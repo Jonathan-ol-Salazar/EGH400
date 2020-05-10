@@ -8,15 +8,16 @@ import json
 def on_message(client, userdata, msg):
     print('got a message')
     data = str(msg.payload.decode("utf-8", "ignore"))
-    dataJSON = json.loads(data)  # decode json data
-    print(dataJSON)
+    dictJSON = json.loads(data)  # decode json data
+    print(dictJSON)
+    print(type(dictJSON))
 
 
 
 ########################################
 broker_address="localhost" 
  
-client = mqtt.Client("sub") #create new instance
+client = mqtt.Client("FlightPlan_Subscriber") #create new instance
 client.on_message=on_message #attach function to callback  
  
 client.connect(broker_address) #connect to broker

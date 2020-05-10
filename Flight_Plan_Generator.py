@@ -14,14 +14,17 @@ distance = 1
 altitude = 1
 
 
+# Dictionary to hold JSON data
+dictJSON =  { "Duration": duration, "Distance":distance, "Altitude": altitude}
+# Convert dictionary to a string for publishing
+stringJSON = json.dumps(dictJSON)
 
-dataJSON =  '{ "name":"John", "age":30, "city":"New York"}'
 
 ########################################
 broker_address = "localhost"
 
-client = mqtt.Client("pub")  # create new instance
+client = mqtt.Client("FlightPlan_Publisher")  # create new instance
 
 client.connect(broker_address)  # connect to broker
 
-client.publish("Flight_Plans", dataJSON)
+client.publish("Flight_Plans", stringJSON) # Send message to the Topic
