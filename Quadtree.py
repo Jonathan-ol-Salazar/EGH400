@@ -10,11 +10,11 @@ class Point:
 
 
 class Node:
-    def __init__(self, depth, parent, bottomCoords, topCoords, points=0, code=""):
+    def __init__(self, depth, parent, bottomCoords, topCoords, points=0, code="", children=[]):
         self.bottomCoords = bottomCoords
         self.topCoords = topCoords
         self.points = points
-        self.children = []
+        self.children = children
         self.parent = parent
         self.depth = depth
 
@@ -33,14 +33,6 @@ class Node:
     def setPoints(self, point):
         self.points.update(point)
 
-    def plot(self):
-        x = [self.bottomCoords(1), self.bottomCoords(3), self.topCoords(1), self.topCoords(3)]
-        y = [self.bottomCoords(2), self.bottomCoords(4), self.topCoords(2), self.topCoords(4)]
-
-        plt.plot(x, y, 'bo')
-
-
-
 
 
 
@@ -49,20 +41,67 @@ class Quadtree:
         self.bottomCoords = [bottomLeft_X, bottomLeft_Y, topRight_X, bottomLeft_Y]
         self.topCoords = [bottomLeft_X, topRight_Y, topRight_X, topRight_Y]
         self.children = 4
-        self.root = Node(0, 0, self.bottomCoords, self.topCoords)
-        self.root.children = self.children
+       
+        # self.root.children = self.children
 
         mid_X = topRight_X/2
         mid_Y = topRight_Y/2
 
-        Node(1, 0, [bottomLeft_X, mid_Y, mid_X, mid_Y], [bottomLeft_X, topRight_Y, mid_X, topRight_Y], 1)
-        Node(1, 0, [mid_X, mid_Y, topRight_X, mid_Y], [mid_X, topRight_Y, topRight_X, topRight_Y], 2)
-        Node(1, 0, [bottomLeft_X, bottomLeft_Y, mid_X, bottomLeft_Y], [bottomLeft_X, mid_Y, mid_X, mid_Y], 3)
-        Node(1, 0, [mid_X, bottomLeft_Y, topRight_X, bottomLeft_Y], [mid_X, mid_Y, topRight_X, mid_Y], 4)
+        one = Node(1, 0, [bottomLeft_X, mid_Y, mid_X, mid_Y], [bottomLeft_X, topRight_Y, mid_X, topRight_Y], 1)
+        two = Node(1, 0, [mid_X, mid_Y, topRight_X, mid_Y], [mid_X, topRight_Y, topRight_X, topRight_Y], 2)
+        three = Node(1, 0, [bottomLeft_X, bottomLeft_Y, mid_X, bottomLeft_Y], [bottomLeft_X, mid_Y, mid_X, mid_Y], 3)
+        four = Node(1, 0, [mid_X, bottomLeft_Y, topRight_X, bottomLeft_Y], [mid_X, mid_Y, topRight_X, mid_Y], 4)
 
 
+        self.arrayOfChildren = [one, two, three, four] 
+
+        self.root = Node(0, 0, self.bottomCoords, self.topCoords, self.arrayOfChildren)
         # for initalChildren in range(self.children):
         #     Node(1, 0, )
+
+
+
+def main():
+    quadtree = Quadtree(0,0,10,10)
+    children = quadtree.arrayOfChildren  
+    
+    top = []
+    bottom = []
+    
+    
+    for kids in children:
+        kids.getTopCoords
+        kids.getBottomCoords
+
+        print(str(kids.getTopCoords)) 
+
+
+if __name__ == "__main__":
+    # execute only if run as a script
+    main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Plotting
 
 
 class plottingGrid:
@@ -71,6 +110,7 @@ class plottingGrid:
         self.topCoords = [bottomLeft_X, topRight_Y, topRight_X, topRight_Y]
         plt.plot(self.topCoords, self.bottomCoords) 
         plt.show()
+
 
 
 #%%
@@ -137,14 +177,11 @@ class QuadtreePlot:
         for node in nodes:
             x = [node.bottomCoords[0], node.bottomCoords[2], node.topCoords[0], node.topCoords[2]]
             y = [node.bottomCoords[1], node.bottomCoords[3], node.topCoords[1], node.topCoords[3]] 
-            print(x)
-            print(y)
+            # print(x)
+            # print(y)
             plt.plot(x,y,'bo')
         plt.show
-        print(x)
-        print(y)
+        # print(x)
+        # print(y)
 
 QuadtreePlot(0,0,100,100)
-
-
-# %%
