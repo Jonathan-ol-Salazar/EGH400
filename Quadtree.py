@@ -5,6 +5,7 @@ class Point:
     def __init__(self, latitude, longitude):
         self.latitude = latitude
         self.longitude = longitude
+        # Dictionary that contains timestamp, x, y, altitude
         self.point = {}
 
 
@@ -17,10 +18,11 @@ class Node:
         self.children = children
         self.parent = parent
         self.depth = depth
-        self.state = 0                      # Initialize as empty leaf node
+        self.state = 0    
+        self.code = code                  # Initialize as empty leaf node
 
         # state == 1 if node has children
-        if children != 0:
+        if len(children) != 0:
             self.state = 1
 
 
@@ -34,9 +36,9 @@ class Node:
     def getNumPoints(self):
         return self.points.count
 
-    # Add points
+    # Add points and sort via timestamp datetime
     def setPoints(self, point):
-        self.points.update(point)
+        self.points.append(point)
 
     # Get bottom coords
     def getBottomCoords(self):
@@ -65,7 +67,9 @@ class Quadtree:
     def __init__(self, bottomLeft_X, bottomLeft_Y, topRight_X, topRight_Y):
         self.bottomCoords = [bottomLeft_X, bottomLeft_Y, topRight_X, bottomLeft_Y]
         self.topCoords = [bottomLeft_X, topRight_Y, topRight_X, topRight_Y]
+        self.depth = 1 # Maximum level of resolution
 
+        
         # Get coordinates for children nodes
         childrenCoords = self.divideCoords(bottomLeft_X, bottomLeft_Y, topRight_X, topRight_Y)
 
@@ -80,7 +84,7 @@ class Quadtree:
         self.arrayOfChildren = [one, two, three, four] 
 
         # Create root node with children
-        self.root = Node(0, 0, self.bottomCoords, self.topCoords, self.arrayOfChildren)
+        self.root = Node(0, 0, self.bottomCoords, self.topCoords, children=self.arrayOfChildren)
       
 
     # Divide a region into 4 quadrants and return coords  
@@ -100,6 +104,55 @@ class Quadtree:
         return [oneCoords, twoCoords, threeCoords, fourCoords]
     
 
+    # Insert a point
+    def insert(self, Point):
+        latitude = Point.latitude       # Y-axis
+        longitude = Point.longitude     # X-axis
+
+        currentNode = self.root
+
+        depth = 0
+
+        # 
+        # for children in self.root.children:
+        
+        # # Find depth 1 quadrant 
+        # for children in self.root.children:
+        #     # find children thats within point coords
+        #     if longitude > children.bottomCoords[0] and longitude < children.bottomCoords[2]:
+        #         if latitude > children.bottomCoords[1] and latitude < children.topCoords[3]:
+        #             currentNode = children
+        #             break
+
+
+        while depth < self.depth:
+            # loop through quads and find relevant one till u find a leaf node
+            if currentNode.getState() == 1:
+                for children in currentNode.children:
+                    # find children thats within point coords
+                    if longitude > children.bottomCoords[0] and longitude < children.bottomCoords[2]:
+                        if latitude > children.bottomCoords[1] and latitude < children.topCoords[3]:
+                            currentNode = children
+
+                            if currentNode.getState() == 0:
+                                currentNode.setPoints(Point)
+
+                            break
+            else:
+                currentNode.setPoints(Point)
+            
+            depth+=1
+
+    # Delete a point
+    def delete(self, Point):
+        pass 
+
+    # Update a point
+    def update(self, Point):
+        pass
+
+
+
 
 ############################################################
 
@@ -113,16 +166,19 @@ def main():
 
     
     # Print children
-    for kids in children:
-        kids.getTopCoords
-        kids.getBottomCoords
+    # for kids in children:
+    #     kids.getTopCoords
+    #     kids.getBottomCoords
 
-        print(str(kids.getTopCoords)) 
+    #     print(str(kids.getTopCoords)) 
 
+    point = Point(1,1)
+    quadtree.insert(point)
+    x = 1
 
 if __name__ == "__main__":
     # execute only if run as a script
-    main()
+    main()  
 
 
 
