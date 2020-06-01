@@ -280,8 +280,19 @@ class QuadtreePlot:
             # print(x)
             # print(y)
             plt.plot(x,y,'bo')
+
+        plt.ylabel('Y-Axis (Meters)')
+        plt.xlabel('X-Axis (Meters)')
+
+        plt.title('Quadtree With A Single Leaf Node')
+
+        plt.plot(2,2, 'ko')
+        
         plt.show
         # print(x)
         # print(y)
 
-QuadtreePlot(0,0,100,100)
+QuadtreePlot(0,0,10,10)
+
+
+# %%
