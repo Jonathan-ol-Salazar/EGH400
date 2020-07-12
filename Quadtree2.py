@@ -21,10 +21,25 @@ class Node:
         self.points = points
         self.children = children
         self.root = root
+        self.bL = bL
+        self.tR = tR
     
     # ADD GETTERS/SETTERS
     def addPoint(self, newPoints):
         self.points.append(newPoints)
+
+    
+    def getNumPoints(self):
+        return self.points
+
+    def getCoords(self):
+        return self.bL, self.tR
+
+    def setChildren(self, children):
+        self.children.append(children)
+
+
+
 
 # Class for Quadtree
 class Quadtree:
@@ -38,20 +53,46 @@ class Quadtree:
         self.root = Node(bL, tR, root = 1) # Create root node
         
 
-    # Split node into 4 new nodes
-        # Move points to corresponding nodes
-    def Decompose(self):
-        pass
-
-
-
     # Insert a point into a node
+        # Traverse till a node is found, otherwise create a new one
     def Insert(self, longitude, latitude, altitude, time):
         # Create a point object
         point = Point(longitude,latitude, altitude, time)
 
-        # Add point to tree
-        self.root.addPoint(point)
+        # # Add point to tree
+        # self.root.addPoint(point)
+
+        # ROOT NODE
+
+        # If the root node has no children, add point
+        if len(self.root.children) == 0:
+            self.root.addPoint(point)
+        # else traverse through tree to find suitable node
+        # else create a new node 
+
+        # Check if root node has max points
+        if self.maxPoints <= self.root.getNumPoints():
+            # Get corners for each quadrant 
+            rootCoords = self.root.getCoords()  # Root node coords
+            bL = rootCoords[0]                  # Bottom left coords
+            tR = rootCoords[1]                  # Top right coords
+            midH = (tR[1] - bL[1]) / 2          # Mid height
+            midL = (tR[0] - bL[0]) / 2          # Mid length
+
+            # Setting children coords
+            one = Node( [bL[0], midH],[midL, tR[1]])
+            two = Node([midL, midH],tR)
+            three = Node(bL,[midL, midH])
+            four = Node([midL, bL[1]],[tR[0], midH])
+
+            # List of children
+            children = [one, two, three, four]
+
+            # Add list of new children to root
+            self.root.setChildren(children)
+                        
+            
+                
 
     # Update existing node
     def Update(self):
@@ -62,6 +103,17 @@ class Quadtree:
         pass
 
     # ADD GETTERS/SETTERS
+
+
+
+    def createChildren(self, bL, tR, points):
+        pass 
+        
+
+    # Split node into 4 new nodes
+        # Move points to corresponding nodes
+    def decompose(self):
+        pass 
 
 
 
