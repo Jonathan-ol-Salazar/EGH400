@@ -25,8 +25,8 @@ class Node:
         self.tR = tR
     
     # ADD GETTERS/SETTERS
-    def addPoint(self, newPoints):
-        self.points.append(newPoints)
+    def addPoint(self, newPoint):
+        self.points.append(newPoint)
 
     
     def getNumPoints(self):
@@ -35,8 +35,13 @@ class Node:
     def getCoords(self):
         return self.bL, self.tR
 
+    def getPoints(self):
+        return self.points
+
     def setChildren(self, children):
         self.children.append(children)
+
+
 
 
 
@@ -55,9 +60,9 @@ class Quadtree:
 
     # Insert a point into a node
         # Traverse till a node is found, otherwise create a new one
-    def Insert(self, longitude, latitude, altitude, time):
+    def Insert(self, point):
         # Create a point object
-        point = Point(longitude,latitude, altitude, time)
+        # point = Point(longitude,latitude, altitude, time)
 
         # # Add point to tree
         # self.root.addPoint(point)
@@ -91,8 +96,13 @@ class Quadtree:
             # Add list of new children to root
             self.root.setChildren(children)
                         
-            
+            # Move existing points to suitable children
+            points = self.root.getPoints()
                 
+                # loop through all points and place into new children
+                # for point in points:
+                
+            
 
     # Update existing node
     def Update(self):
@@ -112,8 +122,10 @@ class Quadtree:
 
     # Split node into 4 new nodes
         # Move points to corresponding nodes
+        # Find node object to place children
     def decompose(self):
         pass 
+
 
 
 
