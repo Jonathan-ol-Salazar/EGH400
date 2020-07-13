@@ -6,6 +6,14 @@ class Point:
         self.longitude = longitude
         self.altitude = altitude
         self.time = time
+
+    def getLong(self):
+        return self.longitude
+
+    def getLat(self):
+        return self.latitude
+    
+
     
     # Add GETTERS/SETTERS
 
@@ -25,12 +33,12 @@ class Node:
         self.tR = tR
     
     # ADD GETTERS/SETTERS
-    def addPoint(self, newPoint):
+    def setPoint(self, newPoint):
         self.points.append(newPoint)
 
     
     def getNumPoints(self):
-        return self.points
+        return len(self.points)
 
     def getCoords(self):
         return self.bL, self.tR
@@ -60,18 +68,18 @@ class Quadtree:
 
     # Insert a point into a node
         # Traverse till a node is found, otherwise create a new one
-    def Insert(self, point):
+    def Insert(self, Point):
         # Create a point object
         # point = Point(longitude,latitude, altitude, time)
 
         # # Add point to tree
-        # self.root.addPoint(point)
+        # self.root.setPoint(point)
 
         # ROOT NODE
 
         # If the root node has no children, add point
         if len(self.root.children) == 0:
-            self.root.addPoint(point)
+            self.root.setPoint(Point)
         # else traverse through tree to find suitable node
         # else create a new node 
 
@@ -93,14 +101,43 @@ class Quadtree:
             # List of children
             children = [one, two, three, four]
 
+            points = self.root.getPoints()
+            # Loop through all children and place points
+            for child in children:
+                pointsToAdd = self.movePoints(child, points )
+                if len(pointsToAdd) != 0:
+                    for point in pointsToAdd:
+                        child.setPoint(point)
+                
+
             # Add list of new children to root
             self.root.setChildren(children)
                         
-            # Move existing points to suitable children
-            points = self.root.getPoints()
+
                 
-                # loop through all points and place into new children
-                # for point in points:
+    # From a list of points return all points within quadrant
+    def movePoints(self, child, points):
+        pts = []
+        coords = child.getCoords()  # Coordinates of child node
+        bottomLeft = coords[0]      # Bottom left coords
+        topRight = coords[1]        # Top right coords
+
+        # Loop through all points and place them into child
+        for point in points:
+            longitudePoint = point.getLong()    # Longitude (X) of point
+            latitudePoint = point.getLat()      # Latitude (Y) of point
+            # Check if point is within quadrant
+            if longitudePoint >= bottomLeft[0] and longitudePoint <= topRight[0] and latitudePoint >= bottomLeft[1] and latitudePoint <= topRight[1]:
+                pts.append(point)
+
+        return pts
+   
+
+
+
+                
+
+
                 
             
 
@@ -137,8 +174,11 @@ def main():
 
     # Initialize Quadtree
     quadtree = Quadtree(0,0,10,10, 1)
+    
+    point = Point(1,1,2,3)
 
-    quadtree.Insert(1,1,2,3)
+    quadtree.Insert(point)
+    # quadtree.movePoints(quadtree.root.children[0], point)
 
     x = 1
 if __name__ == "__main__":
