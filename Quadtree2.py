@@ -150,7 +150,7 @@ class Quadtree:
 
 
         # List of children
-        Node.children = [one, two, three, four]
+        node.children = [one, two, three, four]
 
         # points = self.root.getPoints()
         # # Remove children from root
