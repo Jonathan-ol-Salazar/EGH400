@@ -49,6 +49,8 @@ class Node:
     def setChildren(self, children):
         self.children.append(children)
 
+    def purgePoints(self):
+        self.points = []
 
 
 
@@ -69,66 +71,120 @@ class Quadtree:
     # Insert a point into a node
         # Traverse till a node is found, otherwise create a new one
     def Insert(self, Point):
-        # Create a point object
-        # point = Point(longitude,latitude, altitude, time)
-
-        # # Add point to tree
-        # self.root.setPoint(point)
+        self.root.setPoint(Point)
+        self.subdivide(self.root)
 
         # ROOT NODE
 
-        # If the root node has no children, add point
-        if len(self.root.children) == 0:
-            self.root.setPoint(Point)
-        # else traverse through tree to find suitable node
-        # else create a new node 
+        # # If the root node has no children, add point
+        # if len(self.root.children) == 0:
+        #     self.root.setPoint(Point)
+        # # else traverse through tree to find suitable node
+        # # else create a new node 
+        # else:
+        #     self.subdivide(self.root)
+        # # Check if root node has max points
+        # if self.maxPoints <= self.root.getNumPoints():
+        #     # Get corners for each quadrant 
+        #     rootCoords = self.root.getCoords()  # Root node coords
+        #     bL = rootCoords[0]                  # Bottom left coords
+        #     tR = rootCoords[1]                  # Top right coords
+        #     midH = (tR[1] - bL[1]) / 2          # Mid height
+        #     midL = (tR[0] - bL[0]) / 2          # Mid length
 
-        # Check if root node has max points
-        if self.maxPoints <= self.root.getNumPoints():
-            # Get corners for each quadrant 
-            rootCoords = self.root.getCoords()  # Root node coords
-            bL = rootCoords[0]                  # Bottom left coords
-            tR = rootCoords[1]                  # Top right coords
-            midH = (tR[1] - bL[1]) / 2          # Mid height
-            midL = (tR[0] - bL[0]) / 2          # Mid length
+        #     # Setting children coords
+        #     one = Node( [bL[0], midH],[midL, tR[1]])
+        #     two = Node([midL, midH],tR)
+        #     three = Node(bL,[midL, midH])
+        #     four = Node([midL, bL[1]],[tR[0], midH])
 
-            # Setting children coords
-            one = Node( [bL[0], midH],[midL, tR[1]])
-            two = Node([midL, midH],tR)
-            three = Node(bL,[midL, midH])
-            four = Node([midL, bL[1]],[tR[0], midH])
+        #     # List of children
+        #     children = [one, two, three, four]
 
-            # List of children
-            children = [one, two, three, four]
+        #     points = self.root.getPoints()
+        #     # Remove children from root
+        #     self.root.purgePoints()
 
-            points = self.root.getPoints()
-            # Loop through all children and place points
-            for child in children:
-                pointsToAdd = self.movePoints(child, points )
-                if len(pointsToAdd) != 0:
-                    for point in pointsToAdd:
-                        child.setPoint(point)
+        #     # # Loop through all children and place points
+        #     # for child in children:
+        #     #     pointsToAdd = self.movePoints(child, points )
+        #     #     if len(pointsToAdd) != 0:
+        #     #         for point in pointsToAdd:
+        #     #             child.setPoint(point)
                 
+ 
 
-            # Add list of new children to root
-            self.root.setChildren(children)
+        #     # Add list of new children to root
+        #     self.root.setChildren(children)
                         
-
+        #TODO remove points from root
+        #TODO find out why adding to children also adds to root
                 
+    def subdivide(self, node):
+        if node.getNumPoints() <= self.maxPoints:
+            return
+
+        # Get corners for each quadrant 
+        nodeCoords = node.getCoords()  # Root node coords
+        bL = nodeCoords[0]                  # Bottom left coords
+        tR = nodeCoords[1]                  # Top right coords
+        midH = (tR[1] - bL[1]) / 2          # Mid height
+        midL = (tR[0] - bL[0]) / 2          # Mid length
+
+        # Setting children coords
+        p = self.movePoints([bL[0], midH], [midL, tR[1]], node )
+        one = Node( [bL[0], midH], [midL, tR[1]], p )
+        self.subdivide(one)
+
+        p = self.movePoints([midL, midH],tR, node)        
+        two = Node( [midL, midH],tR, p )
+        self.subdivide(two)
+
+        p = self.movePoints(bL, [midL, midH], node )
+        three = Node( bL, [midL, midH], p )
+        self.subdivide(three)
+
+        p = self.movePoints([midL, bL[1]], [tR[0], midH], node )
+        four = Node( [midL, bL[1]], [tR[0], midH], p )
+        self.subdivide(four)
+
+
+        # List of children
+        Node.children = [one, two, three, four]
+
+        # points = self.root.getPoints()
+        # # Remove children from root
+        # self.root.purgePoints()
+        
+        # # Loop through all children and place points
+        # for child in children:
+        #     pointsToAdd = self.movePoints(child, points )
+        #     if len(pointsToAdd) != 0:
+        #         for point in pointsToAdd:
+        #             child.setPoint(point)
+
+
+
+
     # From a list of points return all points within quadrant
-    def movePoints(self, child, points):
+    def movePoints(self, bottomLeft, topRight, node):
         pts = []
-        coords = child.getCoords()  # Coordinates of child node
-        bottomLeft = coords[0]      # Bottom left coords
-        topRight = coords[1]        # Top right coords
+        # coords = Node.getCoords()  # Coordinates of child node
+        # bottomLeft = coords[0]      # Bottom left coords
+        # topRight = coords[1]        # Top right coords
 
         # Loop through all points and place them into child
+        points = node.getPoints()
         for point in points:
             longitudePoint = point.getLong()    # Longitude (X) of point
             latitudePoint = point.getLat()      # Latitude (Y) of point
             # Check if point is within quadrant
             if longitudePoint >= bottomLeft[0] and longitudePoint <= topRight[0] and latitudePoint >= bottomLeft[1] and latitudePoint <= topRight[1]:
                 pts.append(point)
+
+        for pt in pts:
+            while pt in points:
+                node.points.remove(pt)
 
         return pts
    
@@ -175,9 +231,17 @@ def main():
     # Initialize Quadtree
     quadtree = Quadtree(0,0,10,10, 1)
     
-    point = Point(1,1,2,3)
+    point1 = Point(1,1,2,3)
+    point2 = Point(1,2,2,3)
 
-    quadtree.Insert(point)
+    points = [point1, point2]
+
+    quadtree.Insert(point1)
+    quadtree.Insert(point2)
+
+
+
+    # point = Point(1,1,2,3)
     # quadtree.movePoints(quadtree.root.children[0], point)
 
     x = 1
