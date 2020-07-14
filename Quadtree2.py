@@ -74,51 +74,6 @@ class Quadtree:
         self.root.setPoint(Point)
         self.subdivide(self.root)
 
-        # ROOT NODE
-
-        # # If the root node has no children, add point
-        # if len(self.root.children) == 0:
-        #     self.root.setPoint(Point)
-        # # else traverse through tree to find suitable node
-        # # else create a new node 
-        # else:
-        #     self.subdivide(self.root)
-        # # Check if root node has max points
-        # if self.maxPoints <= self.root.getNumPoints():
-        #     # Get corners for each quadrant 
-        #     rootCoords = self.root.getCoords()  # Root node coords
-        #     bL = rootCoords[0]                  # Bottom left coords
-        #     tR = rootCoords[1]                  # Top right coords
-        #     midH = (tR[1] - bL[1]) / 2          # Mid height
-        #     midL = (tR[0] - bL[0]) / 2          # Mid length
-
-        #     # Setting children coords
-        #     one = Node( [bL[0], midH],[midL, tR[1]])
-        #     two = Node([midL, midH],tR)
-        #     three = Node(bL,[midL, midH])
-        #     four = Node([midL, bL[1]],[tR[0], midH])
-
-        #     # List of children
-        #     children = [one, two, three, four]
-
-        #     points = self.root.getPoints()
-        #     # Remove children from root
-        #     self.root.purgePoints()
-
-        #     # # Loop through all children and place points
-        #     # for child in children:
-        #     #     pointsToAdd = self.movePoints(child, points )
-        #     #     if len(pointsToAdd) != 0:
-        #     #         for point in pointsToAdd:
-        #     #             child.setPoint(point)
-                
- 
-
-        #     # Add list of new children to root
-        #     self.root.setChildren(children)
-                        
-        #TODO remove points from root
-        #TODO find out why adding to children also adds to root
                 
     def subdivide(self, node):
         if node.getNumPoints() <= self.maxPoints:
@@ -152,27 +107,11 @@ class Quadtree:
         # List of children
         node.children = [one, two, three, four]
 
-        # points = self.root.getPoints()
-        # # Remove children from root
-        # self.root.purgePoints()
-        
-        # # Loop through all children and place points
-        # for child in children:
-        #     pointsToAdd = self.movePoints(child, points )
-        #     if len(pointsToAdd) != 0:
-        #         for point in pointsToAdd:
-        #             child.setPoint(point)
-
-
-
 
     # From a list of points return all points within quadrant
     def movePoints(self, bottomLeft, topRight, node):
         pts = []
-        # coords = Node.getCoords()  # Coordinates of child node
-        # bottomLeft = coords[0]      # Bottom left coords
-        # topRight = coords[1]        # Top right coords
-
+       
         # Loop through all points and place them into child
         points = node.getPoints()
         for point in points:
@@ -189,14 +128,6 @@ class Quadtree:
         return pts
    
 
-
-
-                
-
-
-                
-            
-
     # Update existing node
     def Update(self):
         pass
@@ -206,22 +137,6 @@ class Quadtree:
         pass
 
     # ADD GETTERS/SETTERS
-
-
-
-    def createChildren(self, bL, tR, points):
-        pass 
-        
-
-    # Split node into 4 new nodes
-        # Move points to corresponding nodes
-        # Find node object to place children
-    def decompose(self):
-        pass 
-
-
-
-
 
 
 ############################################################
