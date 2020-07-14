@@ -152,11 +152,12 @@ class Quadtree:
     # ADD GETTERS/SETTERS
 
     def recursiveSearch(self, node, bottomLeftSearch, topRightSearch, ptsOld):
-        if len(node.getChildren()) <= 0 or len(node.getPoints()) <= 0:
+        if len(node.getChildren()) <= 0 and len(node.getPoints()) <= 0:
             return
 
         pts = []            # Initialise new list of points
-        pts.append(ptsOld)  # Add previous list of points to new list
+        if len(ptsOld) > 0:
+            pts.extend(ptsOld)  # Add previous list of points to new list
 
         # [bottomLeftNode, topRightNode] = node.getCoords()
 
@@ -165,7 +166,13 @@ class Quadtree:
             # if bottomLeft (x and y) are >= to boundaries AND topright (x and y) are <= boundaries (topRight)
             # if bottomLeftNode[0] >= bottomLeftSearch[0] and bottomLeftNode[1] >= bottomLeftSearch[1] and topRightNode[0] <= topRightSearch[0] and topRightNode[1] <= topRightSearch[1]:
             if bottomLeftNode[0] >= bottomLeftSearch[0] and bottomLeftNode[1] >= bottomLeftSearch[1] and topRightNode[0] <= topRightSearch[0] and topRightNode[1] <= topRightSearch[1]:
-                pts.append(self.recursiveSearch(child, bottomLeftSearch, topRightSearch, pts))
+                if len(child.getPoints()) > 0:
+                    pts.extend(child.getPoints())
+                else:
+                    traversePoints = self.recursiveSearch(child, bottomLeftSearch, topRightSearch, pts)
+                    if traversePoints != None:
+                        pts.extend(traversePoints)
+                # pts.append(self.recursiveSearch(child, bottomLeftSearch, topRightSearch, pts))
                  
 
         return pts
@@ -183,7 +190,7 @@ def main():
 
     quadtree.Insert(point1)
     quadtree.Insert(point2)
-    y = quadtree.Query([0,0], [0.5,0.5])
+    y = quadtree.Query([0,0], [5,5])
 
 
     # point = Point(1,1,2,3)
