@@ -47,7 +47,7 @@ class Node:
         return self.points
 
     def setChildren(self, children):
-        self.children.append(children)
+        self.children = children
 
     def getChildren(self):
         return self.children
@@ -100,8 +100,8 @@ class Quadtree:
 
 
         # List of children
-        node.children = [one, two, three, four]
-
+        # node.children = [one, two, three, four]
+        node.setChildren([one, two, three, four])
 
     # From a list of points return all points within quadrant
     def movePoints(self, bottomLeft, topRight, node):
@@ -172,7 +172,7 @@ class Quadtree:
                     traversePoints = self.recursiveSearch(child, bottomLeftSearch, topRightSearch, pts)
                     if traversePoints != None:
                         pts.extend(traversePoints)
-                # pts.append(self.recursiveSearch(child, bottomLeftSearch, topRightSearch, pts))
+               
                  
 
         return pts
