@@ -49,6 +49,9 @@ class Node:
     def setChildren(self, children):
         self.children.append(children)
 
+    def getChildren(self):
+        return self.children
+
     def purgePoints(self):
         self.points = []
 
@@ -66,15 +69,7 @@ class Quadtree:
 
         self.maxPoints = maxPoints # Max points before decomposition
         self.root = Node(bL, tR, root = 1) # Create root node
-        
-
-    # Insert a point into a node
-        # Traverse till a node is found, otherwise create a new one
-    def Insert(self, Point):
-        self.root.setPoint(Point)
-        self.subdivide(self.root)
-
-                
+                       
     def subdivide(self, node):
         if node.getNumPoints() <= self.maxPoints:
             return
@@ -127,6 +122,11 @@ class Quadtree:
 
         return pts
    
+    # Insert a point into a node
+        # Traverse till a node is found, otherwise create a new one
+    def Insert(self, Point):
+        self.root.setPoint(Point)
+        self.subdivide(self.root)
 
     # Update existing node
     def Update(self):
@@ -136,9 +136,39 @@ class Quadtree:
     def Delete(self):
         pass
 
+
+    # Search for number of points in area
+    def Query(self, bottomLeft, topRight):
+        # From the given area
+        # Check if given node has children
+        # if it has children, check within coords
+        # if in coords, check for points
+        # if it has points, add to list
+        # else recurse again 
+        pts = []
+        return self.recursiveSearch(self.root, bottomLeft, topRight, pts)
+        
+
     # ADD GETTERS/SETTERS
 
+    def recursiveSearch(self, node, bottomLeftSearch, topRightSearch, ptsOld):
+        if len(node.getChildren()) <= 0 or len(node.getPoints()) <= 0:
+            return
 
+        pts = []            # Initialise new list of points
+        pts.append(ptsOld)  # Add previous list of points to new list
+
+        # [bottomLeftNode, topRightNode] = node.getCoords()
+
+        for child in node.getChildren():
+            [bottomLeftNode, topRightNode] = child.getCoords()
+            # if bottomLeft (x and y) are >= to boundaries AND topright (x and y) are <= boundaries (topRight)
+            # if bottomLeftNode[0] >= bottomLeftSearch[0] and bottomLeftNode[1] >= bottomLeftSearch[1] and topRightNode[0] <= topRightSearch[0] and topRightNode[1] <= topRightSearch[1]:
+            if bottomLeftNode[0] >= bottomLeftSearch[0] and bottomLeftNode[1] >= bottomLeftSearch[1] and topRightNode[0] <= topRightSearch[0] and topRightNode[1] <= topRightSearch[1]:
+                pts.append(self.recursiveSearch(child, bottomLeftSearch, topRightSearch, pts))
+                 
+
+        return pts
 ############################################################
 
 def main():
@@ -153,7 +183,7 @@ def main():
 
     quadtree.Insert(point1)
     quadtree.Insert(point2)
-
+    y = quadtree.Query([0,0], [0.5,0.5])
 
 
     # point = Point(1,1,2,3)
