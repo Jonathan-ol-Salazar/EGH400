@@ -184,25 +184,17 @@ class Quadtree:
     def recursiveDelete(self, point, node):
         # Check if node has no points and no children
         if node.getNumPoints() == 0 and len(node.getChildren()) == 0:
-            return "Nothing to delete"
-            # Return None
-        
-        # Loop through all the points in the node
-        # Check if node has points
-        if node.getNumPoints() > 0:
-            for pt in node.getPoints():
-                # Check of pt is equal to point
-                if point == pt:
-                    node.removePoint(point)     # Remove point from node list
+            return "Nothing to delete"  # Nothing to delete
+            
+        # Check if point is in node
+        if point in node.getPoints():
+            node.removePoint(point) # Remove point from node
 
-        # Check if point is in node.point list
+        # Check if point is in node.point list      
+        for child in node.getChildren():
+            self.recursiveDelete(point, child)  # Recurse method
         
-        # Check if node has children
-        if len(node.getChildren()) > 0:
-            for child in node.getChildren():
-                self.recursiveDelete(point, child)
-        
-        return "Deletion Successful"
+        return "Deletion Successful" # Something was deleted
 
 
 
@@ -217,6 +209,8 @@ def main():
     point2 = Point(1,2,2,3)
 
     points = [point1, point2]
+
+    quadtree.Delete(point1)
 
     quadtree.Insert(point1)
     quadtree.Insert(point2)
