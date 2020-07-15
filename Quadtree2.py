@@ -55,7 +55,8 @@ class Node:
     def purgePoints(self):
         self.points = []
 
-
+    def removePoint(self, point):
+        self.points.remove(point)
 
 
 
@@ -105,7 +106,7 @@ class Quadtree:
         # node.children = [one, two, three, four]
         node.setChildren([one, two, three, four])
 
-    # Helper (subdivide): From a list of points return all points within quadrant
+    # Helper (subdivide): From a list of points return all points within boundary
     def movePoints(self, bottomLeft, topRight, node):
         pts = []
        
@@ -125,27 +126,8 @@ class Quadtree:
 
         return pts  # Return point list
    
-    # Insert a point into a node
-        # Traverse till a node is found, otherwise create a new one
-    def Insert(self, Point):
-        self.root.setPoint(Point)
-        self.subdivide(self.root)
 
-    # Update existing node
-    def Update(self):
-        pass
-
-    # Delete an existing node
-    def Delete(self):
-        pass
-
-
-    # Search for number of points in area
-    def Query(self, bottomLeft, topRight):
-        pts = []
-        return self.recursiveSearch(self.root, bottomLeft, topRight, pts)      
-
-    # Helper (Query): Recursively search current node
+     # Helper (Query): Recursively search current node
     def recursiveSearch(self, node, bottomLeftSearch, topRightSearch, ptsOld):
         # Return if node has no children or points
         if len(node.getChildren()) <= 0 and len(node.getPoints()) <= 0:
@@ -175,6 +157,55 @@ class Quadtree:
 
 
 
+    # Insert a point into a node
+    def Insert(self, point):
+        self.root.setPoint(point)   # Add point to root
+        self.subdivide(self.root)   # Subdivide root
+
+    # Search for number of points in area
+    def Query(self, bottomLeft, topRight):
+        pts = []                                                            # Initialise empty list of points
+        return self.recursiveSearch(self.root, bottomLeft, topRight, pts)   # Do a resursive search and return result of points found
+
+    # Update existing node
+    def Update(self):
+        pass
+
+    # Delete an existing node
+    def Delete(self, point):
+        # Take a point object
+        # Find the point
+        # Delete the point from node
+        # Check all the other children in the same level if they have children or points
+        # Delete level if children don't have points or children
+        print(self.recursiveDelete(point, self.root))
+
+
+    def recursiveDelete(self, point, node):
+        # Check if node has no points and no children
+        if node.getNumPoints() == 0 and len(node.getChildren()) == 0:
+            return "Nothing to delete"
+            # Return None
+        
+        # Loop through all the points in the node
+        # Check if node has points
+        if node.getNumPoints() > 0:
+            for pt in node.getPoints():
+                # Check of pt is equal to point
+                if point == pt:
+                    node.removePoint(point)     # Remove point from node list
+
+        # Check if point is in node.point list
+        
+        # Check if node has children
+        if len(node.getChildren()) > 0:
+            for child in node.getChildren():
+                self.recursiveDelete(point, child)
+        
+        return "Deletion Successful"
+
+
+
 ############################################################
 
 def main():
@@ -191,7 +222,7 @@ def main():
     quadtree.Insert(point2)
     y = quadtree.Query([0,0], [5,5])
 
-
+    quadtree.Delete(point1)
     # point = Point(1,1,2,3)
     # quadtree.movePoints(quadtree.root.children[0], point)
 
