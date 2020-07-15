@@ -55,6 +55,9 @@ class Node:
     def purgePoints(self):
         self.points = []
 
+    def purgeChildren(self):
+        self.children = []
+
     def removePoint(self, point):
         self.points.remove(point)
 
@@ -189,11 +192,23 @@ class Quadtree:
         # Check if point is in node
         if point in node.getPoints():
             node.removePoint(point) # Remove point from node
+            return "Deletion Successful"
 
+        # Bool to check if nodes children should be deleted
+        purgeChildren = True
+        internalNode = False
+        
         # Check if point is in node.point list      
         for child in node.getChildren():
+            internalNode = True 
             self.recursiveDelete(point, child)  # Recurse method
-        
+            if len(child.getChildren()) > 0 or child.getNumPoints() > 0:
+                purgeChildren = False
+                
+            
+        if purgeChildren:
+            node.purgeChildren()
+
         return "Deletion Successful" # Something was deleted
 
 
@@ -217,6 +232,7 @@ def main():
     y = quadtree.Query([0,0], [5,5])
 
     quadtree.Delete(point1)
+    quadtree.Delete(point2)
     # point = Point(1,1,2,3)
     # quadtree.movePoints(quadtree.root.children[0], point)
 
