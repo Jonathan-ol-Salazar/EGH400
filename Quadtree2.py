@@ -134,7 +134,7 @@ class Quadtree:
     def recursiveSearch(self, node, bottomLeftSearch, topRightSearch, ptsOld):
         # Return if node has no children or points
         if len(node.getChildren()) <= 0 and len(node.getPoints()) <= 0:
-            return
+            return [] # Return empty list
 
         pts = []                # Initialise new list of points
         if len(ptsOld) > 0:     # Check if previous points has a point
@@ -155,7 +155,7 @@ class Quadtree:
                     # If recurse doesn't return None, add to list. This is because it will return points
                     if traversePoints != None:
                         pts.extend(traversePoints)  # Add points
-               
+
         return pts # Return list of points 
 
 
@@ -168,7 +168,7 @@ class Quadtree:
     # Search for number of points in area
     def Query(self, bottomLeft, topRight):
         pts = []                                                            # Initialise empty list of points
-        return self.recursiveSearch(self.root, bottomLeft, topRight, pts)   # Do a resursive search and return result of points found
+        return self.recursiveSearch(self.root, bottomLeft, topRight, pts)   # Do a resursive search and return result of points found                                                         
 
     # Update existing node
     def Update(self):
@@ -176,11 +176,7 @@ class Quadtree:
 
     # Delete an existing node
     def Delete(self, point):
-        # Take a point object
-        # Find the point
-        # Delete the point from node
-        # Check all the other children in the same level if they have children or points
-        # Delete level if children don't have points or children
+        # Prints result of deletion
         print(self.recursiveDelete(point, self.root))
 
 
@@ -195,19 +191,20 @@ class Quadtree:
             return "Deletion Successful"
 
         # Bool to check if nodes children should be deleted
-        purgeChildren = True
-        internalNode = False
+        purgeChildren = True    # True if children have no kids or points
+        internalNode = False    # True if node has children
         
         # Check if point is in node.point list      
         for child in node.getChildren():
-            internalNode = True 
+            internalNode = True                 # Node has children
             self.recursiveDelete(point, child)  # Recurse method
+            # Check if child has kids or points
             if len(child.getChildren()) > 0 or child.getNumPoints() > 0:
-                purgeChildren = False
+                purgeChildren = False           # Child has kids or points
                 
-            
-        if purgeChildren:
-            node.purgeChildren()
+        # Check if bools are true
+        if purgeChildren and internalNode:
+            node.purgeChildren()    # Delete nodes children
 
         return "Deletion Successful" # Something was deleted
 
@@ -235,7 +232,7 @@ def main():
     quadtree.Delete(point2)
     # point = Point(1,1,2,3)
     # quadtree.movePoints(quadtree.root.children[0], point)
-
+    y = quadtree.Query([0,0], [5,5])
     x = 1
 if __name__ == "__main__":
     # execute only if run as a script
