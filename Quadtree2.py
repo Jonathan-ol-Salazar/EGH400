@@ -9,6 +9,11 @@ class Point:
         self.altitude = altitude
         self.time = time
 
+    def getID(self):
+        return self.id
+    
+    def getSequence(self):
+        return self.sequence
 
     def getLong(self):
         return self.longitude
@@ -21,6 +26,12 @@ class Point:
     
     def getTime(self):
         return self.time
+
+    def setID(self, identification):
+        self.id = identification
+    
+    def setSequence(self, sequence):
+        self.sequence = sequence
     
     def setLong(self, longitude):
         self.longitude = longitude
@@ -33,8 +44,7 @@ class Point:
 
     def setTime(self, time):
         self.time = time
-    
-    # Add GETTERS/SETTERS
+
 
 # Class for node in Quadtree
     # Node can two types - Internal or Leaf 
@@ -236,8 +246,8 @@ def main():
     # Initialize Quadtree
     quadtree = Quadtree(0,0,10,10, 1)
     
-    point1 = Point(1,1,2,3)
-    point2 = Point(1,2,2,3)
+    point1 = Point(1,1,1,1,2,3)
+    point2 = Point(1,2,1,2,2,3)
 
     points = [point1, point2]
 
