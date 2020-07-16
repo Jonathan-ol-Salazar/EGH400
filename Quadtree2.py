@@ -27,6 +27,9 @@ class Point:
     def getTime(self):
         return self.time
 
+    def getAll(self):
+        return [self.id, self.sequence, self.longitude, self.latitude, self.altitude, self.time]
+
     def setID(self, identification):
         self.id = identification
     
@@ -187,28 +190,7 @@ class Quadtree:
 
         return pts # Return list of points 
 
-
-
-    # Insert a point into a node
-    def Insert(self, point):
-        self.root.setPoint(point)   # Add point to root
-        self.subdivide(self.root)   # Subdivide root
-
-    # Search for number of points in area
-    def Query(self, bottomLeft, topRight):
-        pts = []                                                            # Initialise empty list of points
-        return self.recursiveSearch(self.root, bottomLeft, topRight, pts)   # Do a resursive search and return result of points found                                                         
-
-    # Update existing node
-    def Update(self):
-        pass
-
-    # Delete an existing node
-    def Delete(self, point):
-        # Prints result of deletion
-        print(self.recursiveDelete(point, self.root))
-
-
+    
     def recursiveDelete(self, point, node):
         # Check if node has no points and no children
         if node.getNumPoints() == 0 and len(node.getChildren()) == 0:
@@ -239,6 +221,47 @@ class Quadtree:
 
 
 
+    # Insert a point into a node
+    def Insert(self, point):
+        self.root.setPoint(point)   # Add point to root
+        self.subdivide(self.root)   # Subdivide root
+
+    # Search for number of points in area
+    def Query(self, bottomLeft, topRight):
+        pts = []                                                            # Initialise empty list of points
+        return self.recursiveSearch(self.root, bottomLeft, topRight, pts)   # Do a resursive search and return result of points found                                                         
+
+    # Update existing node
+    def Update(self, oldPlan, newPlan):
+
+        if len(oldPlan) == len(oldPlan):
+            self.sameLengthUpdate(oldPlan, newPlan)
+        else:
+            self.differentLengthUpdate(oldPlan, newPlan)
+        pass
+
+    
+    def sameLengthUpdate(self, oldPlan, newPlan):
+        # Get list of altered points from the new flight plan
+        alteredPoints = [point for point in newPlan if point.getAll() not in oldPlan] 
+        print(alteredPoints[0].getAll())
+
+
+
+    def differentLengthUpdate(self, oldPlan, newPlan):
+        pass
+
+
+    # Delete an existing node
+    def Delete(self, point):
+        # Prints result of deletion
+        print(self.recursiveDelete(point, self.root))
+
+
+   
+
+
+
 ############################################################
 
 def main():
@@ -263,6 +286,34 @@ def main():
     # quadtree.movePoints(quadtree.root.children[0], point)
     y = quadtree.Query([0,0], [5,5])
     x = 1
+
+
+    points1 = [point1.getAll(), point2.getAll()]
+    points2 = [point1, Point(1,2,1,2,2,3) , Point(1,1,1,1,1,1)]
+
+
+    # for x in points2:
+    #     # print(x)
+    #     print(x.getAll())
+    #     if x.getAll() not in points:
+    #         print(x)
+
+    xx = [x for x in points2 if x.getAll() not in points1] 
+    print(xx[0].getAll())
+
+
+
+
+
+  
+
+
+    # print(point2.getAll() == xx.getAll()) 
+    # print(point2.getAll() is xx.getAll()) 
+
+    
+
+
 if __name__ == "__main__":
     # execute only if run as a script
     main()  
