@@ -12,8 +12,24 @@ class Point:
 
     def getLat(self):
         return self.latitude
-    
 
+    def getAlt(self):
+        return self.altitude
+    
+    def getTime(self):
+        return self.time
+    
+    def setLong(self, longitude):
+        self.longitude = longitude
+    
+    def setLat(self, latitude):
+        self.latitude = latitude
+    
+    def setAlt(self, altitude):
+        self.altitude = altitude
+
+    def setTime(self, time):
+        self.time = time
     
     # Add GETTERS/SETTERS
 
