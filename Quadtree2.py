@@ -1,11 +1,14 @@
 
 # Class for point in Quadtree
 class Point:
-    def __init__(self, longitude, latitude, altitude, time): # long = x, lat = y
-        self.latitude = latitude
+    def __init__(self, identification, sequence, longitude, latitude, altitude, time): # long = x, lat = y
+        self.id = identification
+        self.sequence = sequence
         self.longitude = longitude
+        self.latitude = latitude
         self.altitude = altitude
         self.time = time
+
 
     def getLong(self):
         return self.longitude
