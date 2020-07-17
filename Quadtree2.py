@@ -234,7 +234,11 @@ class Quadtree:
     # Update existing node
     def Update(self, oldPlan, newPlan):
 
-        if len(oldPlan) == len(oldPlan):
+        # Convert list of Points to list of Point attr
+        for i, point in enumerate(oldPlan):
+            oldPlan[i] = point.getAll()
+    j
+        if len(oldPlan) == len(newPlan):
             self.sameLengthUpdate(oldPlan, newPlan)
         else:
             self.differentLengthUpdate(oldPlan, newPlan)
@@ -242,14 +246,14 @@ class Quadtree:
 
     
     def sameLengthUpdate(self, oldPlan, newPlan):
-        # Get list of altered points from the new flight plan
-        alteredPoints = [point for point in newPlan if point.getAll() not in oldPlan] 
-        print(alteredPoints[0].getAll())
-
+       pass
 
 
     def differentLengthUpdate(self, oldPlan, newPlan):
-        pass
+         # Get list of altered points from the new flight plan
+        alteredPoints = [point for point in newPlan if point.getAll() not in oldPlan] 
+        print(alteredPoints[0].getAll()) # Print
+
 
 
     # Delete an existing node
@@ -289,14 +293,17 @@ def main():
 
 
     points1 = [point1.getAll(), point2.getAll()]
+    points1 = [point1, point2]
     points2 = [point1, Point(1,2,1,2,2,3) , Point(1,1,1,1,1,1)]
 
+    quadtree.Update(points1, points2)
 
     # for x in points2:
     #     # print(x)
     #     print(x.getAll())
     #     if x.getAll() not in points:
     #         print(x)
+        # alteredPoints = [point for point in newPlan if point.getAll() not in oldPlan] 
 
     xx = [x for x in points2 if x.getAll() not in points1] 
     print(xx[0].getAll())
