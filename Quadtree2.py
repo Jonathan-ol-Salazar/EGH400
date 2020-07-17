@@ -204,20 +204,20 @@ class Quadtree:
             #         if traversePoints != [] and traversePoints != None:
             #             pts.extend(traversePoints)  # Add points
 
-            if bottomLeftNode[0] >= bottomLeftSearch[0] and bottomLeftNode[0] <= topRightSearch[0] and \
-                bottomLeftNode[1] >= bottomLeftSearch[1] and bottomLeftNode[1] <= topRightSearch[1] and \
-                topRightNode[0] >= bottomLeftSearch[0] and topRightNode[0] <= topRightSearch[0] and \
-                topRightNode[1] >= bottomLeftSearch[1] and topRightNode[1] <= topRightSearch[1]:
-                # If child has points, add to list
-                if len(child.getPoints()) > 0:
-                    pts.extend(child.getPoints())   # Add points
-                else:
-                    # Recurse the search with current child
-                    traversePoints = self.recursiveSearch(child, bottomLeftSearch, topRightSearch, pts)
-                    # If recurse doesn't return None, add to list. This is because it will return points
-                    if traversePoints != [] and traversePoints != None:
-                        pts.extend(traversePoints)  # Add points
-
+            # if bottomLeftNode[0] >= bottomLeftSearch[0] and bottomLeftNode[0] <= topRightSearch[0] and \
+            #     bottomLeftNode[1] >= bottomLeftSearch[1] and bottomLeftNode[1] <= topRightSearch[1] and \
+            #     topRightNode[0] >= bottomLeftSearch[0] and topRightNode[0] <= topRightSearch[0] and \
+            #     topRightNode[1] >= bottomLeftSearch[1] and topRightNode[1] <= topRightSearch[1]:
+            #     # If child has points, add to list
+            #     if len(child.getPoints()) > 0:
+            #         pts.extend(child.getPoints())   # Add points
+            #     else:
+            #         # Recurse the search with current child
+            #         traversePoints = self.recursiveSearch(child, bottomLeftSearch, topRightSearch, pts)
+            #         # If recurse doesn't return None, add to list. This is because it will return points
+            #         if traversePoints != [] and traversePoints != None:
+            #             pts.extend(traversePoints)  # Add points
+            pass 
 
 
 
