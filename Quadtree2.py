@@ -29,6 +29,9 @@ class Point:
 
     def getAll(self):
         return [self.id, self.sequence, self.longitude, self.latitude, self.altitude, self.time]
+    
+    def getCoords(self):
+        return [self.longitude, self.latitude]
 
     def setID(self, identification):
         self.id = identification
@@ -177,6 +180,18 @@ class Quadtree:
             # Get child coords
             [bottomLeftNode, topRightNode] = child.getCoords()
             # Check if child coords is within search area
+            # if bottomLeftNode[0] >= bottomLeftSearch[0] and bottomLeftNode[1] >= bottomLeftSearch[1] and topRightNode[0] <= topRightSearch[0] and topRightNode[1] <= topRightSearch[1]:
+            if (bottomLeftNode[0] >= bottomLeftSearch[0]) and (bottomLeftNode[1] >= bottomLeftSearch[1]) and (topRightNode[0] >= topRightSearch[0]) and (topRightNode[1] >= topRightSearch[1]):
+                # If child has points, add to list
+                if len(child.getPoints()) > 0:
+                    pts.extend(child.getPoints())   # Add points
+                else:
+                    # Recurse the search with current child
+                    traversePoints = self.recursiveSearch(child, bottomLeftSearch, topRightSearch, pts)
+                    # If recurse doesn't return None, add to list. This is because it will return points
+                    if traversePoints != [] and traversePoints != None:
+                        pts.extend(traversePoints)  # Add points
+            
             if bottomLeftNode[0] >= bottomLeftSearch[0] and bottomLeftNode[1] >= bottomLeftSearch[1] and topRightNode[0] <= topRightSearch[0] and topRightNode[1] <= topRightSearch[1]:
                 # If child has points, add to list
                 if len(child.getPoints()) > 0:
@@ -185,7 +200,7 @@ class Quadtree:
                     # Recurse the search with current child
                     traversePoints = self.recursiveSearch(child, bottomLeftSearch, topRightSearch, pts)
                     # If recurse doesn't return None, add to list. This is because it will return points
-                    if traversePoints != None:
+                    if traversePoints != [] and traversePoints != None:
                         pts.extend(traversePoints)  # Add points
 
         return pts # Return list of points 
@@ -229,7 +244,7 @@ class Quadtree:
     # Search for number of points in area
     def Query(self, bottomLeft, topRight):
         pts = []                                                            # Initialise empty list of points
-        return self.recursiveSearch(self.root, bottomLeft, topRight, pts)   # Do a resursive search and return result of points found                                                         
+        return self.recursiveSearch(self.root, bottomLeft, topRight, self.root.getPoints())   # Do a resursive search and return result of points found                                                         
 
     # Update existing node
     def Update(self, oldPlan, newPlan):
@@ -238,22 +253,80 @@ class Quadtree:
         for i, point in enumerate(oldPlan):
             oldPlan[i] = point.getAll()
     
+        # Check if new plan is the same length as the old plan
         if len(oldPlan) == len(newPlan):
-            self.sameLengthUpdate(oldPlan, newPlan)
+            self.sameLengthUpdate(oldPlan, newPlan)         # Same length
         else:
-            self.differentLengthUpdate(oldPlan, newPlan)
-        pass
+            self.differentLengthUpdate(oldPlan, newPlan)    # Different length
+        
+        
 
     
     def sameLengthUpdate(self, oldPlan, newPlan):
        pass
+       # same length so need to find the differences for each point
 
 
     def differentLengthUpdate(self, oldPlan, newPlan):
-         # Get list of altered points from the new flight plan
-        alteredPoints = [point for point in newPlan if point.getAll() not in oldPlan] 
-        print(alteredPoints[0].getAll()) # Print
 
+        # Change existing points first
+
+        # New plan has more points
+        if len(oldPlan) < len(newPlan):
+            # Get list of altered points from the new flight plan
+            alteredPoints = [point for point in newPlan if point.getAll() not in oldPlan] 
+            print(alteredPoints[0].getAll()) # Print
+            
+            # Add points using insert function
+
+        # New plan has less points
+        else:
+            alteredPoints = [point for point in oldPlan if point.getAll() not in newPlan] 
+
+            # Find what to delete
+                # If point at end, delete
+                # If point before, change existing point and change sequence for points after
+
+    def updateExistingPoints(self, oldPlan, newPlan, alteredPoints):
+        # Find specific differences in attrs
+        # Use getters/setters to change them
+
+        # Double for-loop to find out the exact differences in attr
+
+        # Loop through alteredPoints
+        for alteredPoint in alteredPoints:
+
+            # Loop through existing points
+            for point in oldPlan:
+
+                # Check if alteredPoint is an existing point
+                if point.getSequence() == alteredPoint.getSequence():
+                    
+                    # If x or y is changed, find and delete it, then reinsert
+                    if point.getLong() != alteredPoint.getLong() or point.getLat() != alteredPoint.getLat():
+                        self.Delete(point)          # Delete old point
+                        self.Insert(alteredPoint)   # Add new point
+                    
+                    # If altitude or time is changed, find and use get/set to change
+                    if point.getAlt() != alteredPoint.getAlt():
+                        # self.Query(point.getCoords(), point.getCoords())
+                        pass 
+                    # If sequence changed, change the sequence for all the other points
+      
+      
+  
+
+
+        # Check if points need to be added to the end
+        # if points added before end, the rest of the points need to change their sequence
+
+        # 1. Add points before end
+        # 2. Then add points at end (sequence will already be set)
+
+
+
+
+ 
 
 
     # Delete an existing node
@@ -280,9 +353,10 @@ def main():
 
     quadtree.Delete(point1)
 
-    quadtree.Insert(point1)
+    # quadtree.Insert(point1)
     quadtree.Insert(point2)
-    y = quadtree.Query([0,0], [5,5])
+    # y = quadtree.Query([0,0], [5,5])
+    x = quadtree.Query([0,0], [2,2])
 
     quadtree.Delete(point1)
     quadtree.Delete(point2)
