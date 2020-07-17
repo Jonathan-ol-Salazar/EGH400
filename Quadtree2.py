@@ -243,8 +243,13 @@ class Quadtree:
 
     # Search for number of points in area
     def Query(self, bottomLeft, topRight):
-        pts = []                                                            # Initialise empty list of points
-        return self.recursiveSearch(self.root, bottomLeft, topRight, self.root.getPoints())   # Do a resursive search and return result of points found                                                         
+        pts = []
+
+        for point in self.root.getPoints():
+            if point.getCoords()[0] >= bottomLeft[0] and point.getCoords()[0] <= topRight[0] and point.getCoords()[1] >= bottomLeft[1] and point.getCoords()[1] <= topRight[1]:
+                pts.append(point)
+        # pts = [point for point in self.root.getPoints() if point.getCoords()[0] > bottomLeft[0] and point.getCoords()[1] < bottomLeft[1]  ]    # Initialise empty list of points
+        return self.recursiveSearch(self.root, bottomLeft, topRight, pts)   # Do a resursive search and return result of points found                                                         
 
     # Update existing node
     def Update(self, oldPlan, newPlan):
@@ -356,7 +361,7 @@ def main():
     # quadtree.Insert(point1)
     quadtree.Insert(point2)
     # y = quadtree.Query([0,0], [5,5])
-    x = quadtree.Query([0,0], [2,2])
+    x = quadtree.Query([0,0], [0,2])
 
     quadtree.Delete(point1)
     quadtree.Delete(point2)
