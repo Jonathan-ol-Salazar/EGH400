@@ -237,7 +237,7 @@ class Quadtree:
         # Convert list of Points to list of Point attr
         for i, point in enumerate(oldPlan):
             oldPlan[i] = point.getAll()
-    j
+    
         if len(oldPlan) == len(newPlan):
             self.sameLengthUpdate(oldPlan, newPlan)
         else:
