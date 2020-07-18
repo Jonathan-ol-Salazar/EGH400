@@ -168,9 +168,9 @@ class Quadtree:
      # Helper (Query): Recursively search current node
     
     def recursiveSearch(self, node, point):
-        
+        result = None
         # Return if node has no children or points
-        if len(node.getChildren()) <= 0 and len(node.getPoints()) <= 0:
+        if len(node.getChildren()) <= 0 and len(node.getPoints()) <= 0 or len(node.getChildren()) <= 0 and point not in node.getPoints():
             return  # Return None
 
         # Check all children of node if point lies within its boundaries
@@ -187,27 +187,42 @@ class Quadtree:
             # Check if point is within child
             if longitudePoint >= bottomLeft[0] and longitudePoint <= topRight[0] and latitudePoint >= bottomLeft[1] and latitudePoint <= topRight[1]:
                 # Check if point is within the childs points 
-                if point in node.getChildren():
+                if point in child.getPoints():
                     return point    # Return point
                 else:
-                    point = self.recursiveSearch(child, point)  # Recurse method again with child node
-            else:
-                return
+                    result = self.recursiveSearch(child, point)  # Recurse method again with child node
+                    # if point == result:
+                    #     point = result
+            # else:
+            #     return  # Return None
 
 
-        return point # Return point
+        return result # Return point
     
     
     # Search for number of points in area
     def Query(self, point):        
-        
+        result = ""
+        # Check point exists in root
         if point in self.root.getPoints():
-            return point
+            result = point
         elif len(self.root.getChildren()) == 0:
-            return 
+            result = None 
 
-        return self.recursiveSearch(self.root, point)   # Do a resursive search and return result of points found    
-    
+        # Search children recursively
+        if result != None and result != point:
+            result = self.recursiveSearch(self.root, point)   # Do a resursive search and return result of points found    
+
+        # Print confirmations
+        if result == None:
+            print("Point does not exist")
+        else:
+            print("Point found: ", result.getAll())
+
+        
+        return result
+        
+        
 
 
 
@@ -350,13 +365,29 @@ def main():
 
     # quadtree.Delete(point1)
 
-    # quadtree.Insert(point1)
-    quadtree.Insert(point2)
-    y = quadtree.Query(point2)
-    # x = quadtree.Query([0,0], [2,2])
+    w = quadtree.Query(point1) #  no
+    
+
+    quadtree.Insert(point1)
+    
+    x = quadtree.Query(point1)  # yes
+
+    quadtree.Insert(point2) 
+
+    y = quadtree.Query(point3)  # no
+    z = quadtree.Query(point1)  # yes
+    zz = quadtree.Query(point2)  # yes
+
 
     quadtree.Delete(point1)
     quadtree.Delete(point2)
+
+    y = quadtree.Query(point3)  # no
+    z = quadtree.Query(point1)  # yes
+    zz = quadtree.Query(point2)  # yes
+
+
+
     # point = Point(1,1,2,3)
     # quadtree.movePoints(quadtree.root.children[0], point)
     # y = quadtree.Query([0,0], [5,5])
@@ -367,7 +398,7 @@ def main():
     points1 = [point1, point2]
     points2 = [point1, Point(1,2,1,2,2,3) , Point(1,1,1,1,1,1)]
 
-    quadtree.Update(points1, points2)
+    # quadtree.Update(points1, points2)
 
     # for x in points2:
     #     # print(x)
@@ -376,8 +407,8 @@ def main():
     #         print(x)
         # alteredPoints = [point for point in newPlan if point.getAll() not in oldPlan] 
 
-    xx = [x for x in points2 if x.getAll() not in points1] 
-    print(xx[0].getAll())
+    # xx = [x for x in points2 if x.getAll() not in points1] 
+    # print(xx[0].getAll())
 
 
 
