@@ -166,7 +166,9 @@ class Quadtree:
    
 
      # Helper (Query): Recursively search current node
+    
     def recursiveSearch(self, node, bottomLeftSearch, topRightSearch, ptsOld):
+        
         # Return if node has no children or points
         if len(node.getChildren()) <= 0 and len(node.getPoints()) <= 0:
             return [] # Return empty list
@@ -175,53 +177,24 @@ class Quadtree:
         if len(ptsOld) > 0:     # Check if previous points has a point
             pts.extend(ptsOld)  # Add previous list of points to new list
 
-        # Loop through each child
-        for child in node.getChildren():
-            # Get child coords
-            [bottomLeftNode, topRightNode] = child.getCoords()
-            # Check if child coords is within search area
-            # if bottomLeftNode[0] >= bottomLeftSearch[0] and bottomLeftNode[1] >= bottomLeftSearch[1] and topRightNode[0] <= topRightSearch[0] and topRightNode[1] <= topRightSearch[1]:
-            
-            # if (bottomLeftNode[0] >= bottomLeftSearch[0]) and (bottomLeftNode[1] >= bottomLeftSearch[1]) and (topRightNode[0] >= topRightSearch[0]) and (topRightNode[1] >= topRightSearch[1]):
-            #     # If child has points, add to list
-            #     if len(child.getPoints()) > 0:
-            #         pts.extend(child.getPoints())   # Add points
-            #     else:
-            #         # Recurse the search with current child
-            #         traversePoints = self.recursiveSearch(child, bottomLeftSearch, topRightSearch, pts)
-            #         # If recurse doesn't return None, add to list. This is because it will return points
-            #         if traversePoints != [] and traversePoints != None:
-            #             pts.extend(traversePoints)  # Add points
-            
-            # if bottomLeftNode[0] <= bottomLeftSearch[0] and bottomLeftNode[1] <= bottomLeftSearch[1] and topRightNode[0] <= topRightSearch[0] and topRightNode[1] <= topRightSearch[1]:
-            #     # If child has points, add to list
-            #     if len(child.getPoints()) > 0:
-            #         pts.extend(child.getPoints())   # Add points
-            #     else:
-            #         # Recurse the search with current child
-            #         traversePoints = self.recursiveSearch(child, bottomLeftSearch, topRightSearch, pts)
-            #         # If recurse doesn't return None, add to list. This is because it will return points
-            #         if traversePoints != [] and traversePoints != None:
-            #             pts.extend(traversePoints)  # Add points
-
-            # if bottomLeftNode[0] >= bottomLeftSearch[0] and bottomLeftNode[0] <= topRightSearch[0] and \
-            #     bottomLeftNode[1] >= bottomLeftSearch[1] and bottomLeftNode[1] <= topRightSearch[1] and \
-            #     topRightNode[0] >= bottomLeftSearch[0] and topRightNode[0] <= topRightSearch[0] and \
-            #     topRightNode[1] >= bottomLeftSearch[1] and topRightNode[1] <= topRightSearch[1]:
-            #     # If child has points, add to list
-            #     if len(child.getPoints()) > 0:
-            #         pts.extend(child.getPoints())   # Add points
-            #     else:
-            #         # Recurse the search with current child
-            #         traversePoints = self.recursiveSearch(child, bottomLeftSearch, topRightSearch, pts)
-            #         # If recurse doesn't return None, add to list. This is because it will return points
-            #         if traversePoints != [] and traversePoints != None:
-            #             pts.extend(traversePoints)  # Add points
-            pass 
-
-
+       
 
         return pts # Return list of points 
+    
+    
+    # Search for number of points in area
+    def Query(self, bottomLeft, topRight):
+        pts = []    # Placeholder for points
+        # Loop through all points in root and grab points within search area
+        for point in self.root.getPoints():
+            if point.getCoords()[0] >= bottomLeft[0] and point.getCoords()[0] <= topRight[0] and point.getCoords()[1] >= bottomLeft[1] and point.getCoords()[1] <= topRight[1]:
+                pts.append(point)   # Add points to list
+       
+        return self.recursiveSearch(self.root, bottomLeft, topRight, pts)   # Do a resursive search and return result of points found    
+    
+
+
+
 
     
     def recursiveDelete(self, point, node):
@@ -259,15 +232,7 @@ class Quadtree:
         self.root.setPoint(point)   # Add point to root
         self.subdivide(self.root)   # Subdivide root
 
-    # Search for number of points in area
-    def Query(self, bottomLeft, topRight):
-        pts = []    # Placeholder for points
-        # Loop through all points in root and grab points within search area
-        for point in self.root.getPoints():
-            if point.getCoords()[0] >= bottomLeft[0] and point.getCoords()[0] <= topRight[0] and point.getCoords()[1] >= bottomLeft[1] and point.getCoords()[1] <= topRight[1]:
-                pts.append(point)   # Add points to list
-       
-        return self.recursiveSearch(self.root, bottomLeft, topRight, pts)   # Do a resursive search and return result of points found                                                         
+                                                         
 
     # Update existing node
     def Update(self, oldPlan, newPlan):
@@ -288,7 +253,6 @@ class Quadtree:
     def sameLengthUpdate(self, oldPlan, newPlan):
        pass
        # same length so need to find the differences for each point
-
 
     def differentLengthUpdate(self, oldPlan, newPlan):
 
@@ -345,12 +309,6 @@ class Quadtree:
 
         # 1. Add points before end
         # 2. Then add points at end (sequence will already be set)
-
-
-
-
- 
-
 
     # Delete an existing node
     def Delete(self, point):
