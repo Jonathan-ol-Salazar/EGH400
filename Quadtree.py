@@ -112,7 +112,7 @@ class Quadtree:
     # Helper (Insert): Subdivide nodes into 4 children                 
     def subdivide(self, node):
         # Check if the nodes points is less than the max points
-        if node.getNumPoints() <= self.maxPoints:
+        if node.getNumPoints() <= self.maxPoints and len(node.getChildren()) == 0:
             return
 
         # Get corners for each quadrant 
@@ -260,7 +260,9 @@ class Quadtree:
 
     # Insert a point into a node
     def Insert(self, point):
+        
         self.root.setPoint(point)   # Add point to root
+        
         self.subdivide(self.root)   # Subdivide root
 
                                                          
@@ -370,6 +372,7 @@ def main():
     quadtree.Insert(point1)
     quadtree.Insert(point2)
 
+    quadtree.Update(point2, point3) # 
     quadtree.Update(point1, point2) # yes
     quadtree.Update(point2, point1) # yes
     quadtree.Update(point3, point2) # no
