@@ -266,80 +266,60 @@ class Quadtree:
                                                          
 
     # Update existing node
-    def Update(self, oldPlan, newPlan):
+    def Update(self, existingPoint, editedPoint):
+        
+        # Find point to be changed
+        # Find difference -> turn to set and find attr difference
+        # if different, use get/set to change, return point and print
+        # else return point and print statement
+        # re-add point if x or y is changed
 
-        # Convert list of Points to list of Point attr
-        for i, point in enumerate(oldPlan):
-            oldPlan[i] = point.getAll()
-    
-        # Check if new plan is the same length as the old plan
-        if len(oldPlan) == len(newPlan):
-            self.sameLengthUpdate(oldPlan, newPlan)         # Same length
+
+        existingPoint = self.Query(existingPoint)
+
+        if existingPoint == None:
+            print("Update Failed: Point to update does not exist")
+            return 
         else:
-            self.differentLengthUpdate(oldPlan, newPlan)    # Different length
-        
-        
-
-    
-    def sameLengthUpdate(self, oldPlan, newPlan):
-       pass
-       # same length so need to find the differences for each point
-
-    def differentLengthUpdate(self, oldPlan, newPlan):
-
-        # Change existing points first
-
-        # New plan has more points
-        if len(oldPlan) < len(newPlan):
-            # Get list of altered points from the new flight plan
-            alteredPoints = [point for point in newPlan if point.getAll() not in oldPlan] 
-            print(alteredPoints[0].getAll()) # Print
+            # find index of difference, and the value its supposed to be 
             
-            # Add points using insert function
+            reInsert = False
 
-        # New plan has less points
+            # loop through each value and check 
+            for i, attr in enumerate(editedPoint.getAll()):
+                if attr != existingPoint.getAll()[i]:
+
+                    # Switch statement of somesort, via if-statements
+                    if i == 0:  # ID
+                        existingPoint.setID(attr)
+                    elif i == 1: # Sequence
+                        existingPoint.setSequence(attr)
+                    elif i == 2: # Long
+                        existingPoint.setLong(attr)
+                        reInsert = True
+                    elif i == 3: # Lat
+                        existingPoint.setLat(attr)
+                        reInsert = True
+                    elif i == 4: # Alt
+                        existingPoint.setAlt(attr)
+                    elif i == 5: # Time
+                        existingPoint.setTime(attr)
+       
+            # If coords are changed, re-insert point
+            if reInsert:
+                self.Delete(existingPoint)
+                self.Insert(existingPoint)
+
+
+        # Check if edits were successful, with print statements
+        if existingPoint.getAll() == editedPoint.getAll():
+            print("Update Successful")
         else:
-            alteredPoints = [point for point in oldPlan if point.getAll() not in newPlan] 
+            print("Update Failed")
 
-            # Find what to delete
-                # If point at end, delete
-                # If point before, change existing point and change sequence for points after
-
-    def updateExistingPoints(self, oldPlan, newPlan, alteredPoints):
-        # Find specific differences in attrs
-        # Use getters/setters to change them
-
-        # Double for-loop to find out the exact differences in attr
-
-        # Loop through alteredPoints
-        for alteredPoint in alteredPoints:
-
-            # Loop through existing points
-            for point in oldPlan:
-
-                # Check if alteredPoint is an existing point
-                if point.getSequence() == alteredPoint.getSequence():
-                    
-                    # If x or y is changed, find and delete it, then reinsert
-                    if point.getLong() != alteredPoint.getLong() or point.getLat() != alteredPoint.getLat():
-                        self.Delete(point)          # Delete old point
-                        self.Insert(alteredPoint)   # Add new point
-                    
-                    # If altitude or time is changed, find and use get/set to change
-                    if point.getAlt() != alteredPoint.getAlt():
-                        # self.Query(point.getCoords(), point.getCoords())
-                        pass 
-                    # If sequence changed, change the sequence for all the other points
-      
-      
-  
+        return
 
 
-        # Check if points need to be added to the end
-        # if points added before end, the rest of the points need to change their sequence
-
-        # 1. Add points before end
-        # 2. Then add points at end (sequence will already be set)
 
     # Delete an existing node
     def Delete(self, point):
@@ -383,9 +363,16 @@ def main():
     quadtree.Delete(point2)
 
     y = quadtree.Query(point3)  # no
-    z = quadtree.Query(point1)  # yes
-    zz = quadtree.Query(point2)  # yes
+    z = quadtree.Query(point1)  # no
+    zz = quadtree.Query(point2)  # no
 
+
+    quadtree.Insert(point1)
+    quadtree.Insert(point2)
+
+    quadtree.Update(point1, point2) # yes
+    quadtree.Update(point2, point1) # yes
+    quadtree.Update(point3, point2) # no
 
 
     # point = Point(1,1,2,3)
@@ -394,9 +381,9 @@ def main():
     x = 1
 
 
-    points1 = [point1.getAll(), point2.getAll()]
-    points1 = [point1, point2]
-    points2 = [point1, Point(1,2,1,2,2,3) , Point(1,1,1,1,1,1)]
+    # points1 = [point1.getAll(), point2.getAll()]
+    # points1 = [point1, point2]
+    # points2 = [point1, Point(1,2,1,2,2,3) , Point(1,1,1,1,1,1)]
 
     # quadtree.Update(points1, points2)
 
