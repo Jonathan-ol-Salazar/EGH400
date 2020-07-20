@@ -404,12 +404,13 @@ def main():
 
     quadtree.Insert(point1)
     quadtree.Insert(point2)
-    quadtree.Insert(point3)
+    # quadtree.Insert(point3)
 
     quadtree.Update(point2, point3) # 
-    quadtree.Update(point1, point2) # yes
-    quadtree.Update(point2, point1) # yes
-    quadtree.Update(point3, point2) # no
+    # quadtree.Update(point1, point2) # yes
+    # quadtree.Update(point2, point1) # yes
+    # quadtree.Update(point3, point2) # no
+    quadtree.Update(point3, point3) # 
 
 
     # point = Point(1,1,2,3)
