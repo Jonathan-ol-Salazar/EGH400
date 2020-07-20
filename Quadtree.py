@@ -167,6 +167,37 @@ class Quadtree:
 
      # Helper (Query): Recursively search current node
     
+
+    # Find a node
+    def traverseNode(self, node, point):
+        result = None
+        # Return if node has no children or points
+        if len(node.getChildren()) <= 0 and len(node.getPoints()) <= 0 or len(node.getChildren()) <= 0 and point not in node.getPoints():
+            return  # Return None
+
+        # Loop through all children of current node
+        for child in node.getChildren():
+            longitudePoint = point.getLong()    # Longitude (X) of point
+            latitudePoint = point.getLat()      # Latitude (Y) of point
+            bottomLeft = child.getCoords()[0]     # Bottom left coords of node
+            topRight = child.getCoords()[1]       # Top right coords of node
+
+            # Check if point is within child
+            if longitudePoint >= bottomLeft[0] and longitudePoint <= topRight[0] and latitudePoint >= bottomLeft[1] and latitudePoint <= topRight[1]:
+                # Check if child has children
+                if len(child.getChildren()) == 0:
+                    return child    # Return node
+                else:
+                    result = self.traverseNode(child, point)  # Recurse method again with child node
+
+        return result # Return point
+        
+        
+ 
+
+
+
+
     def recursiveSearch(self, node, point):
         result = None
         # Return if node has no children or points
@@ -222,11 +253,6 @@ class Quadtree:
         
         return result
         
-        
-
-
-
-
 
     def recursiveDelete(self, point, node):
         # Check if node has no points and no children
@@ -261,9 +287,16 @@ class Quadtree:
     # Insert a point into a node
     def Insert(self, point):
         
-        self.root.setPoint(point)   # Add point to root
-        
-        self.subdivide(self.root)   # Subdivide root
+        node = self.root
+
+        if len(self.root.getChildren()) == 0:
+            node.setPoint(point)   # Add point to root
+        else:
+            node = self.traverseNode(self.root, point)
+            node.setPoint(point)
+
+
+        self.subdivide(node)   # Subdivide node
 
                                                          
 
@@ -342,7 +375,7 @@ def main():
     
     point1 = Point(1,1,1,1,2,3)
     point2 = Point(1,2,1,2,2,3)
-    point3 = Point(1,3,1,1,1,1)
+    point3 = Point(1,3,1,3,1,1)
     # points = [point1, point2]
 
     # quadtree.Delete(point1)
@@ -371,6 +404,7 @@ def main():
 
     quadtree.Insert(point1)
     quadtree.Insert(point2)
+    quadtree.Insert(point3)
 
     quadtree.Update(point2, point3) # 
     quadtree.Update(point1, point2) # yes
