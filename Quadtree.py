@@ -175,29 +175,7 @@ class Quadtree:
 
     # Helper (subdivide): From a list of points return all points within boundary
     def movePoints(self, bottomLeft, topRight, node):
-        # pts = []
-       
-        # # Loop through all points and place them into child
-        # # points = node.getPoints()
-        # # for point in points:
-        # if node.getPointCoords() != []:
-        #     longitudePoint = node.pointCoords[0]    # Longitude (X) of point
-        #     latitudePoint = node.pointCoords[1]     # Latitude (Y) of point
-        #         # Check if point is within quadrant
-        #     if longitudePoint >= bottomLeft[0] and longitudePoint <= topRight[0] and latitudePoint >= bottomLeft[1] and latitudePoint <= topRight[1]:
-        #         pts.extend(node.getPoints())
-        #         node.purgePoints()
-        # # Loop through each point in points list
-        # # for pt in pts:
-        # #     # While the point is still in the nodes point list
-        # #     while pt in points:
-        # #         node.points.remove(pt)  # Remove points from point list
-
-        # return pts  # Return point list
-   
-
-
-
+        
         pts = {}
        
         # Loop through all points and place them into child
@@ -215,11 +193,7 @@ class Quadtree:
             # Set as new points for node
             node.setPoints(remainingPoints)
 
-        # for pt in pts:
-        #     # While the point is still in the nodes point list
-        #     while pt in points:
-        #         node.points.remove(pt)  # Remove points from point list
-        
+              
         return pts  # Return point list
 
 
@@ -350,34 +324,6 @@ class Quadtree:
     # Insert a point into a node
     def Insert(self, point):
         
-
-        # node = self.root
-
-        # if len(node.getChildren()) == 0 and node.getNumPoints() == 0:
-        #     node.setPoint(point)   # Add point to root
-        # # elif node.getNumPoints() == 1:
-        # #     self.subdivide(node)
-        # #     node = self.traverseNode(self.root, point)
-        # #     node.setPoint(point)
-
-        # else:
-        #     # Check if root has 1 child
-        #     if node.getNumPoints() == 1:
-        #         self.subdivide(node)    # subdivide
-        #     else:
-        #         # Find node for point
-        #         node = self.traverseNode(self.root, point)
-                
-        #         # Check if the node has pointcoords
-        #         if node.getPointCoords != []:
-        #             # Check if the point coords are NOT equal to the point
-        #             if node.getPointCoords[0] != point.getLong() or node.getPointCoords[1] != point.getLat():
-        #                 self.subdivide(node)   # Subdivide node
-
-        #     node = self.traverseNode(self.root, point)  # Find node
-        #     node.setPoint(point)                        # Add point to the node 
-
-
         node = self.root
         
         if len(self.root.getChildren()) == 0:
