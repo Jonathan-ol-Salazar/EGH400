@@ -61,31 +61,17 @@ class Point:
 class Node:
     # New nodes will be type Leaf and store no points
     def __init__(self, bL, tR, points={}, children=[], root=0): 
-        self.pointCoords = []
         self.points = points
         self.children = children
         self.root = root
         self.bL = bL
         self.tR = tR
 
-        # # Assign nodes corresponding point coords
-        # if len(self.points) != 0:
-        #     # Get first point in the points list and get coords
-        #     self.pointCoords.append(self.points[0].getLong())  # Long
-        #     self.pointCoords.append(self.points[0].getLat())   # Lat
 
 
     # Add a single points to points dict
     def setPoint(self, newPoint):
-        # self.points.append(newPoint)
-        # if len(self.points) != 0:
-        #     self.pointCoords.append(self.points[0].getLong())  # Long
-        #     self.pointCoords.append(self.points[0].getLat())   # Lat
-
-        # Check if newPoint coords exist as key for points
-        # if so, add to value list
-        # else make new key/value
-
+       
         key = (newPoint.getLong(), newPoint.getLat())
 
         if key in self.points.keys():
@@ -112,13 +98,9 @@ class Node:
     def getChildren(self):
         return self.children
 
-    def getPointCoords(self):
-        return self.pointCoords
-
     def purgePoints(self):
         self.points = []
-        self.pointCoords = []
-
+     
     def purgeChildren(self):
         self.children = []
 
@@ -421,10 +403,15 @@ def main():
     point1 = Point(1,1,1,1,2,3)
     point2 = Point(1,2,1,2,2,3)
     point3 = Point(1,3,1,3,1,1)
+    point4 = Point(1,4,1,1,1,1)
 
 
     quadtree.Insert(point1)
     quadtree.Insert(point2)
+    quadtree.Insert(point3)
+    quadtree.Insert(point4)
+
+
 
     x = 1
 
