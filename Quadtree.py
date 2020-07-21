@@ -60,7 +60,7 @@ class Point:
     # Node can only store points with same coords
 class Node:
     # New nodes will be type Leaf and store no points
-    def __init__(self, bL, tR, points=[], children=[], root=0): 
+    def __init__(self, bL, tR, points={}, children=[], root=0): 
         self.pointCoords = []
         self.points = points
         self.children = children
@@ -71,13 +71,28 @@ class Node:
         # Assign nodes corresponding point coords
         if len(self.points) != 0:
             # Get first point in the points list and get coords
-            self.pointCoords[0] = self.points[0].getLong()  # Long
-            self.pointCoords[1] = self.points[0].getLat()   # Lat
+            self.pointCoords.append(self.points[0].getLong())  # Long
+            self.pointCoords.append(self.points[0].getLat())   # Lat
+
 
 
     def setPoint(self, newPoint):
-        self.points.append(newPoint)
+        # self.points.append(newPoint)
+        # if len(self.points) != 0:
+        #     self.pointCoords.append(self.points[0].getLong())  # Long
+        #     self.pointCoords.append(self.points[0].getLat())   # Lat
 
+        # Check if newPoint coords exist as key for points
+        # if so, add to value list
+        # else make new key/value
+
+        key = (newPoint.getLong(), newPoint.getLat())
+
+        if key in self.points.keys():
+            self.points[key].append(newPoint)
+        else:
+            self.points[key] = [newPoint]
+        
     
     def getNumPoints(self):
         return len(self.points)
@@ -94,8 +109,12 @@ class Node:
     def getChildren(self):
         return self.children
 
+    def getPointCoords(self):
+        return self.pointCoords
+
     def purgePoints(self):
         self.points = []
+        self.pointCoords = []
 
     def purgeChildren(self):
         self.children = []
@@ -156,18 +175,20 @@ class Quadtree:
         pts = []
        
         # Loop through all points and place them into child
-        points = node.getPoints()
-        for point in points:
-            longitudePoint = point.getLong()    # Longitude (X) of point
-            latitudePoint = point.getLat()      # Latitude (Y) of point
-            # Check if point is within quadrant
+        # points = node.getPoints()
+        # for point in points:
+        if node.getPointCoords() != []:
+            longitudePoint = node.pointCoords[0]    # Longitude (X) of point
+            latitudePoint = node.pointCoords[1]     # Latitude (Y) of point
+                # Check if point is within quadrant
             if longitudePoint >= bottomLeft[0] and longitudePoint <= topRight[0] and latitudePoint >= bottomLeft[1] and latitudePoint <= topRight[1]:
-                pts.append(point)
+                pts.extend(node.getPoints())
+                node.purgePoints()
         # Loop through each point in points list
-        for pt in pts:
-            # While the point is still in the nodes point list
-            while pt in points:
-                node.points.remove(pt)  # Remove points from point list
+        # for pt in pts:
+        #     # While the point is still in the nodes point list
+        #     while pt in points:
+        #         node.points.remove(pt)  # Remove points from point list
 
         return pts  # Return point list
    
@@ -294,8 +315,36 @@ class Quadtree:
     # Insert a point into a node
     def Insert(self, point):
         
-        node = self.root
 
+        # node = self.root
+
+        # if len(node.getChildren()) == 0 and node.getNumPoints() == 0:
+        #     node.setPoint(point)   # Add point to root
+        # # elif node.getNumPoints() == 1:
+        # #     self.subdivide(node)
+        # #     node = self.traverseNode(self.root, point)
+        # #     node.setPoint(point)
+
+        # else:
+        #     # Check if root has 1 child
+        #     if node.getNumPoints() == 1:
+        #         self.subdivide(node)    # subdivide
+        #     else:
+        #         # Find node for point
+        #         node = self.traverseNode(self.root, point)
+                
+        #         # Check if the node has pointcoords
+        #         if node.getPointCoords != []:
+        #             # Check if the point coords are NOT equal to the point
+        #             if node.getPointCoords[0] != point.getLong() or node.getPointCoords[1] != point.getLat():
+        #                 self.subdivide(node)   # Subdivide node
+
+        #     node = self.traverseNode(self.root, point)  # Find node
+        #     node.setPoint(point)                        # Add point to the node 
+
+
+        node = self.root
+        
         if len(self.root.getChildren()) == 0:
             node.setPoint(point)   # Add point to root
         else:
@@ -304,6 +353,14 @@ class Quadtree:
 
 
         self.subdivide(node)   # Subdivide node
+
+        # # Print confirmations
+        # if node.getNumPoints() != 0 and node.getPointCoords() == [point.getLong(), point.getLat()]:
+        #     print("Insert Successful: Point:", point.getAll(), "located in Node:", node.getCoords())
+        # else:
+        #     print("Insert Unsuccessful")    
+
+
 
                                                          
 
@@ -383,64 +440,71 @@ def main():
     point1 = Point(1,1,1,1,2,3)
     point2 = Point(1,2,1,2,2,3)
     point3 = Point(1,3,1,3,1,1)
-    # points = [point1, point2]
+
+
+    quadtree.Insert(point1)
+
+
+############################################### old testing
+
+    # # points = [point1, point2]
+
+    # # quadtree.Delete(point1)
+
+    # w = quadtree.Query(point1) #  no
+    
+
+    # quadtree.Insert(point1)
+    
+    # x = quadtree.Query(point1)  # yes
+
+    # quadtree.Insert(point2) 
+
+    # y = quadtree.Query(point3)  # no
+    # z = quadtree.Query(point1)  # yes
+    # zz = quadtree.Query(point2)  # yes
+
 
     # quadtree.Delete(point1)
+    # quadtree.Delete(point2)
 
-    w = quadtree.Query(point1) #  no
-    
-
-    quadtree.Insert(point1)
-    
-    x = quadtree.Query(point1)  # yes
-
-    quadtree.Insert(point2) 
-
-    y = quadtree.Query(point3)  # no
-    z = quadtree.Query(point1)  # yes
-    zz = quadtree.Query(point2)  # yes
+    # y = quadtree.Query(point3)  # no
+    # z = quadtree.Query(point1)  # no
+    # zz = quadtree.Query(point2)  # no
 
 
-    quadtree.Delete(point1)
-    quadtree.Delete(point2)
+    # quadtree.Insert(point1)
+    # quadtree.Insert(point2)
+    # # quadtree.Insert(point3)
 
-    y = quadtree.Query(point3)  # no
-    z = quadtree.Query(point1)  # no
-    zz = quadtree.Query(point2)  # no
-
-
-    quadtree.Insert(point1)
-    quadtree.Insert(point2)
-    # quadtree.Insert(point3)
-
-    quadtree.Update(point2, point3) # 
-    # quadtree.Update(point1, point2) # yes
-    # quadtree.Update(point2, point1) # yes
-    # quadtree.Update(point3, point2) # no
-    quadtree.Update(point3, point3) # 
+    # quadtree.Update(point2, point3) # 
+    # # quadtree.Update(point1, point2) # yes
+    # # quadtree.Update(point2, point1) # yes
+    # # quadtree.Update(point3, point2) # no
+    # quadtree.Update(point3, point3) # 
 
 
-    # point = Point(1,1,2,3)
-    # quadtree.movePoints(quadtree.root.children[0], point)
-    # y = quadtree.Query([0,0], [5,5])
-    x = 1
+    # # point = Point(1,1,2,3)
+    # # quadtree.movePoints(quadtree.root.children[0], point)
+    # # y = quadtree.Query([0,0], [5,5])
+    # x = 1
 
 
-    # points1 = [point1.getAll(), point2.getAll()]
-    # points1 = [point1, point2]
-    # points2 = [point1, Point(1,2,1,2,2,3) , Point(1,1,1,1,1,1)]
+    # # points1 = [point1.getAll(), point2.getAll()]
+    # # points1 = [point1, point2]
+    # # points2 = [point1, Point(1,2,1,2,2,3) , Point(1,1,1,1,1,1)]
 
-    # quadtree.Update(points1, points2)
+    # # quadtree.Update(points1, points2)
 
-    # for x in points2:
-    #     # print(x)
-    #     print(x.getAll())
-    #     if x.getAll() not in points:
-    #         print(x)
-        # alteredPoints = [point for point in newPlan if point.getAll() not in oldPlan] 
+    # # for x in points2:
+    # #     # print(x)
+    # #     print(x.getAll())
+    # #     if x.getAll() not in points:
+    # #         print(x)
+    #     # alteredPoints = [point for point in newPlan if point.getAll() not in oldPlan] 
 
-    # xx = [x for x in points2 if x.getAll() not in points1] 
-    # print(xx[0].getAll())
+    # # xx = [x for x in points2 if x.getAll() not in points1] 
+    # # print(xx[0].getAll())
 
 
 
@@ -449,8 +513,8 @@ def main():
   
 
 
-    # print(point2.getAll() == xx.getAll()) 
-    # print(point2.getAll() is xx.getAll()) 
+    # # print(point2.getAll() == xx.getAll()) 
+    # # print(point2.getAll() is xx.getAll()) 
 
     
 
