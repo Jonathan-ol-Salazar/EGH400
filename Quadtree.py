@@ -61,13 +61,20 @@ class Point:
 class Node:
     # New nodes will be type Leaf and store no points
     def __init__(self, bL, tR, points=[], children=[], root=0): 
+        self.pointCoords = []
         self.points = points
         self.children = children
         self.root = root
         self.bL = bL
         self.tR = tR
-    
-    # ADD GETTERS/SETTERS
+
+        # Assign nodes corresponding point coords
+        if len(self.points) != 0:
+            # Get first point in the points list and get coords
+            self.pointCoords[0] = self.points[0].getLong()  # Long
+            self.pointCoords[1] = self.points[0].getLat()   # Lat
+
+
     def setPoint(self, newPoint):
         self.points.append(newPoint)
 
