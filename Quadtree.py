@@ -318,10 +318,16 @@ class Quadtree:
         self.subdivide(node)   # Subdivide node
 
         # # Print confirmations
-        # if node.getNumPoints() != 0 and node.getPointCoords() == [point.getLong(), point.getLat()]:
-        #     print("Insert Successful: Point:", point.getAll(), "located in Node:", node.getCoords())
-        # else:
-        #     print("Insert Unsuccessful")    
+
+        if node != self.root:
+            node = self.traverseNode(self.root, point)
+
+        
+
+        if node.getNumPoints() != 0 and point in node.getPoints()[(point.getLong(), point.getLat())] or node == self.root and node.getNumPoints !=0 :
+            print("Insert Successful: Point:", point.getAll(), "located in Node:", node.getCoords())
+        else:
+            print("Insert Unsuccessful")    
 
 
 
