@@ -68,14 +68,14 @@ class Node:
         self.bL = bL
         self.tR = tR
 
-        # Assign nodes corresponding point coords
-        if len(self.points) != 0:
-            # Get first point in the points list and get coords
-            self.pointCoords.append(self.points[0].getLong())  # Long
-            self.pointCoords.append(self.points[0].getLat())   # Lat
+        # # Assign nodes corresponding point coords
+        # if len(self.points) != 0:
+        #     # Get first point in the points list and get coords
+        #     self.pointCoords.append(self.points[0].getLong())  # Long
+        #     self.pointCoords.append(self.points[0].getLat())   # Lat
 
 
-
+    # Add a single points to points dict
     def setPoint(self, newPoint):
         # self.points.append(newPoint)
         # if len(self.points) != 0:
@@ -93,7 +93,10 @@ class Node:
         else:
             self.points[key] = [newPoint]
         
-    
+    # Replace existing points dict
+    def setPoints(self, newPointDict):
+        self.points = newPointDict
+
     def getNumPoints(self):
         return len(self.points)
 
@@ -172,26 +175,58 @@ class Quadtree:
 
     # Helper (subdivide): From a list of points return all points within boundary
     def movePoints(self, bottomLeft, topRight, node):
-        pts = []
+        # pts = []
+       
+        # # Loop through all points and place them into child
+        # # points = node.getPoints()
+        # # for point in points:
+        # if node.getPointCoords() != []:
+        #     longitudePoint = node.pointCoords[0]    # Longitude (X) of point
+        #     latitudePoint = node.pointCoords[1]     # Latitude (Y) of point
+        #         # Check if point is within quadrant
+        #     if longitudePoint >= bottomLeft[0] and longitudePoint <= topRight[0] and latitudePoint >= bottomLeft[1] and latitudePoint <= topRight[1]:
+        #         pts.extend(node.getPoints())
+        #         node.purgePoints()
+        # # Loop through each point in points list
+        # # for pt in pts:
+        # #     # While the point is still in the nodes point list
+        # #     while pt in points:
+        # #         node.points.remove(pt)  # Remove points from point list
+
+        # return pts  # Return point list
+   
+
+
+
+        pts = {}
        
         # Loop through all points and place them into child
-        # points = node.getPoints()
-        # for point in points:
-        if node.getPointCoords() != []:
-            longitudePoint = node.pointCoords[0]    # Longitude (X) of point
-            latitudePoint = node.pointCoords[1]     # Latitude (Y) of point
-                # Check if point is within quadrant
+        points = node.getPoints()
+        for key, value in points.items():
+            longitudePoint = key[0]    # Longitude (X) of point
+            latitudePoint = key[1]      # Latitude (Y) of point
+            # Check if point is within quadrant
             if longitudePoint >= bottomLeft[0] and longitudePoint <= topRight[0] and latitudePoint >= bottomLeft[1] and latitudePoint <= topRight[1]:
-                pts.extend(node.getPoints())
-                node.purgePoints()
-        # Loop through each point in points list
+                pts[key] = value
+        
+        if pts != {}:
+            # Create dic of points that are not in pts
+            remainingPoints =  {k: v for k, v in points.items() if k not in pts}
+            # Set as new points for node
+            node.setPoints(remainingPoints)
+
         # for pt in pts:
         #     # While the point is still in the nodes point list
         #     while pt in points:
         #         node.points.remove(pt)  # Remove points from point list
-
+        
         return pts  # Return point list
-   
+
+
+
+
+
+
 
      # Helper (Query): Recursively search current node
     
@@ -443,6 +478,10 @@ def main():
 
 
     quadtree.Insert(point1)
+    quadtree.Insert(point2)
+
+    x = 1
+
 
 
 ############################################### old testing
