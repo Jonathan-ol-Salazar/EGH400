@@ -209,7 +209,7 @@ class Quadtree:
                 else:
                     result = self.traverseNode(child, point)  # Recurse method again with child node
 
-        return result # Return point
+        return result # Return node
         
         
  
@@ -251,27 +251,48 @@ class Quadtree:
     
     
     # Search for number of points in area
-    def Query(self, point):        
-        result = ""
-        # Check point exists in root
-        if point in self.root.getPoints():
-            result = point
-        elif len(self.root.getChildren()) == 0:
-            result = None 
+    def Query(self, point, allPoints = False):        
+        result = None   # Initialize result
+        
+        key = (point.getLong(), point.getLat()) # Key for dictionary with list of points
+
+        # Check if point exists in root
+        if key in self.root.getPoints():
+            # Get point roots pointsList
+            result = self.pointFromList(self.root.getPoints()[key],point)
 
         # Search children recursively
-        if result != None and result != point:
-            result = self.recursiveSearch(self.root, point)   # Do a resursive search and return result of points found    
+        if result == None:
+            node = self.traverseNode(self.root, point)   # Do a resursive search and return result of points found    
+            
+            # Check if a node exists with point
+            if node != None:
+                # Check if all points of same coords are wanted or just a single point
+                if allPoints == True:
+                    result = node.getPoints()
+                else:
+                    result = self.pointFromList(node.getPoints()[key],point)
+        
 
         # Print confirmations
         if result == None:
             print("Point does not exist")
+        elif allPoints == True:
+            print("Points found: ", result)
         else:
-            print("Point found: ", result.getAll())
+            print("Point found: ", result)
 
         
-        return result
-        
+        return result   # Point or list of points with same Long, Lat
+
+    def pointFromList(self, pointList, point):
+        # Loop through all the points in the pointList
+        for existingPoint in pointList:
+            # Check if point == existingPoint
+            if existingPoint.getAll() == point.getAll():
+                result = existingPoint
+    
+        return result   # Point
 
     def recursiveDelete(self, point, node):
         # Check if node has no points and no children
@@ -413,10 +434,14 @@ def main():
 
 
     quadtree.Insert(point1)
+    quadtree.Query(point1, 1)
+    quadtree.Query(point2, 1)
+
     quadtree.Insert(point2)
     quadtree.Insert(point3)
     quadtree.Insert(point4)
 
+    quadtree.Query(point1, 1)
 
 
     x = 1
