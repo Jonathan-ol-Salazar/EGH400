@@ -253,34 +253,35 @@ class Quadtree:
     # Search for number of points in area
     def Query(self, point, allPoints = False):        
         result = None   # Initialize result
-        
+        node = self.root
         key = (point.getLong(), point.getLat()) # Key for dictionary with list of points
 
         # Check if point exists in root
-        if key in self.root.getPoints():
+        if key in node.getPoints():
             # Get point roots pointsList
-            result = self.pointFromList(self.root.getPoints()[key],point)
+            result = self.pointFromList(node.getPoints()[key],point)
 
         # Search children recursively
         if result == None:
-            node = self.traverseNode(self.root, point)   # Do a resursive search and return result of points found    
+            node = self.traverseNode(node, point)   # Do a resursive search and return result of points found    
             
-            # Check if a node exists with point
-            if node != None:
-                # Check if all points of same coords are wanted or just a single point
-                if allPoints == True:
-                    result = node.getPoints()
-                else:
-                    result = self.pointFromList(node.getPoints()[key],point)
-        
+        # Check if a node exists with point
+        if node != None:
+            # Check if all points of same coords are wanted or just a single point
+            if allPoints == True:
+                result = node.getPoints()
+            else:
+                result = self.pointFromList(node.getPoints()[key],point)
+    
 
         # Print confirmations
         if result == None:
-            print("Point does not exist")
+            print("Query Failed: Point: ", point.getAll(), " does not exist!")
         elif allPoints == True:
-            print("Points found: ", result)
+            print("Query Successful: Points with (X,Y) = ", key, "located in Node: ", node.getCoords())
         else:
-            print("Point found: ", result)
+            print("Query Successful: Point: ", result.getAll(), "located in Node: ", node.getCoords())
+
 
         
         return result   # Point or list of points with same Long, Lat
@@ -433,15 +434,20 @@ def main():
     point4 = Point(1,4,1,1,1,1)
 
 
-    quadtree.Insert(point1)
-    quadtree.Query(point1, 1)
-    quadtree.Query(point2, 1)
+    quadtree.Insert(point1)     
+    quadtree.Query(point1, 1)   # Query point at root
+    quadtree.Query(point2, 1)   # Query point that doesn't exist
+    quadtree.Query(point1)   # Query point in children
+    quadtree.Query(point2)   # Query point in children
 
-    quadtree.Insert(point2)
-    quadtree.Insert(point3)
-    quadtree.Insert(point4)
 
-    quadtree.Query(point1, 1)
+
+    quadtree.Insert(point2)     # Insert point2
+    quadtree.Insert(point3)     # Insert point3
+    quadtree.Insert(point4)     # Insert point4
+
+    quadtree.Query(point1, 1)   # Query point in children
+    quadtree.Query(point1)   # Query point in children
 
 
     x = 1
