@@ -105,7 +105,11 @@ class Node:
         self.children = []
 
     def removePoint(self, point):
-        self.points.remove(point)
+        key = (point.getLong(), point.getLat())
+        self.points[key].remove(point)
+
+        if len(self.points[key]) == 0:
+            self.points.pop(key)
 
 
 
@@ -296,14 +300,18 @@ class Quadtree:
         return result   # Point
 
     def recursiveDelete(self, point, node):
+        result = ""
+
         # Check if node has no points and no children
         if node.getNumPoints() == 0 and len(node.getChildren()) == 0:
-            return "Nothing to delete"  # Nothing to delete
+            result = "Nothing to delete"  # Nothing to delete
             
         # Check if point is in node
-        if point in node.getPoints():
-            node.removePoint(point) # Remove point from node
-            return "Deletion Successful"
+        # if [point] in node.getPoints().values():
+        if len(node.getPoints()) > 0:
+            if point in node.getPoints()[(point.getLong(), point.getLat())]:
+                node.removePoint(point) # Remove point from node
+                result = "Deletion Successful"
 
         # Bool to check if nodes children should be deleted
         purgeChildren = True    # True if children have no kids or points
@@ -312,7 +320,7 @@ class Quadtree:
         # Check if point is in node.point list      
         for child in node.getChildren():
             internalNode = True                 # Node has children
-            self.recursiveDelete(point, child)  # Recurse method
+            result = self.recursiveDelete(point, child)  # Recurse method
             # Check if child has kids or points
             if len(child.getChildren()) > 0 or child.getNumPoints() > 0:
                 purgeChildren = False           # Child has kids or points
@@ -321,7 +329,11 @@ class Quadtree:
         if purgeChildren and internalNode:
             node.purgeChildren()    # Delete nodes children
 
-        return "Deletion Successful" # Something was deleted
+
+        # do a search to check if point still exists
+
+        return result
+        # return "Nothing to delete" # Something was deleted
 
 
 
@@ -414,7 +426,26 @@ class Quadtree:
     # Delete an existing node
     def Delete(self, point):
         # Prints result of deletion
-        print(self.recursiveDelete(point, self.root))
+        # print(self.recursiveDelete(point, self.root))
+
+        result = None   # Initialize result
+        node = self.root
+        key = (point.getLong(), point.getLat()) # Key for dictionary with list of points
+
+        # Check if point exists in root
+        if key in node.getPoints() and len(node.getPoints()) > 0: 
+            # Get point roots pointsList
+            result = self.pointFromList(node.getPoints()[key],point)
+            
+            node.removePoint(result)
+            # try:
+
+
+        # Search children recursively
+        if result == None:
+            node = self.traverseNode(node, point)   # Do a resursive search and return result of points found 
+
+
 
 
    
@@ -425,6 +456,15 @@ class Quadtree:
 
 def main():
 
+
+    try:
+        print(x)
+    except:
+        pass
+
+
+
+
     # Initialize Quadtree
     quadtree = Quadtree(0,0,10,10, 1)
     
@@ -433,21 +473,40 @@ def main():
     point3 = Point(1,3,1,3,1,1)
     point4 = Point(1,4,1,1,1,1)
 
+### Query
+    # quadtree.Insert(point1)     # Insert point1
+    # quadtree.Query(point1, 1)   # Query point at root
+    # quadtree.Query(point2, 1)   # Query point that doesn't exist
+    # quadtree.Query(point1)      # Query point in children
+    # quadtree.Query(point2)      # Query point in children
 
-    quadtree.Insert(point1)     
-    quadtree.Query(point1, 1)   # Query point at root
-    quadtree.Query(point2, 1)   # Query point that doesn't exist
-    quadtree.Query(point1)   # Query point in children
-    quadtree.Query(point2)   # Query point in children
+    # quadtree.Insert(point2)     # Insert point2
+    # quadtree.Insert(point3)     # Insert point3
+    # quadtree.Insert(point4)     # Insert point4
 
+    # quadtree.Query(point1, 1)   # Query point in children
+    # quadtree.Query(point1)      # Query point in children
 
+### Delete
+    quadtree.Insert(point1)     # Insert point1
+    quadtree.Delete(point1)   # Query point at root
+    quadtree.Delete(point2)   # Query point that doesn't exist
+    quadtree.Delete(point1)      # Query point in children
+    quadtree.Delete(point2)      # Query point in children
 
     quadtree.Insert(point2)     # Insert point2
     quadtree.Insert(point3)     # Insert point3
     quadtree.Insert(point4)     # Insert point4
 
-    quadtree.Query(point1, 1)   # Query point in children
-    quadtree.Query(point1)   # Query point in children
+    quadtree.Delete(point1)   # Query point in children
+    quadtree.Delete(point1)      # Query point in children
+
+    quadtree.Insert(point1)
+    quadtree.Delete(point2)     # Insert point2
+    quadtree.Delete(point3)     # Insert point3
+    quadtree.Delete(point4)     # Insert point4
+    quadtree.Delete(point1)      # Query point in children
+
 
 
     x = 1
