@@ -296,7 +296,9 @@ class Quadtree:
             print("Insert Successful: Point:", point.getAll(), "located in Node:", node.getCoords())
         else:
             print("Insert Unsuccessful")    
-            
+
+
+
     # Search for number of points in area
     def Query(self, point, allPoints = False):        
         result = None   # Initialize result
@@ -317,7 +319,7 @@ class Quadtree:
             # Check if all points of same coords are wanted or just a single point
             if allPoints == True:
                 result = node.getPoints()
-            else:
+            elif key in node.getPoints():
                 result = self.pointFromList(node.getPoints()[key],point)
     
 
@@ -332,6 +334,8 @@ class Quadtree:
 
         
         return result   # Point or list of points with same Long, Lat
+
+
 
     # Delete an existing node
     def Delete(self, point):
@@ -371,6 +375,8 @@ class Quadtree:
         # Print confirmations
         print(result)
 
+
+
     # Update existing node
     def Update(self, existingPoint, editedPoint):
 
@@ -387,6 +393,7 @@ class Quadtree:
             self.Delete(existingPoint)
             # Reinsert edited point
             self.Insert(editedPoint)
+            x= 1
     
 
 
@@ -452,8 +459,7 @@ def main():
 ### Update
 
     quadtree.Insert(point1)         # Insert point1
-    quadtree.Insert(point1)
-
+    
     quadtree.Update(point1, point2) # Make point1 into point2
     quadtree.Update(point2, point2) # Make point2 into point2
 
@@ -466,7 +472,6 @@ def main():
     # quadtree.Update(point2, point1) # yes
     # quadtree.Update(point3, point2) # no
     quadtree.Update(point3, point3) # 
-
 
 
     x = 1
