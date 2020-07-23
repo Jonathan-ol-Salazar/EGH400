@@ -114,6 +114,9 @@ class Node:
 
         if len(self.points[key]) == 0:
             self.points.pop(key)
+    
+    def isRoot(self):
+        return self.root
 
 
 
@@ -428,6 +431,35 @@ class Quadtree:
 
 
 
+    def purgeLevel(self, node):
+
+        parent = node.getParent()
+        purgeChildren = True
+
+        # If node is root then return
+        if node.isRoot():
+            return
+
+        # Check if current node is leaf node as well as neighbouring nodes
+        for child in parent.getChildren():
+            # Check if child has a point or children
+            if len(child.getChildren()) > 0 or child.getNumPoints() > 0:
+                purgeChildren = False
+
+        # If no children has points or children, delete all children
+        if purgeChildren:
+            parent.purgeChildren()
+            self.purgeLevel(parent)
+
+
+        return node
+
+
+
+
+
+
+
     # Delete an existing node
     def Delete(self, point):
 
@@ -460,15 +492,17 @@ class Quadtree:
                     # Remove point
                     node.removePoint(pointDelete)
 
-                    purgeChildren = True
-                    # Check if current node is leaf node as well as neighbouring nodes
-                    for child in node.getParent().getChildren():
-                        # Check if child has a point or children
-                        if len(child.getChildren()) > 0 or child.getNumPoints() > 0:
-                            purgeChildren = False
-                    # If no children has points or children, delete all children
-                    if purgeChildren:
-                        node.getParent().purgeChildren()
+                    # purgeChildren = True
+                    # # Check if current node is leaf node as well as neighbouring nodes
+                    # for child in node.getParent().getChildren():
+                    #     # Check if child has a point or children
+                    #     if len(child.getChildren()) > 0 or child.getNumPoints() > 0:
+                    #         purgeChildren = False
+                    # # If no children has points or children, delete all children
+                    # if purgeChildren:
+                    #     node.getParent().purgeChildren()
+
+                    self.purgeLevel(node)
 
                     result = "Delete Successful: Point: {0} deleted from Node: {1}".format(point.getAll(), node.getCoords())    # Print statement
                 
