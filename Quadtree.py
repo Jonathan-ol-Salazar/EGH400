@@ -268,6 +268,13 @@ class Quadtree:
         # Initialize node as root
         node = self.root
 
+        # Check if point is already in tree
+        if self.Query(point) != None:
+            print("Insert Failed: Point: ", point.getAll(), " already exists")
+            return
+
+        
+
         # Check if root node has children, else find node to add point
         if len(node.getChildren()) == 0:
             node.setPoint(point)   # Add point to root
@@ -366,57 +373,21 @@ class Quadtree:
 
     # Update existing node
     def Update(self, existingPoint, editedPoint):
-        
-        # Find point to be changed
-        # Find difference -> turn to set and find attr difference
-        # if different, use get/set to change, return point and print
-        # else return point and print statement
-        # re-add point if x or y is changed
-
 
         existingPoint = self.Query(existingPoint)
 
         if existingPoint == None:
             print("Update Failed: Point to update does not exist")
             return 
+        elif existingPoint.getAll() == editedPoint.getAll():
+            print("Update Failed: Updates do not change the select point")
+            return
         else:
-            # find index of difference, and the value its supposed to be 
-            
-            reInsert = False
-
-            # loop through each value and check 
-            for i, attr in enumerate(editedPoint.getAll()):
-                if attr != existingPoint.getAll()[i]:
-
-                    # Switch statement of somesort, via if-statements
-                    if i == 0:  # ID
-                        existingPoint.setID(attr)
-                    elif i == 1: # Sequence
-                        existingPoint.setSequence(attr)
-                    elif i == 2: # Long
-                        existingPoint.setLong(attr)
-                        reInsert = True
-                    elif i == 3: # Lat
-                        existingPoint.setLat(attr)
-                        reInsert = True
-                    elif i == 4: # Alt
-                        existingPoint.setAlt(attr)
-                    elif i == 5: # Time
-                        existingPoint.setTime(attr)
-       
-            # If coords are changed, re-insert point
-            if reInsert:
-                self.Delete(existingPoint)
-                self.Insert(existingPoint)
-
-
-        # Check if edits were successful, with print statements
-        if existingPoint.getAll() == editedPoint.getAll():
-            print("Update Successful")
-        else:
-            print("Update Failed")
-
-        return
+            # Delete existing point
+            self.Delete(existingPoint)
+            # Reinsert edited point
+            self.Insert(editedPoint)
+    
 
 
    
@@ -459,24 +430,42 @@ def main():
     # quadtree.Query(point1)      # Query point in children
 
 ### Delete
-    quadtree.Insert(point1)     # Insert point1
-    quadtree.Delete(point1)   # Query point at root
-    quadtree.Delete(point2)   # Query point that doesn't exist
-    quadtree.Delete(point1)      # Query point in children
-    quadtree.Delete(point2)      # Query point in children
+    # quadtree.Insert(point1)     # Insert point1
+    # quadtree.Delete(point1)   # Query point at root
+    # quadtree.Delete(point2)   # Query point that doesn't exist
+    # quadtree.Delete(point1)      # Query point in children
+    # quadtree.Delete(point2)      # Query point in children
 
-    quadtree.Insert(point2)     # Insert point2
-    quadtree.Insert(point3)     # Insert point3
-    quadtree.Insert(point4)     # Insert point4
+    # quadtree.Insert(point2)     # Insert point2
+    # quadtree.Insert(point3)     # Insert point3
+    # quadtree.Insert(point4)     # Insert point4
 
-    quadtree.Delete(point1)   # Query point in children
-    quadtree.Delete(point1)      # Query point in children
+    # quadtree.Delete(point1)   # Query point in children
+    # quadtree.Delete(point1)      # Query point in children
+
+    # quadtree.Insert(point1)
+    # quadtree.Delete(point2)     # Insert point2
+    # quadtree.Delete(point3)     # Insert point3
+    # quadtree.Delete(point4)     # Insert point4
+    # quadtree.Delete(point1)      # Query point in children
+
+### Update
+
+    quadtree.Insert(point1)         # Insert point1
+    quadtree.Insert(point1)
+
+    quadtree.Update(point1, point2) # Make point1 into point2
+    quadtree.Update(point2, point2) # Make point2 into point2
 
     quadtree.Insert(point1)
-    quadtree.Delete(point2)     # Insert point2
-    quadtree.Delete(point3)     # Insert point3
-    quadtree.Delete(point4)     # Insert point4
-    quadtree.Delete(point1)      # Query point in children
+    quadtree.Insert(point2)
+    # quadtree.Insert(point3)
+
+    quadtree.Update(point2, point3) # 
+    # quadtree.Update(point1, point2) # yes
+    # quadtree.Update(point2, point1) # yes
+    # quadtree.Update(point3, point2) # no
+    quadtree.Update(point3, point3) # 
 
 
 
