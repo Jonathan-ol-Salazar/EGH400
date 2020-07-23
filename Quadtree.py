@@ -291,6 +291,7 @@ class Quadtree:
         return result   # Point or list of points with same Long, Lat
 
     def pointFromList(self, pointList, point):
+        result = None
         # Loop through all the points in the pointList
         for existingPoint in pointList:
             # Check if point == existingPoint
@@ -428,6 +429,7 @@ class Quadtree:
         # Prints result of deletion
         # print(self.recursiveDelete(point, self.root))
 
+
         result = None   # Initialize result
         node = self.root
         key = (point.getLong(), point.getLat()) # Key for dictionary with list of points
@@ -435,16 +437,31 @@ class Quadtree:
         # Check if point exists in root
         if key in node.getPoints() and len(node.getPoints()) > 0: 
             # Get point roots pointsList
-            result = self.pointFromList(node.getPoints()[key],point)
+            pointDelete = self.pointFromList(node.getPoints()[key],point)
             
-            node.removePoint(result)
-            # try:
+            node.removePoint(pointDelete)
 
+            result = "Delete Successful: Point: {0} deleted from Node: {1}".format(point.getAll(), node.getCoords())
 
-        # Search children recursively
-        if result == None:
+            
+        else:
+            # Search children recursively
+
             node = self.traverseNode(node, point)   # Do a resursive search and return result of points found 
+            
+            if node == None:
+                result = "Delete Failed: Point: {0} does not exist!".format(point.getAll())
 
+            else:
+                pointDelete = self.pointFromList(node.getPoints()[key],point)
+                if pointDelete == None:
+                    result = "Delete Failed: Point: {0} does not exist!".format(point.getAll())
+                else:
+                    node.removePoint(pointDelete)
+                    result = "Delete Successful: Point: {0} deleted from Node: {1}".format(point.getAll(), node.getCoords())
+                
+
+        print(result)
 
 
 
