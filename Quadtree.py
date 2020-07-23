@@ -131,6 +131,9 @@ class Quadtree:
         self.maxPoints = maxPoints # Max points before decomposition
         self.root = Node(bL, tR, root = 1) # Create root node
 
+    ############# BODY METHODS #################
+
+
     # Helper (Insert): Subdivide nodes into 4 children                 
     def subdivide(self, node):
         # Check if the nodes points is less than the max points
@@ -138,16 +141,16 @@ class Quadtree:
             return
 
         # Get corners for each quadrant 
-        nodeCoords = node.getCoords()  # Root node coords
-        bL = nodeCoords[0]                  # Bottom left coords
-        tR = nodeCoords[1]                  # Top right coords
-        midH = (tR[1] - bL[1]) / 2          # Mid height
-        midL = (tR[0] - bL[0]) / 2          # Mid length
+        nodeCoords = node.getCoords()   # Root node coords
+        bL = nodeCoords[0]              # Bottom left coords
+        tR = nodeCoords[1]              # Top right coords
+        midH = (tR[1] - bL[1]) / 2      # Mid height
+        midL = (tR[0] - bL[0]) / 2      # Mid length
 
         # Setting children coords
-        p = self.movePoints([bL[0], midH], [midL, tR[1]], node )    # Get points within child node    
-        one = Node( [bL[0], midH], [midL, tR[1]], p, parent = node )               # Create child node with points
-        self.subdivide(one)                                         # Recursively subdivide
+        p = self.movePoints([bL[0], midH], [midL, tR[1]], node )        # Get points within child node    
+        one = Node( [bL[0], midH], [midL, tR[1]], p, parent = node )    # Create child node with points
+        self.subdivide(one)                                             # Recursively subdivide
 
         p = self.movePoints([midL, midH],tR, node)        
         two = Node( [midL, midH],tR, p, parent = node )
@@ -163,7 +166,6 @@ class Quadtree:
 
 
         # List of children
-        # node.children = [one, two, three, four]
         node.setChildren([one, two, three, four])
 
     # Helper (subdivide): From a list of points return all points within boundary
@@ -197,8 +199,7 @@ class Quadtree:
 
      # Helper (Query): Recursively search current node
     
-
-    # Find a node
+    # Traverse tree to find node with given point
     def traverseNode(self, node, point):
         result = None
         # Return if node has no children or points
@@ -221,46 +222,74 @@ class Quadtree:
                     result = self.traverseNode(child, point)  # Recurse method again with child node
 
         return result # Return node
-        
-        
- 
-
-
-
-
-    def recursiveSearch(self, node, point):
+    
+    # From a list containing Points, return the given point
+    def pointFromList(self, pointList, point):
         result = None
-        # Return if node has no children or points
-        if len(node.getChildren()) <= 0 and len(node.getPoints()) <= 0 or len(node.getChildren()) <= 0 and point not in node.getPoints():
-            return  # Return None
-
-        # Check all children of node if point lies within its boundaries
-        # if it does, then recurse method again, using said node
-        # check if its got points, if so compare to search node
-
-        # Loop through all children of current node
-        for child in node.getChildren():
-            longitudePoint = point.getLong()    # Longitude (X) of point
-            latitudePoint = point.getLat()      # Latitude (Y) of point
-            bottomLeft = child.getCoords()[0]     # Bottom left coords of node
-            topRight = child.getCoords()[1]       # Top right coords of node
-
-            # Check if point is within child
-            if longitudePoint >= bottomLeft[0] and longitudePoint <= topRight[0] and latitudePoint >= bottomLeft[1] and latitudePoint <= topRight[1]:
-                # Check if point is within the childs points 
-                if point in child.getPoints():
-                    return point    # Return point
-                else:
-                    result = self.recursiveSearch(child, point)  # Recurse method again with child node
-                    # if point == result:
-                    #     point = result
-            # else:
-            #     return  # Return None
-
-
-        return result # Return point
+        # Loop through all the points in the pointList
+        for existingPoint in pointList:
+            # Check if point == existingPoint
+            if existingPoint.getAll() == point.getAll():
+                result = existingPoint
     
-    
+        return result   # Point
+
+    # Helper (Delete): Recursively delete levels upwards if level is filled with leaf nodes
+    def purgeLevel(self, node):
+        # Get parent of node
+        parent = node.getParent()
+        # Bool to check if children should be purged
+        purgeChildren = True
+
+        # If node is root then return
+        if node.isRoot():
+            return
+
+        # Check if current node is leaf node as well as neighbouring nodes
+        for child in parent.getChildren():
+            # Check if child has a point or children
+            if len(child.getChildren()) > 0 or child.getNumPoints() > 0:
+                purgeChildren = False
+
+        # If no children has points or children, delete all children
+        if purgeChildren:
+            # Purge children 
+            parent.purgeChildren()
+            # Recurse method
+            self.purgeLevel(parent)
+
+
+
+    #### MAIN FUNCTIONALITIES ####
+
+    # Insert a point into a node
+    def Insert(self, point):
+
+        # Initialize node as root
+        node = self.root
+
+        # Check if root node has children, else find node to add point
+        if len(node.getChildren()) == 0:
+            node.setPoint(point)   # Add point to root
+        else:
+            node = self.traverseNode(node, point)   # Find node suitable to add point
+            node.setPoint(point)                    # Add point to node
+
+        self.subdivide(node)   # Subdivide node
+
+
+
+        # Print confirmations
+        # Find node that the point was just added to
+        if node != self.root:
+            node = self.traverseNode(self.root, point)
+        
+        # Check if point is actually in node
+        if node.getNumPoints() != 0 and point in node.getPoints()[(point.getLong(), point.getLat())] or node == self.root and node.getNumPoints !=0 :
+            print("Insert Successful: Point:", point.getAll(), "located in Node:", node.getCoords())
+        else:
+            print("Insert Unsuccessful")    
+            
     # Search for number of points in area
     def Query(self, point, allPoints = False):        
         result = None   # Initialize result
@@ -297,83 +326,43 @@ class Quadtree:
         
         return result   # Point or list of points with same Long, Lat
 
-    def pointFromList(self, pointList, point):
-        result = None
-        # Loop through all the points in the pointList
-        for existingPoint in pointList:
-            # Check if point == existingPoint
-            if existingPoint.getAll() == point.getAll():
-                result = existingPoint
-    
-        return result   # Point
+    # Delete an existing node
+    def Delete(self, point):
 
-    def recursiveDelete(self, point, node):
-        result = ""
-
-        # Check if node has no points and no children
-        if node.getNumPoints() == 0 and len(node.getChildren()) == 0:
-            result = "Nothing to delete"  # Nothing to delete
-            
-        # Check if point is in node
-        # if [point] in node.getPoints().values():
-        if len(node.getPoints()) > 0:
-            if point in node.getPoints()[(point.getLong(), point.getLat())]:
-                node.removePoint(point) # Remove point from node
-                result = "Deletion Successful"
-
-        # Bool to check if nodes children should be deleted
-        purgeChildren = True    # True if children have no kids or points
-        internalNode = False    # True if node has children
-        
-        # Check if point is in node.point list      
-        for child in node.getChildren():
-            internalNode = True                 # Node has children
-            result = self.recursiveDelete(point, child)  # Recurse method
-            # Check if child has kids or points
-            if len(child.getChildren()) > 0 or child.getNumPoints() > 0:
-                purgeChildren = False           # Child has kids or points
-                
-        # Check if bools are true
-        if purgeChildren and internalNode:
-            node.purgeChildren()    # Delete nodes children
-
-
-        # do a search to check if point still exists
-
-        return result
-        # return "Nothing to delete" # Something was deleted
-
-
-
-    # Insert a point into a node
-    def Insert(self, point):
-        
+        result = None   # Initialize result
         node = self.root
-        
-        if len(self.root.getChildren()) == 0:
-            node.setPoint(point)   # Add point to root
+        key = (point.getLong(), point.getLat()) # Key for dictionary with list of points
+
+        # Check if point exists in root
+        if key in node.getPoints() and len(node.getPoints()) > 0: 
+            # Get point roots pointsList
+            pointDelete = self.pointFromList(node.getPoints()[key],point)
+            # Remove point
+            node.removePoint(pointDelete)
+            result = "Delete Successful: Point: {0} deleted from Node: {1}".format(point.getAll(), node.getCoords())    # Print statement            
         else:
-            node = self.traverseNode(self.root, point)
-            node.setPoint(point)
+            # Search children recursively
+            node = self.traverseNode(node, point)   # Do a resursive search and return result of points found 
+            
+            # Check if the was a node found that contained point
+            if node == None:
+                result = "Delete Failed: Point: {0} does not exist!".format(point.getAll()) # Print statement
 
-
-        self.subdivide(node)   # Subdivide node
-
-        # # Print confirmations
-
-        if node != self.root:
-            node = self.traverseNode(self.root, point)
-
-        
-
-        if node.getNumPoints() != 0 and point in node.getPoints()[(point.getLong(), point.getLat())] or node == self.root and node.getNumPoints !=0 :
-            print("Insert Successful: Point:", point.getAll(), "located in Node:", node.getCoords())
-        else:
-            print("Insert Unsuccessful")    
-
-
-
-                                                         
+            else:
+                # Check if point exists in list of nodes points
+                pointDelete = self.pointFromList(node.getPoints()[key],point)
+                # Print statements
+                if pointDelete == None:
+                    result = "Delete Failed: Point: {0} does not exist!".format(point.getAll()) # Print statement
+                else:
+                    # Remove point
+                    node.removePoint(pointDelete)
+                    # Recursively purge levels
+                    self.purgeLevel(node)
+                    result = "Delete Successful: Point: {0} deleted from Node: {1}".format(point.getAll(), node.getCoords())    # Print statement
+                        
+        # Print confirmations
+        print(result)
 
     # Update existing node
     def Update(self, existingPoint, editedPoint):
@@ -428,90 +417,6 @@ class Quadtree:
             print("Update Failed")
 
         return
-
-
-
-    def purgeLevel(self, node):
-
-        parent = node.getParent()
-        purgeChildren = True
-
-        # If node is root then return
-        if node.isRoot():
-            return
-
-        # Check if current node is leaf node as well as neighbouring nodes
-        for child in parent.getChildren():
-            # Check if child has a point or children
-            if len(child.getChildren()) > 0 or child.getNumPoints() > 0:
-                purgeChildren = False
-
-        # If no children has points or children, delete all children
-        if purgeChildren:
-            parent.purgeChildren()
-            self.purgeLevel(parent)
-
-
-        return node
-
-
-
-
-
-
-
-    # Delete an existing node
-    def Delete(self, point):
-
-        result = None   # Initialize result
-        node = self.root
-        key = (point.getLong(), point.getLat()) # Key for dictionary with list of points
-
-        # Check if point exists in root
-        if key in node.getPoints() and len(node.getPoints()) > 0: 
-            # Get point roots pointsList
-            pointDelete = self.pointFromList(node.getPoints()[key],point)
-            # Remove point
-            node.removePoint(pointDelete)
-            result = "Delete Successful: Point: {0} deleted from Node: {1}".format(point.getAll(), node.getCoords())    # Print statement            
-        else:
-            # Search children recursively
-            node = self.traverseNode(node, point)   # Do a resursive search and return result of points found 
-            
-            # Check if the was a node found that contained point
-            if node == None:
-                result = "Delete Failed: Point: {0} does not exist!".format(point.getAll()) # Print statement
-
-            else:
-                # Check if point exists in list of nodes points
-                pointDelete = self.pointFromList(node.getPoints()[key],point)
-                # Print statements
-                if pointDelete == None:
-                    result = "Delete Failed: Point: {0} does not exist!".format(point.getAll()) # Print statement
-                else:
-                    # Remove point
-                    node.removePoint(pointDelete)
-
-                    # purgeChildren = True
-                    # # Check if current node is leaf node as well as neighbouring nodes
-                    # for child in node.getParent().getChildren():
-                    #     # Check if child has a point or children
-                    #     if len(child.getChildren()) > 0 or child.getNumPoints() > 0:
-                    #         purgeChildren = False
-                    # # If no children has points or children, delete all children
-                    # if purgeChildren:
-                    #     node.getParent().purgeChildren()
-
-                    self.purgeLevel(node)
-
-                    result = "Delete Successful: Point: {0} deleted from Node: {1}".format(point.getAll(), node.getCoords())    # Print statement
-                
-        
-        
-        
-        # Print confirmations
-        print(result)
-
 
 
    
