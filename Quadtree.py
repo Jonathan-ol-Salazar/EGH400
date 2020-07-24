@@ -29,6 +29,26 @@ class Point:
 
     def getAll(self):
         return [self.id, self.sequence, self.longitude, self.latitude, self.altitude, self.time]
+
+    def setAll(self, attrs):
+
+        if len(attrs) != len(self.getAll()):
+            print("Not enough attributes, did not update point")
+        else:
+            for i, attr in enumerate(attrs):
+                # Switch statement of somesort, via if-statements
+                if i == 0:  # ID
+                   self.id = attr                  
+                elif i == 1: # Sequence
+                    self.sequence = attr                 
+                elif i == 2: # Long
+                    self.longitude = attr                      
+                elif i == 3: # Lat
+                    self.latitude = attr                   
+                elif i == 4: # Alt
+                    self.altitude = attr                    
+                elif i == 5: # Time
+                    self.time = attr
     
     def getCoords(self):
         return [self.longitude, self.latitude]
@@ -202,6 +222,10 @@ class Quadtree:
     # Traverse tree to find node with given point
     def traverseNode(self, node, point):
         result = None
+
+        if node.isRoot() and len(node.getChildren()) == 0:
+            return node
+
         # Return if node has no children or points
         if len(node.getChildren()) <= 0 and len(node.getPoints()) <= 0 or len(node.getChildren()) <= 0 and point not in node.getPoints():
             return  # Return None
@@ -345,31 +369,43 @@ class Quadtree:
         key = (point.getLong(), point.getLat()) # Key for dictionary with list of points
 
         if self.Query(point) == None:
-            result = "Delete Failed: Point: {0} does not exist!".format(point.getAll()) # Print statement
-            print(result)
-            return
+            # result = "Delete Failed: Point: {0} does not exist!".format(point.getAll()) # Print statement
+            # print(result)
+            result = 0
+            return result
 
         # Get node where point lies
         node = self.traverseNode(node, point)
         
         # Check if there is a suitable node or if key in nodes points
         if node == None or key not in node.getPoints() :
-            result = "Delete Failed: Point: {0} does not exist!".format(point.getAll()) # Print statement
+            # result = "Delete Failed: Point: {0} does not exist!".format(point.getAll()) # Print statement
+            print("Delete Failed: Point: {0} does not exist!".format(point.getAll()))
+            result = 0
         else:
             # Find point in nodes points list
             pointDelete = self.pointFromList(node.getPoints()[key],point)
             # Check if point was found, if so remove point and purge levels if need be
             if pointDelete == None:
-                result = "Delete Failed: Point: {0} does not exist!".format(point.getAll()) # Print statement
+                # result = "Delete Failed: Point: {0} does not exist!".format(point.getAll()) # Print statement
+                result = 0
             else:
                 # Remove point
                 node.removePoint(pointDelete)
                 # Recursively purge levels
                 self.purgeLevel(node)
-                result = "Delete Successful: Point: {0} deleted from Node: {1}".format(point.getAll(), node.getCoords())    # Print statement
+                # result = "Delete Successful: Point: {0} deleted from Node: {1}".format(point.getAll(), node.getCoords())    # Print statement
+                result = 1
                 
         # Print confirmations
         print(result)
+
+        if result == 0:
+            print("Delete Failed: Point: {0} does not exist!".format(point.getAll()))
+        else:
+            print("Delete Successful: Point: {0} deleted from Node: {1}".format(point.getAll(), node.getCoords()))
+        
+        return result
 
 
 
@@ -385,11 +421,22 @@ class Quadtree:
             print("Update Failed: Updates do not change the select point")
             return
         else:
+            # # Dummy variable to replace existing point
+            # newPoint = existingPoint
+            # # Set attr of dummy variable to the edited point
+            # newPoint.setAll(editedPoint.getAll())
+                       
+
+        
             # Delete existing point
             self.Delete(existingPoint)
-            # Reinsert edited point
-            self.Insert(editedPoint)
-            x= 1
+
+            existingPoint.setAll(editedPoint.getAll())
+
+            # Insert new point
+            self.Insert(existingPoint)
+            
+
     
 
 
@@ -464,9 +511,9 @@ def main():
     # quadtree.Insert(point3)
 
     quadtree.Update(point2, point3) # 
-    # quadtree.Update(point1, point2) # yes
-    # quadtree.Update(point2, point1) # yes
-    # quadtree.Update(point3, point2) # no
+    quadtree.Update(point1, point2) # yes
+    quadtree.Update(point2, point1) # yes
+    quadtree.Update(point3, point2) # no
     quadtree.Update(point3, point3) # 
 
 
