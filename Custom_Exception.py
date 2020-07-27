@@ -9,3 +9,7 @@ class Error(Exception):
 class typeNotInt(Error):
     """Raised with input is not type 'int' """
     pass
+
+class typeNotDatetime(Error):
+    """Raised with input is not type 'datetime' """
+    pass

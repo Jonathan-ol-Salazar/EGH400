@@ -1,9 +1,9 @@
-import Exception
-
+import Custom_Exception
+import datetime
 
 # Main Quadtree file containing classes: Quadtree, Point and Node
 
-
+# TODO Make point class an enum class
 
 
 # Class for point in Quadtree
@@ -39,9 +39,18 @@ class Point:
 
     def setAll(self, attrs):
 
-        if len(attrs) != len(self.getAll()):
+        allCorrectType = True
+        
+        # Loop through all attrs and check if they are all the correct types
+        for attr in attrs:
+            if self.checkInt(attr) == 1:
+                allCorrectType = False
+                break
+        
+        # Check if there is a correct number of attrs to change
+        if len(attrs) != len(self.getAll()) and allCorrectType == True:
             print("Not enough attributes, did not update point")
-        else:
+        elif allCorrectType == True:
             for i, attr in enumerate(attrs):
                 # Switch statement of somesort, via if-statements
                 if i == 0:  # ID
@@ -61,33 +70,47 @@ class Point:
         return [self.longitude, self.latitude]
 
     def setID(self, identification):
-        self.id = identification
+        if self.checkInt(identification) == 1:
+            self.id = identification
     
     def setSequence(self, sequence):
-        self.sequence = sequence
+        if self.checkInt(sequence) == 1:
+            self.sequence = sequence
     
     def setLong(self, longitude):
-        self.longitude = longitude
+        if self.checkInt(longitude) == 1:
+            self.longitude = longitude
     
     def setLat(self, latitude):
-        self.latitude = latitude
+        if self.checkInt(latitude) == 1:
+            self.latitude = latitude
     
     def setAlt(self, altitude):
         if self.checkInt(altitude) == 1:
             self.altitude = altitude
 
     def setTime(self, time):
+        # if self.checkDatetime(time) == 1:
         self.time = time
 
     def checkInt(self, input):
         try:
             if type(input) != int:
-                raise Exception.typeNotInt
-            return 1 # Passed
-        except Exception.typeNotInt:
+                raise Custom_Exception.typeNotInt()
+            else:
+                return 1 # Passed
+        except Custom_Exception.typeNotInt():
             print("Input must be of type 'int' ")
             return 0 # Failed
             
+    # def checkDatetime(self, input):
+    #     try:
+    #         if type(input) != datetime.datetime:
+    #             raise Custom_Exception.typeNotDatetime
+    #         return 1 # Passed
+    #     except Custom_Exception.typeNotDatetime:
+    #         print("Input must be of type 'datetime' ")
+    #         return 0 # Failed
 
 
 # Class for node in Quadtree
@@ -467,10 +490,10 @@ class Quadtree:
 def main():
 
 
-    try:
-        print(x)
-    except:
-        pass
+    # try:
+    #     print(x)
+    # except:
+    #     pass
 
 
 
@@ -483,7 +506,7 @@ def main():
     point3 = Point(1,3,1,3,1,1)
     point4 = Point(1,4,1,1,1,1)
 
-    point1.setAlt([1])
+    point1.setID([])
 
 
 

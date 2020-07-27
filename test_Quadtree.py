@@ -1,5 +1,7 @@
 import unittest
 import sys
+import math
+import Custom_Exception as exception
 # from EGH400 import Quadtree
 import Quadtree as quadtree
 
@@ -79,10 +81,30 @@ class TestPoint(unittest.TestCase):
         self.point.setAlt(testAlt)
         self.assertEqual(self.point.getAlt(),testAlt)
 
-    def test_setTime(self):
-        testTime = 2
-        self.point.setTime(testTime)
-        self.assertEqual(self.point.getTime(), testTime)    
+    # Add in when time is of type datetime
+    # def test_setTime(self):
+    #     testTime = 2
+    #     self.point.setTime(testTime)
+    #     self.assertEqual(self.point.getTime(), testTime)    
+
+    # def test_typeInt(self):
+    #     testList = []
+    #     testInt = 1
+    #     testIntMax = math.inf
+    #     testIntMin = -math.inf
+
+
+    #     self.assertRaises(exception.typeNotInt, self.point.setID, testList)
+
+    #     # with self.assertRaises(exception.typeNotInt):
+    #     #     self.point.setID(testList)
+
+    #         # self.point.setID(testList)
+    #     # self.assertRaises(exception.typeNotInt, self.point.setID(testInt))
+    #     # self.assertRaises(exception.typeNotInt, self.point.setID(testIntMax))
+    #     # self.assertRaises(exception.typeNotInt, self.point.setID(testIntMin))
+
+
         
 
 class TestNode(unittest.TestCase):
