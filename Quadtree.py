@@ -1,3 +1,10 @@
+import Exception
+
+
+# Main Quadtree file containing classes: Quadtree, Point and Node
+
+
+
 
 # Class for point in Quadtree
 class Point:
@@ -66,10 +73,21 @@ class Point:
         self.latitude = latitude
     
     def setAlt(self, altitude):
-        self.altitude = altitude
+        if self.checkInt(altitude) == 1:
+            self.altitude = altitude
 
     def setTime(self, time):
         self.time = time
+
+    def checkInt(self, input):
+        try:
+            if type(input) != int:
+                raise Exception.typeNotInt
+            return 1 # Passed
+        except Exception.typeNotInt:
+            print("Input must be of type 'int' ")
+            return 0 # Failed
+            
 
 
 # Class for node in Quadtree
@@ -465,6 +483,10 @@ def main():
     point3 = Point(1,3,1,3,1,1)
     point4 = Point(1,4,1,1,1,1)
 
+    point1.setAlt([1])
+
+
+
 ### Query
     quadtree.Insert(point1)     # Insert point1
     quadtree.Query(point1, 1)   # Query point at root
@@ -515,7 +537,6 @@ def main():
     quadtree.Update(point2, point1) # yes
     quadtree.Update(point3, point2) # no
     quadtree.Update(point3, point3) # 
-
 
     x = 1
 
