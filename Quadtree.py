@@ -42,12 +42,12 @@ class Point:
 
     def setAll(self, attrs):
 
-        allCorrectType = True
+        allCorrectType = False
         
         # Loop through all attrs and check if they are all the correct types
         for attr in attrs:
             if self.checkInt(attr) == 1:
-                allCorrectType = False
+                allCorrectType = True
                 break
         
         # Check if there is a correct number of attrs to change
