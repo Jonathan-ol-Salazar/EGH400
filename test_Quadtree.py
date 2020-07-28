@@ -100,11 +100,41 @@ class TestQuadtree(unittest.TestCase):
         self.assertEqual(len(self.quadtree.root.getChildren()), 0)    # No children
         self.assertEqual(len(self.quadtree.root.getPoints()), 1)      # Single point
         
-   
+        point3 = quadtree.Point(1,3,4,2,2,3)
+        self.quadtree.Insert(point3)
+        point4 = quadtree.Point(1,4,2,2,2,3)
+        self.quadtree.Insert(point4)
+        self.assertEqual(len(self.quadtree.root.getChildren()), 4)    # 4 children
+        self.assertEqual(len(self.quadtree.root.getPoints()), 0)      # No point
 
-        # Root Level 
-        # Single Level
+        self.assertEqual(self.quadtree.Delete(point2), 1)
+        self.assertEqual(self.quadtree.Delete(point3), 1)
+        self.assertEqual(self.quadtree.Delete(point4), 1)
+        self.assertEqual(len(self.quadtree.root.getChildren()), 0)    # No children
+        self.assertEqual(len(self.quadtree.root.getPoints()), 0)      # No point
+        
         # Each Quadrant
+        point1 = quadtree.Point(1,1,1,9,2,3)    # Quadrant One
+        point2 = quadtree.Point(1,2,8,9,2,3)    # Quadrant Two
+        point3 = quadtree.Point(1,3,1,4,2,3)    # Quadrant Three
+        point4 = quadtree.Point(1,4,8,4,2,3)    # Quadrant Four
+        
+        # Inserting points into each quadrant
+        self.quadtree.Insert(point1)
+        self.quadtree.Insert(point2)
+        self.quadtree.Insert(point3)
+        self.quadtree.Insert(point4)
+
+        self.assertEqual(len(self.quadtree.root.getChildren()), 4 )  # Four children
+        
+        # Deleting all the points
+        self.assertEqual(self.quadtree.Delete(point1), 1)  
+        self.assertEqual(self.quadtree.Delete(point2), 1)
+        self.assertEqual(self.quadtree.Delete(point3), 1)
+        self.assertEqual(self.quadtree.Delete(point4), 1)
+
+        self.assertEqual(len(self.quadtree.root.getChildren()), 0 )  # Four children
+
 
 
     def test_Query(self):

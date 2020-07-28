@@ -416,7 +416,7 @@ class Quadtree:
             # result = "Delete Failed: Point: {0} does not exist!".format(point.getAll()) # Print statement
             # print(result)
             result = 0
-            return result
+            # return result
 
         # Get node where point lies
         node = self.traverseNode(node, point)
@@ -424,7 +424,7 @@ class Quadtree:
         # Check if there is a suitable node or if key in nodes points
         if node == None or key not in node.getPoints() :
             # result = "Delete Failed: Point: {0} does not exist!".format(point.getAll()) # Print statement
-            print("Delete Failed: Point: {0} does not exist!".format(point.getAll()))
+            # print("Delete Failed: Point: {0} does not exist!".format(point.getAll()))
             result = 0
         else:
             # Find point in nodes points list
