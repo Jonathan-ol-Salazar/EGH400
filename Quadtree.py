@@ -332,6 +332,7 @@ class Quadtree:
 
     # Insert a point into a node
     def Insert(self, point):
+        result = 0 # Initialize return result
 
         # Initialize node as root
         node = self.root
@@ -362,10 +363,12 @@ class Quadtree:
         # Check if point is actually in node
         if node.getNumPoints() != 0 and point in node.getPoints()[(point.getLong(), point.getLat())] or node == self.root and node.getNumPoints !=0 :
             print("Insert Successful: Point:", point.getAll(), "located in Node:", node.getCoords())
+            result = 1
         else:
             print("Insert Unsuccessful")    
+            result = 0
 
-
+        return result
 
     # Search for number of points in area
     def Query(self, point, allPoints = False):        

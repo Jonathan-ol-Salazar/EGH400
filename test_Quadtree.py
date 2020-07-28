@@ -26,7 +26,8 @@ class TestQuadtree(unittest.TestCase):
 
         # Root Level 
         point1 = quadtree.Point(1,1,1,1,1,1)
-        self.quadtree.Insert(point1)
+        
+        self.assertEqual(self.quadtree.Insert(point1), 1)    # No children
 
         self.assertEqual(self.quadtree.root.points[point1.getKey()][0].getAll(), point1.getAll())
         self.assertEqual(len(self.quadtree.root.getChildren()), 0)    # No children
