@@ -460,10 +460,10 @@ class Quadtree:
 
         if existingPoint == None:
             print("Update Failed: Point to update does not exist")
-            return 
+            return 0
         elif existingPoint.getAll() == editedPoint.getAll():
             print("Update Failed: Updates do not change the select point")
-            return
+            return 0
         else:
             # # Dummy variable to replace existing point
             # newPoint = existingPoint
@@ -479,6 +479,8 @@ class Quadtree:
 
             # Insert new point
             self.Insert(existingPoint)
+
+            return 1
             
 
     
