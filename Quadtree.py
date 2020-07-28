@@ -33,6 +33,9 @@ class Point:
     
     def getTime(self):
         return self.time
+    
+    def getKey(self):
+        return (self.longitude, self.latitude)
 
     def getAll(self):
         return [self.id, self.sequence, self.longitude, self.latitude, self.altitude, self.time]

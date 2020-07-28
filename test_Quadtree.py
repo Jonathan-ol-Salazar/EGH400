@@ -6,9 +6,47 @@ import Custom_Exception as exception
 import Quadtree as quadtree
 
 class TestQuadtree(unittest.TestCase):
+    def setUp(self):
+
+        # Initial params
+        longitude1 = 0
+        latitude1 = 0
+        longitude2 = 10
+        latitude2 = 10
+        maxPoints = 1
 
 
-    pass 
+        self.quadtree = quadtree.Quadtree(latitude1, longitude1, latitude2, longitude2, maxPoints)
+
+    def test_Insert(self):
+        # Existing point varying levels
+        pointRoot = quadtree.Point(1,1,1,1,1,1)
+        self.quadtree.Insert(pointRoot)
+        self.assertEqual(self.quadtree.root.points[pointRoot.getKey()][0].getAll(), pointRoot.getAll())
+        # Root Level 
+        # Single Level
+        # Each Quadrant
+
+    def test_Update(self):
+        # Non-existant
+        # Root Level 
+        # Single Level
+        # Each Quadrant
+        pass
+
+    def test_Delete(self):
+        # Non-existant
+        # Root Level 
+        # Single Level
+        # Each Quadrant
+        pass
+
+    def test_Query(self):
+        # Non-existant
+        # Root Level 
+        # Single Level
+        # Each Quadrant
+        pass
 
 
 
