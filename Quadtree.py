@@ -167,7 +167,7 @@ class Node:
         return self.children
 
     def purgePoints(self):
-        self.points = []
+        self.points = {}
      
     def purgeChildren(self):
         self.children = []
