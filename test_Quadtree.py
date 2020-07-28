@@ -139,10 +139,48 @@ class TestQuadtree(unittest.TestCase):
 
     def test_Query(self):
         # Non-existant
-        # Root Level 
-        # Single Level
-        # Each Quadrant
-        pass
+        point1 = quadtree.Point(1,1,1,1,1,1)
+        
+        self.assertEqual(self.quadtree.Query(point1), None)
+        
+
+        # ROOT LEVEL 
+        self.quadtree.Insert(point1)        
+        self.assertEqual(self.quadtree.Query(point1), point1)
+
+        # SINGLE LEVEL
+        
+        # New point at existing location
+        point2 = quadtree.Point(1,1,1,1,1,2)
+        self.quadtree.Insert(point2)    
+        self.assertEqual(self.quadtree.Query(point1), point1)
+        self.assertEqual(self.quadtree.Query(point2), point2)
+
+        point3 = quadtree.Point(1,2,1,2,1,1)
+        self.quadtree.Insert(point3)    
+        self.assertEqual(self.quadtree.Query(point1), point1)
+        self.assertEqual(self.quadtree.Query(point2), point2)
+        self.assertEqual(self.quadtree.Query(point3), point3)
+
+
+
+        # EACH QUADRANT
+        point1 = quadtree.Point(1,1,1,9,2,3)    # Quadrant One
+        point2 = quadtree.Point(1,2,8,9,2,3)    # Quadrant Two
+        point3 = quadtree.Point(1,3,1,4,2,3)    # Quadrant Three
+        point4 = quadtree.Point(1,4,8,4,2,3)    # Quadrant Four
+        
+        # Inserting points into each quadrant
+        self.quadtree.Insert(point1)
+        self.quadtree.Insert(point2)
+        self.quadtree.Insert(point3)
+        self.quadtree.Insert(point4)
+        
+        # Query all points
+        self.assertEqual(self.quadtree.Query(point1), point1)
+        self.assertEqual(self.quadtree.Query(point2), point2)
+        self.assertEqual(self.quadtree.Query(point3), point3)
+        self.assertEqual(self.quadtree.Query(point4), point4)
 
 
 
