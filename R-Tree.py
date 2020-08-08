@@ -1,237 +1,236 @@
-#%%
-import matplotlib.pyplot as plt
+import Custom_Exception
+import datetime 
+
+# Main R-Tree file containing classes: Rtree, Point and Node
 
 
-class Point():
-    def __init__(self, longitude, latitude):
-        self.latitude = latitude
+
+# Class for point in R-Tree
+class Point:
+    def __init__(self, identification, sequence, longitude, latitude, altitude, time): # long = x, lat = y
+        self.id = identification
+        self.sequence = sequence
         self.longitude = longitude
-        # Dictionary that contains timestamp, x, y, altitude
-        self.point = {}
+        self.latitude = latitude
+        self.altitude = altitude
+        self.time = time
 
-
-    def getLat(self):
-        return self.latitude
-
+    def getID(self):
+        return self.id
+    
+    def getSequence(self):
+        return self.sequence
 
     def getLong(self):
         return self.longitude
 
-# Node Class - leaf = data and no children, internal = has children
+    def getLat(self):
+        return self.latitude
+
+    def getAlt(self):
+        return self.altitude
+    
+    def getTime(self):
+        return self.time
+    
+    def getKey(self):
+        return (self.longitude, self.latitude)
+
+    def getAll(self):
+        return [self.id, self.sequence, self.longitude, self.latitude, self.altitude, self.time]
+
+    def setAll(self, attrs):
+
+        allCorrectType = False
+        
+        # Loop through all attrs and check if they are all the correct types
+        for attr in attrs:
+            if self.checkInt(attr) == 1:
+                allCorrectType = True
+                break
+        
+        # Check if there is a correct number of attrs to change
+        if len(attrs) != len(self.getAll()) and allCorrectType == True:
+            print("Not enough attributes, did not update point")
+        elif allCorrectType == True:
+            for i, attr in enumerate(attrs):
+                # Switch statement of somesort, via if-statements
+                if i == 0:  # ID
+                   self.id = attr                  
+                elif i == 1: # Sequence
+                    self.sequence = attr                 
+                elif i == 2: # Long
+                    self.longitude = attr                      
+                elif i == 3: # Lat
+                    self.latitude = attr                   
+                elif i == 4: # Alt
+                    self.altitude = attr                    
+                elif i == 5: # Time
+                    self.time = attr
+    
+    def getCoords(self):
+        return [self.longitude, self.latitude]
+
+    def setID(self, identification):
+        if self.checkInt(identification) == 1:
+            self.id = identification
+    
+    def setSequence(self, sequence):
+        if self.checkInt(sequence) == 1:
+            self.sequence = sequence
+    
+    def setLong(self, longitude):
+        if self.checkInt(longitude) == 1:
+            self.longitude = longitude
+    
+    def setLat(self, latitude):
+        if self.checkInt(latitude) == 1:
+            self.latitude = latitude
+    
+    def setAlt(self, altitude):
+        if self.checkInt(altitude) == 1:
+            self.altitude = altitude
+
+    def setTime(self, time):
+        # if self.checkDatetime(time) == 1:
+        self.time = time
+
+
+    def checkInt(self, input):
+        try:
+            if type(input) != int:
+                raise Custom_Exception.typeNotInt()
+            else:
+                return 1 # Passed
+        except Custom_Exception.typeNotInt():
+            print("Input must be of type 'int' ")
+            return 0 # Failed
+
 class Node:
-    def __init__(self, depth, parent, bottomCoords, topCoords, code="", points=[], children=[]):
-        self.bottomCoords = bottomCoords
-        self.topCoords = topCoords
+    # New nodes will be type Leaf and store no points
+    def __init__(self, bL, tR, points={}, children=[], root=0, parent = None): 
         self.points = points
         self.children = children
+        self.root = root
+        self.bL = bL
+        self.tR = tR
         self.parent = parent
-        self.depth = depth
-        self.state = 0    
-        self.code = code                  # Initialize as empty leaf node
-
-        # state == 1 if node has children
-        if len(children) != 0:
-            self.state = 1
 
 
-    # Getters and Setters #
 
-    # Return points
+    # Add a single points to points dict
+    def setPoint(self, newPoint):
+       
+        key = (newPoint.getLong(), newPoint.getLat())
+
+        if key in self.points.keys():
+            self.points[key].append(newPoint)
+        else:
+            self.points[key] = [newPoint]
+        
+    # Replace existing points dict
+    def setPoints(self, newPointDict):
+        self.points = newPointDict
+
+    def getNumPoints(self):
+        return len(self.points)
+
+    def getCoords(self):
+        return self.bL, self.tR
+
     def getPoints(self):
         return self.points
+    
+    def getParent(self):
+        return self.parent
 
-    # Return number of points
-    def getNumPoints(self):
-        return self.points.count
+    def setChildren(self, children):
+        self.children = children
 
-    # Add points and sort via timestamp datetime
-    def setPoints(self, point):
-        self.points.append(point)
-
-    # Get bottom coords
-    def getBottomCoords(self):
-        return self.bottomCoords
-
-    # Get top coords
-    def getTopCoords(self):
-        return self.topCoords
-
-
-
-    # Returns children
     def getChildren(self):
         return self.children
 
-    # Returns current state 
-    def getState(self):
-        return self.state
+    def purgePoints(self):
+        self.points = {}
+     
+    def purgeChildren(self):
+        self.children = []
 
-    def setChild(self, child):
-        self.children.append(child)
+    def removePoint(self, point):
+        key = (point.getLong(), point.getLat())
+        self.points[key].remove(point)
 
-
-
-
-class CylinderBoundingBox():
-    def __init__(self, Points, bottomLeft_X, bottomLeft_Y, topRight_X, topRight_Y):
-        self.Points = Points
-        self.Coords = [[bottomLeft_X, bottomLeft_Y], [topRight_X, topRight_Y]]
-        self.bottomCoords = [bottomLeft_X, bottomLeft_Y, topRight_X, bottomLeft_Y]
-        self.topCoords = [bottomLeft_X, topRight_Y, topRight_X, topRight_Y]
-
-    def getPoints(self):
-        return self.Points
+        if len(self.points[key]) == 0:
+            self.points.pop(key)
     
-    def getCoords(self):
-        return self.Coords
-
-    # Get bottom coords
-    def getBottomCoords(self):
-        return self.bottomCoords
-
-    # Get top coords
-    def getTopCoords(self):
-        return self.topCoords
-
-class RTree():
-    def __init__(self, bottomLeft_X, bottomLeft_Y, topRight_X, topRight_Y):
-        self.bottomCoords = [bottomLeft_X, bottomLeft_Y, topRight_X, bottomLeft_Y]
-        self.topCoords = [bottomLeft_X, topRight_Y, topRight_X, topRight_Y]
-        self.depth = 1 # Maximum level of resolution
-        self.root = Node(0, 0, self.bottomCoords, self.topCoords)
-
-    def insert(self, CylinderBoundingBox):
-        Box = CylinderBoundingBox.getCoords()
-
-        bottomCoords = [Box[0], [ Box[1][0], Box[0][1] ]]
-        topCoords = [[ Box[0][0], Box[1][1] ], Box[1]]
-
-
-        newNode = Node(self.depth, 0, bottomCoords, topCoords, points=CylinderBoundingBox.getPoints() )
-        self.root.setChild(newNode)
-        x = 1
-
-
-    # Get bottom coords
-    def getBottomCoords(self):
-        return self.bottomCoords
-
-    # Get top coords
-    def getTopCoords(self):
-        return self.topCoords
-
-    
+    def isRoot(self):
+        return self.root
 
 
 
 
 
-############################################################
+
+
+
+# Class for R-Tree
+class RTree:
+    # Give initial size of R-Tree
+    # Creates root node
+    def __init__(self, latitude1, longitude1, latitude2, longitude2, maxPoints): # 1 = bottom left corner, 2 = top right corner
+        bL = [longitude1, latitude1] # Bottom left corner (X,Y)
+        tR = [longitude2, latitude2] # Top right corner (X,Y)
+
+        self.maxPoints = maxPoints # Max points before decomposition
+        self.root = Node(bL, tR, root = 1) # Create root node
+
+
+
+
+
+
+
+
+
+
+
+
 
 def main():
-    # Initialize Quadtree
-    rtree = RTree(0,0,10,10)
 
-    # # Children of quadtree
-    # children = quadtree.arrayOfChildren  
+
+
+
+
+    # # Initialize R-Tree
+    # rtree = RTree(0,0,10,10, 1)
     
+    # point1 = Point(1,1,1,1,2,3)
+    # point2 = Point(1,2,1,2,2,3)
+    # point3 = Point(1,3,1,3,1,1)
+    # point4 = Point(1,4,1,1,1,1)
 
-    
-    # Print children
-    # for kids in children:
-    #     kids.getTopCoords
-    #     kids.getBottomCoords
 
-    #     print(str(kids.getTopCoords)) 
 
-    point1 = Point(4.5,1)
-    point2 = Point(4.5,2)
-    point3 = Point(4.5,3)
-    point4 = Point(4.5,4)
 
-    points = [point1, point2, point3, point4]
 
-    bottomLeft_X = points[0].getLong() - 0.5
-    bottomLeft_Y = points[0].getLat() - 0.5
-    topRight_X = points[3].getLong() + 0.5
-    topRight_Y = points[3].getLat() + 0.5
+### Query
 
-    boundingBox = CylinderBoundingBox(points, bottomLeft_X, bottomLeft_Y, topRight_X, topRight_Y)
-    
-    rtree.insert(boundingBox)
+
+### Delete
+
+
+### Update
+
+
+
     x = 1
 
-    ## plotting
 
-    bottomCoords = rtree.getBottomCoords()
-    topCoords = rtree.getTopCoords()
-
-
-    # plotting as dots
-    # plt.plot(bottomCoords[0],bottomCoords[1], 'bo')
-    # plt.plot(bottomCoords[2],bottomCoords[3], 'bo')
-    # plt.plot(topCoords[0],topCoords[1], 'bo')
-    # plt.plot(topCoords[2],topCoords[3], 'bo')
-
-    # plotting as line
-    plt.plot([bottomCoords[1],bottomCoords[0]], [bottomCoords[3],bottomCoords[2]], 'b')
-    plt.plot([bottomCoords[3],bottomCoords[2]], [topCoords[3],topCoords[2] ], 'b')
-    plt.plot([bottomCoords[2],bottomCoords[2]], [topCoords[0],topCoords[3]], 'b')
-    plt.plot([bottomCoords[2],bottomCoords[0]], [topCoords[0],topCoords[0]], 'b')
-
-    # plt.plot([10,0], [0,0], 'b')
-    # plt.plot([10,10], [0,10], 'b')
-    
-
-
-    bottomCoords = boundingBox.getBottomCoords()
-    topCoords = boundingBox.getTopCoords()
-
-    plt.plot(bottomCoords[0],bottomCoords[1], 'ro')
-    plt.plot(bottomCoords[2],bottomCoords[3], 'ro')
-    plt.plot(topCoords[0],topCoords[1], 'ro')
-    plt.plot(topCoords[2],topCoords[3], 'ro')
-
-    # plt.plot([bottomCoords[1],bottomCoords[0]], [bottomCoords[3],bottomCoords[2]], 'r')
-    # plt.plot([bottomCoords[3],bottomCoords[2]], [topCoords[3],topCoords[2] ], 'r')
-    # plt.plot([bottomCoords[2],bottomCoords[2]], [topCoords[0],topCoords[3]], 'r')
-    # plt.plot([bottomCoords[2],bottomCoords[0]], [topCoords[0],topCoords[0]], 'r')
-
-    # plt.plot([2,0], [10,8], 'r')
-    # plt.plot([2,0], [10,8], 'r')
-    # plt.plot([2,0], [10,8], 'r')
-    # plt.plot([2,0], [10,8], 'r')
-
-
-
-
-    x = []
-    y = []
-    for points in boundingBox.getPoints():
-        # x.append(points.getLong())
-        # y.append(points.getLat())
-        plt.plot(points.getLong(),points.getLat(), 'ko')
-
-    plt.ylabel('Y-Axis (Meters)')
-    plt.xlabel('X-Axis (Meters)')
-
-    plt.title('R-Tree With A Single Leaf Node')
-
-    # plt.plot(0,10, 'bo')
 
     
-
-
-
-
-    plt.show
 
 
 if __name__ == "__main__":
     # execute only if run as a script
     main()  
-
-
-
-#%%
-import matplotlib.pyplot as plt
