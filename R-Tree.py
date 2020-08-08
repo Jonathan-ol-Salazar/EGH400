@@ -106,6 +106,8 @@ class Point:
             print("Input must be of type 'int' ")
             return 0 # Failed
 
+
+# Class for node in R-Tree
 class Node:
     # New nodes will be type Leaf and store no points
     def __init__(self, bL, tR, points={}, children=[], root=0, parent = None): 
@@ -167,6 +169,29 @@ class Node:
         return self.root
 
 
+# Class for object in R-Tree. Represents a flight plan, which is a set of points
+class Object:
+    def __init__(self, latitude1, longitude1, latitude2, longitude2, points = []):
+        bL = [longitude1, latitude1] # Bottom left corner (X,Y)
+        tR = [longitude2, latitude2] # Top right corner (X,Y)
+        self.points = points
+
+
+
+    def setPoint(self, point):
+        self.points.append(point)
+
+    def getPoint(self, point):
+        if point in self.points:
+            return point
+
+        return None
+        
+    def removePoint(self, point):
+        if self.getPoint(point) != None:
+            self.points.remove(point)
+            return 1
+        return None
 
 
 
