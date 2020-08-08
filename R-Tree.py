@@ -106,74 +106,11 @@ class Point:
             print("Input must be of type 'int' ")
             return 0 # Failed
 
-
-# Class for node in R-Tree
-class Node:
-    # New nodes will be type Leaf and store no points
-    def __init__(self, bL, tR, points={}, children=[], root=0, parent = None): 
-        self.points = points
-        self.children = children
-        self.root = root
-        self.bL = bL
-        self.tR = tR
-        self.parent = parent
-
-
-
-    # Add a single points to points dict
-    def setPoint(self, newPoint):
-       
-        key = (newPoint.getLong(), newPoint.getLat())
-
-        if key in self.points.keys():
-            self.points[key].append(newPoint)
-        else:
-            self.points[key] = [newPoint]
-        
-    # Replace existing points dict
-    def setPoints(self, newPointDict):
-        self.points = newPointDict
-
-    def getNumPoints(self):
-        return len(self.points)
-
-    def getCoords(self):
-        return self.bL, self.tR
-
-    def getPoints(self):
-        return self.points
-    
-    def getParent(self):
-        return self.parent
-
-    def setChildren(self, children):
-        self.children = children
-
-    def getChildren(self):
-        return self.children
-
-    def purgePoints(self):
-        self.points = {}
-     
-    def purgeChildren(self):
-        self.children = []
-
-    def removePoint(self, point):
-        key = (point.getLong(), point.getLat())
-        self.points[key].remove(point)
-
-        if len(self.points[key]) == 0:
-            self.points.pop(key)
-    
-    def isRoot(self):
-        return self.root
-
-
-# Class for object in R-Tree. Represents a flight plan, which is a set of points
+# Class for object in R-Tree. Represents a flight plan, which is a set of points. This can be though of as a MINIMUM BOUNDING BOX
 class Object:
     def __init__(self, latitude1, longitude1, latitude2, longitude2, points = []):
-        bL = [longitude1, latitude1] # Bottom left corner (X,Y)
-        tR = [longitude2, latitude2] # Top right corner (X,Y)
+        self.bL = (longitude1, latitude1) # Bottom left corner (X,Y)
+        self.tR = (longitude2, latitude2) # Top right corner (X,Y)
         self.points = points
 
 
@@ -184,14 +121,80 @@ class Object:
     def getPoint(self, point):
         if point in self.points:
             return point
-
         return None
+
+    def getCoords(self):
+        return (self.bL, self.tR)
         
     def removePoint(self, point):
         if self.getPoint(point) != None:
             self.points.remove(point)
             return 1
         return None
+
+
+# Class for node in R-Tree. Contains Leaf nodes or Objects
+class Node:
+    # New nodes will be type Leaf and store no objects
+    def __init__(self, bL, tR, fanout, objects={}, children=[], root=0, parent = None): 
+        self.objects = objects
+        self.children = children
+        self.root = root
+        self.bL = bL
+        self.tR = tR
+        self.parent = parent
+
+
+
+    # Add a single objects to objects dict
+    def setObject(self, newObject):
+       
+        key = newObject.getCoords()
+
+        if key in self.objects.keys():
+            self.objects[key].append(newObject)
+        else:
+            self.objects[key] = [newObject]
+        
+    # Replace existing objects dict
+    def setObjects(self, newPointDict):
+        self.objects = newPointDict
+
+    def getNumObjects(self):
+        return len(self.objects)
+
+    def getCoords(self):
+        return self.bL, self.tR
+
+    def getObjects(self):
+        return self.objects
+    
+    def getParent(self):
+        return self.parent
+
+    def setChildren(self, children):
+        self.children = children
+
+    def getChildren(self):
+        return self.children
+
+    def purgeObjects(self):
+        self.objects = {}
+     
+    def purgeChildren(self):
+        self.children = []
+
+    def removeObjects(self, point):
+        key = (point.getLong(), point.getLat())
+        self.objects[key].remove(point)
+
+        if len(self.objects[key]) == 0:
+            self.objects.pop(key)
+    
+    def isRoot(self):
+        return self.root
+
+
 
 
 
@@ -202,14 +205,63 @@ class Object:
 class RTree:
     # Give initial size of R-Tree
     # Creates root node
-    def __init__(self, latitude1, longitude1, latitude2, longitude2, maxPoints): # 1 = bottom left corner, 2 = top right corner
+    def __init__(self, longitude1, latitude1, longitude2, latitude2, fanout): # 1 = bottom left corner, 2 = top right corner
         bL = [longitude1, latitude1] # Bottom left corner (X,Y)
         tR = [longitude2, latitude2] # Top right corner (X,Y)
 
-        self.maxPoints = maxPoints # Max points before decomposition
-        self.root = Node(bL, tR, root = 1) # Create root node
+        self.fanout = fanout # Max points before decomposition. FANOUT
+        self.root = Node(bL, tR, fanout, root = 1) # Create root node
 
 
+
+    # Traverse tree to find node with given object
+    def traverseNode(self, node, object):
+        result = None
+
+        if node.isRoot() and len(node.getChildren()) == 0:
+            return node
+
+        # Return if node has no children or points
+        if len(node.getChildren()) <= 0 and len(node.getObjects()) <= 0 or len(node.getChildren()) <= 0 and object not in node.getObjects():
+            return  # Return None
+
+        # Loop through all children of current node
+        for child in node.getChildren():
+            bottomLeftObject = object.getCoords()[0]
+            topRightObject = object.getCoords()[1]
+            bottomLeftNode = child.getCoords()[0]     # Bottom left coords of node
+            topRightNode = child.getCoords()[1]       # Top right coords of node
+
+            # Check if point is within child
+            if bottomLeftNode[0] <= bottomLeftObject[0] and bottomLeftNode[1] <= bottomLeftObject[1] and topRightNode[0] >= topRightObject[0] and topRightNode[1] >= topRightNode[1]:
+                # Check if child has children
+                if len(child.getChildren()) == 0:
+                    return child    # Return node
+                else:
+                    result = self.traverseNode(child, object)  # Recurse method again with child node
+
+        return result # Return node
+
+
+    # Insert object into a node
+    def Insert(self, object):
+
+        # Check if object exists
+        
+        # if object doesn't exist, add to node or make one
+        if len(self.root.getChildren()) == 0:
+            # Create new leaf node with object 
+            newChild = Node(object.getCoords()[0], object.getCoords()[1], self.fanout, objects=object, parent=self.root)
+            # Add leaf node to root
+            self.root.setChildren(newChild)
+        else:
+            # Find leaf node
+            node = self.traverseNode(self.root, object)
+            # Check if there is a node
+            if node != None:
+                # Add object to node 
+                node.setObject(object)
+            
 
 
 
@@ -225,16 +277,23 @@ def main():
 
 
 
-
-
     # # Initialize R-Tree
-    # rtree = RTree(0,0,10,10, 1)
+    rtree = RTree(0,0,1000,1000, 4)
     
-    # point1 = Point(1,1,1,1,2,3)
-    # point2 = Point(1,2,1,2,2,3)
-    # point3 = Point(1,3,1,3,1,1)
-    # point4 = Point(1,4,1,1,1,1)
+    point1 = Point(1,1,1,1,2,3)
+    point2 = Point(1,2,1,2,2,3)
+    point3 = Point(1,3,1,3,1,1)
+    point4 = Point(1,4,1,4,1,1)
 
+
+    f1Points = [point1,point2,point3,point4]    # List of points
+    start = (point1.getLong(), point1.getLat()) # Start coords
+    end = (point4.getLong(), point4.getLat())   # End coords
+
+
+    f1 = Object(start[0], start[1], end[0], end[1], f1Points)   # Object with points
+
+    rtree.Insert(f1)
 
 
 
