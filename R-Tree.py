@@ -173,7 +173,7 @@ class Node:
         return self.parent
 
     def setChildren(self, children):
-        self.children = children
+        self.children.append(children)
 
     def getChildren(self):
         return self.children
@@ -243,9 +243,65 @@ class RTree:
         return result # Return node
 
 
+    def linearSplit(self, node):
+        # Find objects that are furthest apart
+        # Create node
+        # Randomly assign objects to each node via requiring the least enlargement
+            # Find the area of the current nodes
+            # Compare which one will increase the least from adding new object
+        
+        objects = node.getObjects()
+        # Get keys, which are tuples of coords
+        keys = objects.keys()
+        # Loop through all the keys and find the min and max for both axis
+        minX = None
+        maxX = None
+        minY = None
+        maxY = None
+        start = True
+
+        # X-axis
+        for i, key in enumerate(keys):
+            min = 0
+            max = 0
+            valueX = key[i][0]
+
+            if start == True:
+                minX = key
+                maxX = key
+            elif valueX < minX:   # value is less than the current minimum
+                minX = key
+            elif valueX > maxX:   # value is greater than the current maximum
+                maxX = key
+        
+            # What happens with ties?
+
+        # Y-axis
+        for i, key in enumerate(keys):
+            min = 0
+            max = 0
+            valueX = key[i][1]
+
+            if start == True:
+                minX = key
+                maxX = key
+            elif valueX < minX:   # value is less than the current minimum
+                minX = key
+            elif valueX > maxX:   # value is greater than the current maximum
+                maxX = key
+        
+            # What happens with ties?
+
+
+        x = 1
+        # pass 
+
+
+
     # Insert object into a node
     def Insert(self, object):
-
+        node = self.root
+        result = 0
         # Check if object exists
         
         # if object doesn't exist, add to node or make one
@@ -253,7 +309,8 @@ class RTree:
             # Create new leaf node with object 
             newChild = Node(object.getCoords()[0], object.getCoords()[1], self.fanout, objects=object, parent=self.root)
             # Add leaf node to root
-            self.root.setChildren(newChild)
+            node.setChildren(newChild)
+            result = 1
         else:
             # Find leaf node
             node = self.traverseNode(self.root, object)
@@ -262,11 +319,14 @@ class RTree:
                 # Add object to node 
                 node.setObject(object)
             
+                # Check if node is too big, if so split it
+                if node.getChildren() > self.fanout:
+                    self.linearSplit(node)
 
 
+        node = self.traverseNode(self.root, object)
 
-
-
+        self.linearSplit(node)
 
 
 
