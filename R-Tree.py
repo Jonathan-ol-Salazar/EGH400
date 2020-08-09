@@ -108,10 +108,11 @@ class Point:
 
 # Class for object in R-Tree. Represents a flight plan, which is a set of points. This can be though of as a MINIMUM BOUNDING BOX
 class Object:
-    def __init__(self, latitude1, longitude1, latitude2, longitude2, points = []):
+    def __init__(self, latitude1, longitude1, latitude2, longitude2, orientation, points = []):
         self.bL = (longitude1, latitude1) # Bottom left corner (X,Y)
         self.tR = (longitude2, latitude2) # Top right corner (X,Y)
         self.points = points
+        self.orientation = orientation
 
 
 
@@ -125,6 +126,9 @@ class Object:
 
     def getCoords(self):
         return (self.bL, self.tR)
+
+    def getOrientation(self):
+        return self.orientation
         
     def removePoint(self, point):
         if self.getPoint(point) != None:
@@ -155,7 +159,7 @@ class Node:
         if key in self.objects.keys():
             self.objects[key].append(newObject)
         else:
-            self.objects[key] = [newObject]
+            self.objects[key] = newObject
         
     # Replace existing objects dict
     def setObjects(self, newPointDict):
@@ -343,10 +347,14 @@ class RTree:
     def createObject(self, points):
         start = (points[0].getLong(), points[0].getLat()) # Start coords
         end = (points[-1].getLong(), points[-1].getLat())   # End coords
-        object = Object(start[0], start[1], end[0], end[1], points)   # Object with points
 
-        return object
+        if points[0].getLat() == points[-1].getLat():
+            return Object(start[0], start[1], end[0], end[1], 1, points=points)   # Object with points, Horizontal, Y-axis the same
+        else:
+            return Object(start[0], start[1], end[0], end[1], 0, points=points)   # Object with points, Vertical, X-Axis the same
 
+
+        return None
 
 def main():
 
