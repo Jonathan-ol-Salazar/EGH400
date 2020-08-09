@@ -143,6 +143,7 @@ class Node:
         self.bL = bL
         self.tR = tR
         self.parent = parent
+        self.fanout = fanout
 
 
 
@@ -164,7 +165,7 @@ class Node:
         return len(self.objects)
 
     def getCoords(self):
-        return self.bL, self.tR
+        return (self.bL, self.tR)
 
     def getObjects(self):
         return self.objects
@@ -172,8 +173,10 @@ class Node:
     def getParent(self):
         return self.parent
 
-    def setChildren(self, children):
-        self.children.append(children)
+    def setChildren(self, child):
+        addChild = self.children + [child]
+        self.children = addChild
+
 
     def getChildren(self):
         return self.children
@@ -244,7 +247,7 @@ class RTree:
 
 
     def linearSplit(self, node):
-        # Find objects that are furthest apart
+        # Find objects that are furthest apart along both axis
         # Create node
         # Randomly assign objects to each node via requiring the least enlargement
             # Find the area of the current nodes
@@ -259,22 +262,53 @@ class RTree:
         minY = None
         maxY = None
         start = True
+        xDifference = 0
+        yDifference = 0
+
+        # X-axis
+        # for i, key in enumerate(keys):
+            # min = 0
+            # max = 0
+            # valueX = key[i][0]
+
+            # if start == True:
+            #     minX = key
+            #     maxX = key
+            # elif valueX < minX:   # value is less than the current minimum
+            #     minX = key
+            # elif valueX > maxX:   # value is greater than the current maximum
+            #     maxX = key
+        
+            # What happens with ties?
+
 
         # X-axis
         for i, key in enumerate(keys):
-            min = 0
-            max = 0
-            valueX = key[i][0]
+
+            valueX = key[i][0]  # X value
 
             if start == True:
                 minX = key
                 maxX = key
+                start = False
             elif valueX < minX:   # value is less than the current minimum
                 minX = key
+                xDifference = maxX - minX
             elif valueX > maxX:   # value is greater than the current maximum
                 maxX = key
-        
-            # What happens with ties?
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         # Y-axis
         for i, key in enumerate(keys):
@@ -299,7 +333,7 @@ class RTree:
 
 
     # Insert object into a node
-    def Insert(self, object):
+    def Insert(self, x):
         node = self.root
         result = 0
         # Check if object exists
@@ -307,7 +341,7 @@ class RTree:
         # if object doesn't exist, add to node or make one
         if len(self.root.getChildren()) == 0:
             # Create new leaf node with object 
-            newChild = Node(object.getCoords()[0], object.getCoords()[1], self.fanout, objects=object, parent=self.root)
+            newChild = Node(x.getCoords()[0], x.getCoords()[1], self.fanout, objects=x)
             # Add leaf node to root
             node.setChildren(newChild)
             result = 1
