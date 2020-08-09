@@ -112,7 +112,7 @@ class Object:
         self.bL = (longitude1, latitude1) # Bottom left corner (X,Y)
         self.tR = (longitude2, latitude2) # Top right corner (X,Y)
         self.points = points
-        self.orientation = orientation
+        self.orientation = orientation # 0 = Horizontal, 1 = Vertical
 
 
 
@@ -269,48 +269,56 @@ class RTree:
         maximumX = None
         minimumY = None
         maximumY = None
-        start = True
+        startX = True
+        startY = True
 
 
-        # X-axis
+        # X-axis, Vertical (1)
         for key in keys:
-            valueX = key[0][0]
-            if start == True:
-                minX = valueX
-                maxX = valueX
-                minimumX = key
-                maximumX = key
-                start = False
-            elif valueX < minX:   # value is less than the current minimum
-                minX = valueX
-                minimumX = key
-            elif valueX > maxX:   # value is greater than the current maximum
-                maxX = valueX
-                maximumX = key
+            if objects[key].getOrientation() == 1:
+
+                valueX = key[0][0]
+                if startX == True:
+                    minX = valueX
+                    maxX = valueX
+                    minimumX = key
+                    maximumX = key
+                    startX = False
+                elif valueX < minX:   # value is less than the current minimum
+                    minX = valueX
+                    minimumX = key
+                elif valueX > maxX:   # value is greater than the current maximum
+                    maxX = valueX
+                    maximumX = key
         
-        start = True
-        # Y-axis
+
+        # Y-axis, Horizontal (0)
         for key in keys:
-            valueY = key[0][1]
-            if start == True:
-                minY = valueY
-                maxY = valueY
-                minimumY = key
-                maximumY = key
-                start = False
-            elif valueY < minY:   # value is less than the current minimum
-                minY = valueY
-                minimumY = key
-            elif valueY > maxY:   # value is greater than the current maximum
-                maxY = valueY
-                maximumY = key
+            if objects[key].getOrientation() == 0:
+                valueY = key[0][1]
+                if startY == True:
+                    minY = valueY
+                    maxY = valueY
+                    minimumY = key
+                    maximumY = key
+                    startY = False
+                elif valueY < minY:   # value is less than the current minimum
+                    minY = valueY
+                    minimumY = key
+                elif valueY > maxY:   # value is greater than the current maximum
+                    maxY = valueY
+                    maximumY = key
 
-    
-        if (maxY-minY) > (maxX - minX):
-           return (maximumY, minimumY)
+        if startX == True:
+            return (maximumY, minimumY)     # If X-axis wasn't used
+        elif startY == True:
+            return (maximumX, minimumX)     # If Y-axis wasn't used
+        elif (maxY-minY) > (maxX - minX):
+            return (maximumY, minimumY)     # If Y gap larger than X
+        elif (maxY-minY) > (maxX - minX):
+            return (maximumX, minimumX)     # If X gap larger than Y
         else:
-            return (maximumX, minimumX)
-
+            return None
 
 
 
