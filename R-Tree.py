@@ -261,79 +261,57 @@ class RTree:
         maxX = None
         minY = None
         maxY = None
+        minimumX = None
+        maximumX = None
+        minimumY = None
+        maximumY = None
         start = True
-        xDifference = 0
-        yDifference = 0
-
-        # X-axis
-        # for i, key in enumerate(keys):
-            # min = 0
-            # max = 0
-            # valueX = key[i][0]
-
-            # if start == True:
-            #     minX = key
-            #     maxX = key
-            # elif valueX < minX:   # value is less than the current minimum
-            #     minX = key
-            # elif valueX > maxX:   # value is greater than the current maximum
-            #     maxX = key
-        
-            # What happens with ties?
 
 
         # X-axis
-        for i, key in enumerate(keys):
-
-            valueX = key[i][0]  # X value
-
+        for key in keys:
+            valueX = key[0][0]
             if start == True:
-                minX = key
-                maxX = key
+                minX = valueX
+                maxX = valueX
+                minimumX = key
+                maximumX = key
                 start = False
             elif valueX < minX:   # value is less than the current minimum
-                minX = key
-                xDifference = maxX - minX
+                minX = valueX
+                minimumX = key
             elif valueX > maxX:   # value is greater than the current maximum
-                maxX = key
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        # Y-axis
-        for i, key in enumerate(keys):
-            min = 0
-            max = 0
-            valueX = key[i][1]
-
-            if start == True:
-                minX = key
-                maxX = key
-            elif valueX < minX:   # value is less than the current minimum
-                minX = key
-            elif valueX > maxX:   # value is greater than the current maximum
-                maxX = key
+                maxX = valueX
+                maximumX = key
         
-            # What happens with ties?
+        start = True
+        # Y-axis
+        for key in keys:
+            valueY = key[0][1]
+            if start == True:
+                minY = valueY
+                maxY = valueY
+                minimumY = key
+                maximumY = key
+                start = False
+            elif valueY < minY:   # value is less than the current minimum
+                minY = valueY
+                minimumY = key
+            elif valueY > maxY:   # value is greater than the current maximum
+                maxY = valueY
+                maximumY = key
 
+    
+        if (maxY-minY) > (maxX - minX):
+           return (maximumY, minimumY)
+        else:
+            return (maximumX, minimumX)
 
-        x = 1
-        # pass 
 
 
 
     # Insert object into a node
-    def Insert(self, x):
+    def Insert(self, object):
         node = self.root
         result = 0
         # Check if object exists
@@ -341,7 +319,7 @@ class RTree:
         # if object doesn't exist, add to node or make one
         if len(self.root.getChildren()) == 0:
             # Create new leaf node with object 
-            newChild = Node(x.getCoords()[0], x.getCoords()[1], self.fanout, objects=x)
+            newChild = Node(object.getCoords()[0], object.getCoords()[1], self.fanout, objects={object.getCoords():object})
             # Add leaf node to root
             node.setChildren(newChild)
             result = 1
@@ -354,17 +332,20 @@ class RTree:
                 node.setObject(object)
             
                 # Check if node is too big, if so split it
-                if node.getChildren() > self.fanout:
+                if len(node.getObjects()) > self.fanout:
                     self.linearSplit(node)
 
 
-        node = self.traverseNode(self.root, object)
+        # node = self.traverseNode(self.root, object)
 
-        self.linearSplit(node)
+        # self.linearSplit(node)
 
+    def createObject(self, points):
+        start = (points[0].getLong(), points[0].getLat()) # Start coords
+        end = (points[-1].getLong(), points[-1].getLat())   # End coords
+        object = Object(start[0], start[1], end[0], end[1], points)   # Object with points
 
-
-
+        return object
 
 
 def main():
@@ -378,16 +359,51 @@ def main():
     point2 = Point(1,2,1,2,2,3)
     point3 = Point(1,3,1,3,1,1)
     point4 = Point(1,4,1,4,1,1)
-
-
     f1Points = [point1,point2,point3,point4]    # List of points
-    start = (point1.getLong(), point1.getLat()) # Start coords
-    end = (point4.getLong(), point4.getLat())   # End coords
+
+    point1 = Point(2,1,2,1,2,3)
+    point2 = Point(2,2,2,2,2,3)
+    point3 = Point(2,3,2,3,1,1)
+    point4 = Point(2,4,2,4,1,1)
+    f2Points = [point1,point2,point3,point4]    # List of points
+
+    point1 = Point(3,1,3,1,2,3)
+    point2 = Point(3,2,3,2,2,3)
+    point3 = Point(3,3,3,3,1,1)
+    point4 = Point(3,4,3,4,1,1)
+    f3Points = [point1,point2,point3,point4]    # List of points
+
+    point1 = Point(4,1,4,1,2,3)
+    point2 = Point(4,2,4,2,2,3)
+    point3 = Point(4,3,4,3,1,1)
+    point4 = Point(4,4,4,4,1,1)
+    f4Points = [point1,point2,point3,point4]    # List of points
+
+    point1 = Point(5,1,5,1,2,3)
+    point2 = Point(5,2,5,2,2,3)
+    point3 = Point(5,3,5,3,1,1)
+    point4 = Point(5,4,5,4,1,1)
+    f5Points = [point1,point2,point3,point4]    # List of points
 
 
-    f1 = Object(start[0], start[1], end[0], end[1], f1Points)   # Object with points
+
+
+
+    f1 = rtree.createObject(f1Points)
+    f2 = rtree.createObject(f2Points)
+    f3 = rtree.createObject(f3Points)
+    f4 = rtree.createObject(f4Points)
+    f5 = rtree.createObject(f5Points)
+
+
 
     rtree.Insert(f1)
+    rtree.Insert(f2)
+    rtree.Insert(f3)
+    rtree.Insert(f4)
+    rtree.Insert(f5)
+
+
 
 
 
