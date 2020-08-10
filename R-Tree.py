@@ -4,6 +4,7 @@ import datetime
 
 # Main R-Tree file containing classes: Rtree, Point and Node
 
+FANOUT = 2
 
 
 # Class for point in R-Tree
@@ -141,7 +142,7 @@ class Object:
 # Class for node in R-Tree. Contains Leaf nodes or Objects
 class Node:
     # New nodes will be type Leaf and store no objects
-    def __init__(self, bL, tR, fanout=4, objects={}, children={}, root=0, parent = None): 
+    def __init__(self, bL, tR, fanout=FANOUT, objects={}, children={}, root=0, parent = None): 
         self.objects = objects
         self.children = children
         self.root = root
@@ -151,6 +152,8 @@ class Node:
         self.fanout = fanout
 
 
+    def setRoot(self, root):
+        self.root = root
 
     # Add a single objects to objects dict
     def setObject(self, newObject):
@@ -231,6 +234,10 @@ class Node:
     def getChildren(self):
         return self.children
 
+
+    def setParent(self, parent):
+        self.parent = parent
+
     def purgeObjects(self):
         self.objects = {}
      
@@ -285,8 +292,8 @@ class Node:
         y2 = 0
         start = True
         for item in self.children:
-            bL = item.getCoords()[0]
-            tR = item.getCoords()[1]
+            bL = item[0]
+            tR = item[1]
 
             if start == True:
                 x1 = bL[0]
@@ -382,6 +389,22 @@ class RTree:
             elif valueX > maxX:   # value is greater than the current maximum
                 maxX = valueX
                 maximumX = key
+
+        # Y-axis, Horizontal (0)
+        for key in keys:
+            valueY = key[0][1]
+            if startY == True:
+                minY = valueY
+                maxY = valueY
+                minimumY = key
+                maximumY = key
+                startY = False
+            elif valueY < minY:   # value is less than the current minimum
+                minY = valueY
+                minimumY = key
+            elif valueY > maxY:   # value is greater than the current maximum
+                maxY = valueY
+                maximumY = key
     
         # Decide which gap is bigger on which axis
         if startX == True:
@@ -390,7 +413,7 @@ class RTree:
             return (children[maximumX], children[minimumX])     # If Y-axis wasn't used
         elif (maxY-minY) > (maxX - minX):
             return (children[maximumY], children[minimumY])     # If Y gap larger than X
-        elif (maxY-minY) > (maxX - minX):
+        elif (maxY-minY) < (maxX - minX):
             return (children[maximumX], children[minimumX])     # If X gap larger than Y
         else:
             return None
@@ -461,7 +484,7 @@ class RTree:
             return (objects[maximumX], objects[minimumX])     # If Y-axis wasn't used
         elif (maxY-minY) > (maxX - minX):
             return (objects[maximumY], objects[minimumY])     # If Y gap larger than X
-        elif (maxY-minY) > (maxX - minX):
+        elif (maxY-minY) < (maxX - minX):
             return (objects[maximumX], objects[minimumX])     # If X gap larger than Y
         else:
             return None
@@ -481,8 +504,54 @@ class RTree:
             # INTERNAL NODE SPLIT
             seeds = self.findSeedsInternal(node)
 
+            # Check if seeds were found
+            if seeds == None:
+                return 0 # THIS MEANS NO SEEDS WERE FOUND
+        
+            # Get parent
+            parent = node.getParent()
+
+            if parent == None and node.isRoot() == 1:
+                newRoot = Node(node.getCoords()[0], node.getCoords()[1], children={node.getCoords():node}, root=1)
+                node.setRoot(0)
+                node.setParent(newRoot)
+                parent = newRoot
+                self.root = newRoot
+
+            # Assign current nodes objects to placeholder
+            children = node.getChildren()
+
+            # Remove seeds from placeholder
+            children.pop(seeds[0].getCoords())
+            children.pop(seeds[1].getCoords())
 
 
+            # Clear the current nodes objects
+            node.purgeChildren()
+
+            # Assign seeds
+            node.setChildren(seeds[0])
+
+            
+            # Create new node and add to parent
+            newNode = Node(seeds[1].getCoords()[0], seeds[1].getCoords()[1], children={seeds[1].getCoords():seeds[1]}, parent=parent)
+            
+           
+                
+            
+            parent.setChildren(newNode)
+
+            # Assign remaining objects based on least enlargement
+            for item in children:
+                if self.findEnlargement(node,item) > self.findEnlargement(newNode, item):
+                    newNode.setChildren(children[item])
+                elif self.findEnlargement(node,item) == self.findEnlargement(newNode, item):
+                    if node.getArea() > newNode.getArea():
+                        newNode.setChildren(children[item])
+                    else:
+                        node.setChildren(children[item])
+                else:
+                    node.setChildren(children[item])
 
         else:
 
@@ -530,9 +599,9 @@ class RTree:
                     node.setObject(objects[item])
 
 
-            # Check if parent needs a split
-        # if 
-
+        # Check if parent needs a split
+        if len(parent.getChildren()) > node.getFanout():
+            self.linearSplit(parent)
 
 
 
@@ -627,7 +696,7 @@ def main():
 
 
     # # Initialize R-Tree
-    rtree = RTree(0,0,1000,1000, 4)
+    rtree = RTree(0,0,1000,1000, FANOUT)
     
     point1 = Point(1,1,1,1,2,3)
     point2 = Point(1,2,1,2,2,3)
