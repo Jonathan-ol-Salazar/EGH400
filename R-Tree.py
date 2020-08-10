@@ -162,6 +162,18 @@ class Node:
         else:
             self.objects[key] = newObject
         
+
+        # Find parent to change the key to this node
+        # self.parent.getChildren()[self.findAreaObjects()] = self.parent.getChildren().pop(key)
+        if self in self.parent.getChildren().values():
+            self.parent.getChildren()[self.findAreaObjects()] = self.parent.getChildren().pop((self.bL, self.tR))
+
+        # Set new coords
+        self.bL, self.tR = self.findAreaObjects()
+
+
+
+
     # Replace existing objects dict
     def setObjects(self, newPointDict):
         self.objects = newPointDict
@@ -223,7 +235,7 @@ class Node:
         self.objects = {}
      
     def purgeChildren(self):
-        self.children = []
+        self.children = {}
 
     def removeObjects(self, point):
         key = (point.getLong(), point.getLat())
@@ -341,9 +353,9 @@ class RTree:
     # Find the internal nodes that are the furthest apart
     def findSeedsInternal(self,node):
 
-        objects = node.getObjects()
+        children = node.getChildren()
         # Get keys, which are tuples of coords
-        keys = objects.keys()
+        keys = children.keys()
         # Loop through all the keys and find the min and max for both axis
         minX = None
         maxX = None
@@ -356,56 +368,34 @@ class RTree:
         startX = True
         startY = True
 
-
-        # X-axis, Vertical (1)
         for key in keys:
-            if objects[key].getOrientation() == 1:
-
-                valueX = key[0][0]
-                if startX == True:
-                    minX = valueX
-                    maxX = valueX
-                    minimumX = key
-                    maximumX = key
-                    startX = False
-                elif valueX < minX:   # value is less than the current minimum
-                    minX = valueX
-                    minimumX = key
-                elif valueX > maxX:   # value is greater than the current maximum
-                    maxX = valueX
-                    maximumX = key
-        
-
-        # Y-axis, Horizontal (0)
-        for key in keys:
-            if objects[key].getOrientation() == 0:
-                valueY = key[0][1]
-                if startY == True:
-                    minY = valueY
-                    maxY = valueY
-                    minimumY = key
-                    maximumY = key
-                    startY = False
-                elif valueY < minY:   # value is less than the current minimum
-                    minY = valueY
-                    minimumY = key
-                elif valueY > maxY:   # value is greater than the current maximum
-                    maxY = valueY
-                    maximumY = key
-
-
+            valueX = key[0][0]
+            if startX == True:
+                minX = valueX
+                maxX = valueX
+                minimumX = key
+                maximumX = key
+                startX = False
+            elif valueX < minX:   # value is less than the current minimum
+                minX = valueX
+                minimumX = key
+            elif valueX > maxX:   # value is greater than the current maximum
+                maxX = valueX
+                maximumX = key
+    
         # Decide which gap is bigger on which axis
         if startX == True:
-            return (objects[maximumY], objects[minimumY])     # If X-axis wasn't used
+            return (children[maximumY], children[minimumY])     # If X-axis wasn't used
         elif startY == True:
-            return (objects[maximumX], objects[minimumX])     # If Y-axis wasn't used
+            return (children[maximumX], children[minimumX])     # If Y-axis wasn't used
         elif (maxY-minY) > (maxX - minX):
-            return (objects[maximumY], objects[minimumY])     # If Y gap larger than X
+            return (children[maximumY], children[minimumY])     # If Y gap larger than X
         elif (maxY-minY) > (maxX - minX):
-            return (objects[maximumX], objects[minimumX])     # If X gap larger than Y
+            return (children[maximumX], children[minimumX])     # If X gap larger than Y
         else:
             return None
 
+        x=1
 
 
     # Find the objects that are the furthest apart
@@ -525,7 +515,7 @@ class RTree:
             
             # Create new node and add to parent
             newNode = Node(seeds[1].getCoords()[0], seeds[1].getCoords()[1], objects={seeds[1].getCoords():seeds[1]}, parent=parent)
-
+            parent.setChildren(newNode)
 
             # Assign remaining objects based on least enlargement
             for item in objects:
@@ -541,7 +531,7 @@ class RTree:
 
 
             # Check if parent needs a split
-    
+        # if 
 
 
 
