@@ -1,6 +1,7 @@
 import Custom_Exception
 import datetime 
 
+
 # Main R-Tree file containing classes: Rtree, Point and Node
 
 
@@ -140,7 +141,7 @@ class Object:
 # Class for node in R-Tree. Contains Leaf nodes or Objects
 class Node:
     # New nodes will be type Leaf and store no objects
-    def __init__(self, bL, tR, fanout, objects={}, children=[], root=0, parent = None): 
+    def __init__(self, bL, tR, fanout=4, objects={}, children=[], root=0, parent = None): 
         self.objects = objects
         self.children = children
         self.root = root
@@ -169,7 +170,21 @@ class Node:
         return len(self.objects)
 
     def getCoords(self):
-        return (self.bL, self.tR)
+        if len(self.children) == 0:         # if current node is a leaf node, return minimum bounding box of objects
+            return self.findAreaObjects()
+        else:
+            return self.findAreaChildren()  # return MBB of children
+
+    def getArea(self):
+        x1 = self.getCoords()[0][0]
+        y1 = self.getCoords()[0][1]
+        x2 = self.getCoords()[1][0]
+        y2 = self.getCoords()[1][1]
+        
+        # Area of rectangle => L*W
+        return  abs((x2-x1)*(y2-y1))
+
+
 
     def getObjects(self):
         return self.objects
@@ -202,7 +217,62 @@ class Node:
         return self.root
 
 
+    def findAreaObjects(self):
+        # Return a tuple with area (bL, tR)
+        x1 = 0
+        y1 = 0
+        x2 = 0
+        y2 = 0
+        start = True
+        for item in self.objects.values():
+            bL = item.getCoords()[0]
+            tR = item.getCoords()[1]
 
+            if start == True:
+                x1 = bL[0]
+                y1 = bL[1]
+                x2 = tR[0]
+                y2 = tR[1]
+                start = False
+            elif bL[0] < x1:    # if object x1 < current x1
+                x1 = bL[0]
+            elif bL[1] < y1:    # if object y1 < current y1
+                y1 = bL[1]
+            elif tR[0] > x2:    # if object x2 > currnet x2
+                x2 = tR[0]
+            elif tR[1] > y2:    # if object y2 > current y2
+                y2 = tR[1]
+
+        return ((x1,y1),(x2,y2))
+         
+
+    def findAreaChildren(self):
+        # Return a tuple with area (bL, tR)
+        x1 = 0
+        y1 = 0
+        x2 = 0
+        y2 = 0
+        start = True
+        for item in self.children:
+            bL = item.getCoords()[0]
+            tR = item.getCoords()[1]
+
+            if start == True:
+                x1 = bL[0]
+                y1 = bL[1]
+                x2 = tR[0]
+                y2 = tR[1]
+                start = False
+            elif bL[0] < x1:    # if object x1 < current x1
+                x1 = bL[0]
+            elif bL[1] < y1:    # if object y1 < current y1
+                y1 = bL[1]
+            elif tR[0] > x2:    # if object x2 > currnet x2
+                x2 = tR[0]
+            elif tR[1] > y2:    # if object y2 > current y2
+                y2 = tR[1]
+
+        return ((x1,y1),(x2,y2))
 
 
 
@@ -217,7 +287,7 @@ class RTree:
         tR = [longitude2, latitude2] # Top right corner (X,Y)
 
         self.fanout = fanout # Max points before decomposition. FANOUT
-        self.root = Node(bL, tR, fanout, root = 1) # Create root node
+        self.root = Node(bL, tR, fanout=fanout, root = 1) # Create root node
 
 
 
@@ -250,13 +320,8 @@ class RTree:
         return result # Return node
 
 
-    def linearSplit(self, node):
-        # Find objects that are furthest apart along both axis
-        # Create node
-        # Randomly assign objects to each node via requiring the least enlargement
-            # Find the area of the current nodes
-            # Compare which one will increase the least from adding new object
-        
+
+    def findSeeds(self, node):
         objects = node.getObjects()
         # Get keys, which are tuples of coords
         keys = objects.keys()
@@ -309,16 +374,105 @@ class RTree:
                     maxY = valueY
                     maximumY = key
 
+
+        # Decide which gap is bigger on which axis
         if startX == True:
-            return (maximumY, minimumY)     # If X-axis wasn't used
+            return (objects[maximumY], objects[minimumY])     # If X-axis wasn't used
         elif startY == True:
-            return (maximumX, minimumX)     # If Y-axis wasn't used
+            return (objects[maximumX], objects[minimumX])     # If Y-axis wasn't used
         elif (maxY-minY) > (maxX - minX):
-            return (maximumY, minimumY)     # If Y gap larger than X
+            return (objects[maximumY], objects[minimumY])     # If Y gap larger than X
         elif (maxY-minY) > (maxX - minX):
-            return (maximumX, minimumX)     # If X gap larger than Y
+            return (objects[maximumX], objects[minimumX])     # If X gap larger than Y
         else:
             return None
+
+
+
+    def linearSplit(self, node):
+        # Find objects that are furthest apart along both axis
+        # Create node
+        # Randomly assign objects to each node via requiring the least enlargement
+            # Find the area of the current nodes
+            # Compare which one will increase the least from adding new object
+        
+        seeds = self.findSeeds(node)
+
+        # Check if seeds were found
+        if seeds == None:
+            return 0 # THIS MEANS NO SEEDS WERE FOUND
+       
+        parent = node.getParent()
+
+
+        # LEAF NODE SPLIT
+
+
+        # Assign current nodes objects to placeholder
+        objects = node.getObjects()
+
+        # Remove seeds from placeholder
+        objects.pop(seeds[0].getCoords())
+        objects.pop(seeds[1].getCoords())
+
+
+        # Clear the current nodes objects
+        node.purgeObjects()
+
+        # Assign seeds
+        node.setObject(seeds[0])
+
+        
+        # Create new node and add to parent
+        newNode = Node(seeds[1].getCoords()[0], seeds[1].getCoords()[1], objects={seeds[1].getCoords():seeds[1]})
+
+
+        # Assign remaining objects based on least enlargement
+        for item in objects:
+            if self.findEnlargement(node,item) > self.findEnlargement(newNode, item):
+                newNode.setObject(objects[item])
+            elif self.findEnlargement(node,item) == self.findEnlargement(newNode, item):
+                if node.getArea() > newNode.getArea():
+                    newNode.setObject(objects[item])
+                else:
+                    node.setObject(objects[item])
+            else:
+                node.setObject(objects[item])
+
+
+        # Check if parent needs a split
+
+        x= 1
+
+
+
+    # Find enlargement for a given node, return expect size of box
+    def findEnlargement(self, node, item):
+        x1 = node.getCoords()[0][0]
+        y1 = node.getCoords()[0][1]
+        x2 = node.getCoords()[1][0]
+        y2 = node.getCoords()[1][1]
+        
+        # Area of rectangle => L*W
+        originalArea = node.getArea()
+
+        bL = item[0]
+        tR = item[1]
+        if bL[0] < x1:    # if object x1 < current x1
+            x1 = bL[0]
+        if bL[1] < y1:    # if object y1 < current y1
+            y1 = bL[1]
+        if tR[0] > x2:    # if object x2 > currnet x2
+            x2 = tR[0]
+        if tR[1] > y2:    # if object y2 > current y2
+            y2 = tR[1]
+        
+        newArea = abs((x2-x1)*(y2-y1))
+
+        # Return area enlargement
+        return abs(newArea-originalArea)
+
+
 
 
 
@@ -331,7 +485,7 @@ class RTree:
         # if object doesn't exist, add to node or make one
         if len(self.root.getChildren()) == 0:
             # Create new leaf node with object 
-            newChild = Node(object.getCoords()[0], object.getCoords()[1], self.fanout, objects={object.getCoords():object})
+            newChild = Node(object.getCoords()[0], object.getCoords()[1], fanout=self.fanout, objects={object.getCoords():object})
             # Add leaf node to root
             node.setChildren(newChild)
             result = 1
