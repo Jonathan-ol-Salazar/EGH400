@@ -141,7 +141,7 @@ class Object:
 # Class for node in R-Tree. Contains Leaf nodes or Objects
 class Node:
     # New nodes will be type Leaf and store no objects
-    def __init__(self, bL, tR, fanout=4, objects={}, children=[], root=0, parent = None): 
+    def __init__(self, bL, tR, fanout=4, objects={}, children={}, root=0, parent = None): 
         self.objects = objects
         self.children = children
         self.root = root
@@ -192,10 +192,29 @@ class Node:
     def getParent(self):
         return self.parent
 
-    def setChildren(self, child):
-        addChild = self.children + [child]
-        self.children = addChild
+    def getFanout(self):
+        return self.fanout
 
+    def setChildren(self, child):
+        # addChild = self.children + [child]
+        # self.children = addChild
+
+
+        # dictionary -> 2 lists  (k,v)
+        # add item to lists 
+        # convert back to dictionary
+
+        keys = list(self.children.keys())
+        values = list(self.children.values())
+
+        keys = keys + [child.getCoords()]
+        values = values + [child]
+
+        self.children = dict(zip(keys, values))
+
+
+
+        x = 1
 
     def getChildren(self):
         return self.children
@@ -303,7 +322,7 @@ class RTree:
             return  # Return None
 
         # Loop through all children of current node
-        for child in node.getChildren():
+        for child in node.getChildren().values():
             bottomLeftObject = object.getCoords()[0]
             topRightObject = object.getCoords()[1]
             bottomLeftNode = child.getCoords()[0]     # Bottom left coords of node
@@ -319,9 +338,79 @@ class RTree:
 
         return result # Return node
 
+    # Find the internal nodes that are the furthest apart
+    def findSeedsInternal(self,node):
+
+        objects = node.getObjects()
+        # Get keys, which are tuples of coords
+        keys = objects.keys()
+        # Loop through all the keys and find the min and max for both axis
+        minX = None
+        maxX = None
+        minY = None
+        maxY = None
+        minimumX = None
+        maximumX = None
+        minimumY = None
+        maximumY = None
+        startX = True
+        startY = True
 
 
-    def findSeeds(self, node):
+        # X-axis, Vertical (1)
+        for key in keys:
+            if objects[key].getOrientation() == 1:
+
+                valueX = key[0][0]
+                if startX == True:
+                    minX = valueX
+                    maxX = valueX
+                    minimumX = key
+                    maximumX = key
+                    startX = False
+                elif valueX < minX:   # value is less than the current minimum
+                    minX = valueX
+                    minimumX = key
+                elif valueX > maxX:   # value is greater than the current maximum
+                    maxX = valueX
+                    maximumX = key
+        
+
+        # Y-axis, Horizontal (0)
+        for key in keys:
+            if objects[key].getOrientation() == 0:
+                valueY = key[0][1]
+                if startY == True:
+                    minY = valueY
+                    maxY = valueY
+                    minimumY = key
+                    maximumY = key
+                    startY = False
+                elif valueY < minY:   # value is less than the current minimum
+                    minY = valueY
+                    minimumY = key
+                elif valueY > maxY:   # value is greater than the current maximum
+                    maxY = valueY
+                    maximumY = key
+
+
+        # Decide which gap is bigger on which axis
+        if startX == True:
+            return (objects[maximumY], objects[minimumY])     # If X-axis wasn't used
+        elif startY == True:
+            return (objects[maximumX], objects[minimumX])     # If Y-axis wasn't used
+        elif (maxY-minY) > (maxX - minX):
+            return (objects[maximumY], objects[minimumY])     # If Y gap larger than X
+        elif (maxY-minY) > (maxX - minX):
+            return (objects[maximumX], objects[minimumX])     # If X gap larger than Y
+        else:
+            return None
+
+
+
+    # Find the objects that are the furthest apart
+    def findSeedsLeaf(self, node):
+
         objects = node.getObjects()
         # Get keys, which are tuples of coords
         keys = objects.keys()
@@ -396,51 +485,74 @@ class RTree:
             # Find the area of the current nodes
             # Compare which one will increase the least from adding new object
         
-        seeds = self.findSeeds(node)
 
-        # Check if seeds were found
-        if seeds == None:
-            return 0 # THIS MEANS NO SEEDS WERE FOUND
-       
-        parent = node.getParent()
+        if len(node.getChildren()) > node.getFanout():
+
+            # INTERNAL NODE SPLIT
+            seeds = self.findSeedsInternal(node)
 
 
-        # LEAF NODE SPLIT
 
 
-        # Assign current nodes objects to placeholder
-        objects = node.getObjects()
+        else:
 
-        # Remove seeds from placeholder
-        objects.pop(seeds[0].getCoords())
-        objects.pop(seeds[1].getCoords())
+            # LEAF NODE SPLIT
 
+            # Get seeds
+            seeds = self.findSeedsLeaf(node)
 
-        # Clear the current nodes objects
-        node.purgeObjects()
-
-        # Assign seeds
-        node.setObject(seeds[0])
-
+            # Check if seeds were found
+            if seeds == None:
+                return 0 # THIS MEANS NO SEEDS WERE FOUND
         
-        # Create new node and add to parent
-        newNode = Node(seeds[1].getCoords()[0], seeds[1].getCoords()[1], objects={seeds[1].getCoords():seeds[1]})
+            # Get parent
+            parent = node.getParent()
+
+            # Assign current nodes objects to placeholder
+            objects = node.getObjects()
+
+            # Remove seeds from placeholder
+            objects.pop(seeds[0].getCoords())
+            objects.pop(seeds[1].getCoords())
 
 
-        # Assign remaining objects based on least enlargement
-        for item in objects:
-            if self.findEnlargement(node,item) > self.findEnlargement(newNode, item):
-                newNode.setObject(objects[item])
-            elif self.findEnlargement(node,item) == self.findEnlargement(newNode, item):
-                if node.getArea() > newNode.getArea():
+            # Clear the current nodes objects
+            node.purgeObjects()
+
+            # Assign seeds
+            node.setObject(seeds[0])
+
+            
+            # Create new node and add to parent
+            newNode = Node(seeds[1].getCoords()[0], seeds[1].getCoords()[1], objects={seeds[1].getCoords():seeds[1]}, parent=parent)
+
+
+            # Assign remaining objects based on least enlargement
+            for item in objects:
+                if self.findEnlargement(node,item) > self.findEnlargement(newNode, item):
                     newNode.setObject(objects[item])
+                elif self.findEnlargement(node,item) == self.findEnlargement(newNode, item):
+                    if node.getArea() > newNode.getArea():
+                        newNode.setObject(objects[item])
+                    else:
+                        node.setObject(objects[item])
                 else:
                     node.setObject(objects[item])
-            else:
-                node.setObject(objects[item])
 
 
-        # Check if parent needs a split
+            # Check if parent needs a split
+    
+
+
+
+
+
+
+
+
+
+
+
 
         x= 1
 
@@ -485,7 +597,7 @@ class RTree:
         # if object doesn't exist, add to node or make one
         if len(self.root.getChildren()) == 0:
             # Create new leaf node with object 
-            newChild = Node(object.getCoords()[0], object.getCoords()[1], fanout=self.fanout, objects={object.getCoords():object})
+            newChild = Node(object.getCoords()[0], object.getCoords()[1], fanout=self.fanout, objects={object.getCoords():object}, parent=node)
             # Add leaf node to root
             node.setChildren(newChild)
             result = 1
@@ -500,6 +612,8 @@ class RTree:
                 # Check if node is too big, if so split it
                 if len(node.getObjects()) > self.fanout:
                     self.linearSplit(node)
+
+                # Check if node has too many children
 
 
         # node = self.traverseNode(self.root, object)
