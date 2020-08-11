@@ -227,7 +227,8 @@ class Node:
 
         self.children = dict(zip(keys, values))
 
-
+        # Set new coords
+        self.bL, self.tR = self.findAreaChildren()
 
         x = 1
 
