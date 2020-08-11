@@ -158,12 +158,14 @@ class Node:
     # Add a single objects to objects dict
     def setObject(self, newObject):
        
-        key = newObject.getCoords()
+        key = newObject[0].getCoords()
 
         if key in self.objects.keys():
             self.objects[key].append(newObject)
-        else:
+        elif isinstance(newObject, list):
             self.objects[key] = newObject
+        else:
+            self.objects[key] = [newObject]
         
 
         # Find parent to change the key to this node
@@ -181,13 +183,30 @@ class Node:
     def setObjects(self, newPointDict):
         self.objects = newPointDict
 
+        if self in self.parent.getChildren().values():
+            self.parent.getChildren()[self.findAreaObjects()] = self.parent.getChildren().pop((self.bL, self.tR))
+
+        self.bL, self.tR = self.findAreaObjects()
+
+
     def getNumObjects(self):
         return len(self.objects)
 
     def getCoords(self):
         if len(self.children) == 0:         # if current node is a leaf node, return minimum bounding box of objects
+            # self.bL, self.tR = self.findAreaObjects()
             return self.findAreaObjects()
         else:
+            # self.bL, self.tR = self.findAreaChildren()
+            return self.findAreaChildren()  # return MBB of children
+
+
+    def setCoords(self):
+        if len(self.children) == 0:         # if current node is a leaf node, return minimum bounding box of objects
+            self.bL, self.tR = self.findAreaObjects()
+            return self.findAreaObjects()
+        else:
+            self.bL, self.tR = self.findAreaChildren()
             return self.findAreaChildren()  # return MBB of children
 
     def getArea(self):
@@ -198,8 +217,6 @@ class Node:
         
         # Area of rectangle => L*W
         return  abs((x2-x1)*(y2-y1))
-
-
 
     def getObjects(self):
         return self.objects
@@ -230,7 +247,6 @@ class Node:
         # Set new coords
         self.bL, self.tR = self.findAreaChildren()
 
-        x = 1
 
     def getChildren(self):
         return self.children
@@ -245,12 +261,14 @@ class Node:
     def purgeChildren(self):
         self.children = {}
 
-    def removeObjects(self, point):
-        key = (point.getLong(), point.getLat())
-        self.objects[key].remove(point)
+    def removeObjects(self, object):
+        key = object.getCoords()        # Get key for object
+        self.objects[key].remove(object)# Use key to remove from object list
 
-        if len(self.objects[key]) == 0:
-            self.objects.pop(key)
+        if len(self.objects[key]) == 0: # Check if key has any values
+            self.objects.pop(key)       # Delete key
+
+
     
     def isRoot(self):
         return self.root
@@ -263,9 +281,9 @@ class Node:
         x2 = 0
         y2 = 0
         start = True
-        for item in self.objects.values():
-            bL = item.getCoords()[0]
-            tR = item.getCoords()[1]
+        for item in self.objects.keys():
+            bL = item[0]
+            tR = item[1]
 
             if start == True:
                 x1 = bL[0]
@@ -328,6 +346,17 @@ class RTree:
         self.fanout = fanout # Max points before decomposition. FANOUT
         self.root = Node(bL, tR, fanout=fanout, root = 1) # Create root node
 
+    def createObject(self, points):
+        start = (points[0].getLong(), points[0].getLat()) # Start coords
+        end = (points[-1].getLong(), points[-1].getLat())   # End coords
+
+        if points[0].getLat() == points[-1].getLat():
+            return Object(start[0], start[1], end[0], end[1], 1, points=points)   # Object with points, Horizontal, Y-axis the same
+        else:
+            return Object(start[0], start[1], end[0], end[1], 0, points=points)   # Object with points, Vertical, X-Axis the same
+
+
+        return None
 
 
     # Traverse tree to find node with given object
@@ -419,7 +448,6 @@ class RTree:
         else:
             return None
 
-        x=1
 
 
     # Find the objects that are the furthest apart
@@ -443,7 +471,7 @@ class RTree:
 
         # X-axis, Vertical (1)
         for key in keys:
-            if objects[key].getOrientation() == 1:
+            if objects[key][0].getOrientation() == 1:
 
                 valueX = key[0][0]
                 if startX == True:
@@ -462,7 +490,7 @@ class RTree:
 
         # Y-axis, Horizontal (0)
         for key in keys:
-            if objects[key].getOrientation() == 0:
+            if objects[key][0].getOrientation() == 0:
                 valueY = key[0][1]
                 if startY == True:
                     minY = valueY
@@ -480,13 +508,21 @@ class RTree:
 
         # Decide which gap is bigger on which axis
         if startX == True:
-            return (objects[maximumY], objects[minimumY])     # If X-axis wasn't used
+            # return (objects[maximumY], objects[minimumY])     # If X-axis wasn't used
+            return (maximumY, minimumY)     # If X-axis wasn't used
+            
         elif startY == True:
-            return (objects[maximumX], objects[minimumX])     # If Y-axis wasn't used
+            # return (objects[maximumX], objects[minimumX])     # If Y-axis wasn't used
+            return (maximumX, minimumX)     # If Y-axis wasn't used
+
         elif (maxY-minY) > (maxX - minX):
-            return (objects[maximumY], objects[minimumY])     # If Y gap larger than X
+            # return (objects[maximumY], objects[minimumY])     # If Y gap larger than X
+            return (maximumY, minimumY)     # If Y gap larger than X
+
         elif (maxY-minY) < (maxX - minX):
-            return (objects[maximumX], objects[minimumX])     # If X gap larger than Y
+            # return (objects[maximumX], objects[minimumX])     # If X gap larger than Y
+            return (maximumX, minimumX)     # If X gap larger than Y
+
         else:
             return None
 
@@ -570,21 +606,23 @@ class RTree:
 
             # Assign current nodes objects to placeholder
             objects = node.getObjects()
+            seed0 = objects[seeds[0]]
+            seed1 = objects[seeds[1]]
 
             # Remove seeds from placeholder
-            objects.pop(seeds[0].getCoords())
-            objects.pop(seeds[1].getCoords())
+            objects.pop(seeds[0])
+            objects.pop(seeds[1])
 
 
             # Clear the current nodes objects
             node.purgeObjects()
 
             # Assign seeds
-            node.setObject(seeds[0])
+            node.setObjects({seeds[0]:seed0})
 
             
             # Create new node and add to parent
-            newNode = Node(seeds[1].getCoords()[0], seeds[1].getCoords()[1], objects={seeds[1].getCoords():seeds[1]}, parent=parent)
+            newNode = Node(seeds[1][0], seeds[1][1], objects={seeds[1]:seed1}, parent=parent)
             parent.setChildren(newNode)
 
             # Assign remaining objects based on least enlargement
@@ -603,18 +641,6 @@ class RTree:
         # Check if parent needs a split
         if len(parent.getChildren()) > node.getFanout():
             self.linearSplit(parent)
-
-
-
-
-
-
-
-
-
-
-
-        x= 1
 
 
 
@@ -657,7 +683,7 @@ class RTree:
         # if object doesn't exist, add to node or make one
         if len(self.root.getChildren()) == 0:
             # Create new leaf node with object 
-            newChild = Node(object.getCoords()[0], object.getCoords()[1], fanout=self.fanout, objects={object.getCoords():object}, parent=node)
+            newChild = Node(object.getCoords()[0], object.getCoords()[1], fanout=self.fanout, objects={object.getCoords():[object]}, parent=node)
             # Add leaf node to root
             node.setChildren(newChild)
             result = 1
@@ -667,7 +693,7 @@ class RTree:
             # Check if there is a node
             if node != None:
                 # Add object to node 
-                node.setObject(object)
+                node.setObject([object])
             
                 # Check if node is too big, if so split it
                 if len(node.getObjects()) > self.fanout:
@@ -680,17 +706,32 @@ class RTree:
 
         # self.linearSplit(node)
 
-    def createObject(self, points):
-        start = (points[0].getLong(), points[0].getLat()) # Start coords
-        end = (points[-1].getLong(), points[-1].getLat())   # End coords
-
-        if points[0].getLat() == points[-1].getLat():
-            return Object(start[0], start[1], end[0], end[1], 1, points=points)   # Object with points, Horizontal, Y-axis the same
-        else:
-            return Object(start[0], start[1], end[0], end[1], 0, points=points)   # Object with points, Vertical, X-Axis the same
+    # Delete object
+    def Delete(self, object):
+        # Find the object 
+        # Delete it from leaf node 
+        # Go up the to change the sizes of parents, until you reach root
 
 
-        return None
+        # If leaf is empty, delete it (or below minimum size)
+        # If parent of leaf is empty, delete it (or below minimum size)
+
+        node = self.traverseNode(self.root, object)
+
+        node.removeObjects(object)
+
+        parent = None
+        while parent.isRoot() == 0:
+            parent = node.getParent()
+            parent.getCoords()
+
+            node = parent
+
+        
+
+
+
+
 
 def main():
 
@@ -699,6 +740,10 @@ def main():
     # # Initialize R-Tree
     rtree = RTree(0,0,1000,1000, FANOUT)
     
+
+### Insert
+
+
     point1 = Point(1,1,1,1,2,3)
     point2 = Point(1,2,1,2,2,3)
     point3 = Point(1,3,1,3,1,1)
@@ -748,7 +793,7 @@ def main():
     rtree.Insert(f5)
 
 
-
+    # rtree.traverseNode(rtree,f1)
 
 
 
@@ -757,9 +802,7 @@ def main():
 
 ### Delete
 
-
-### Update
-
+    rtree.Delete(f1)
 
 
     x = 1
