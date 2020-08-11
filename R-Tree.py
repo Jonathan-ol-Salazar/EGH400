@@ -235,7 +235,7 @@ class Node:
         # dictionary -> 2 lists  (k,v)
         # add item to lists 
         # convert back to dictionary
-
+        child.setParent(self)
         keys = list(self.children.keys())
         values = list(self.children.values())
 
@@ -549,9 +549,10 @@ class RTree:
             parent = node.getParent()
 
             if parent == None and node.isRoot() == 1:
-                newRoot = Node(node.getCoords()[0], node.getCoords()[1], children={node.getCoords():node}, root=1)
                 node.setRoot(0)
+                newRoot = Node(node.getCoords()[0], node.getCoords()[1], children={node.getCoords():node}, root=1)
                 node.setParent(newRoot)
+
                 parent = newRoot
                 self.root = newRoot
 
@@ -571,8 +572,10 @@ class RTree:
 
             
             # Create new node and add to parent
-            newNode = Node(seeds[1].getCoords()[0], seeds[1].getCoords()[1], children={seeds[1].getCoords():seeds[1]}, parent=parent)
+            newNode = Node(seeds[1].getCoords()[0], seeds[1].getCoords()[1], parent=parent)
             
+            # Add other seed to new node
+            newNode.setChildren(seeds[1])
            
                 
             
@@ -589,7 +592,7 @@ class RTree:
                         node.setChildren(children[item])
                 else:
                     node.setChildren(children[item])
-
+            x = 1
         else:
 
             # LEAF NODE SPLIT
