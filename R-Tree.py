@@ -754,31 +754,73 @@ class RTree:
         else:
             # Find leaf node
             node = self.traverseNode(self.root, object)
+            
+            # If object doesn't fit into any nodes
+            if node == None:
+                # Recursively go down tree till leaf node
+                # Choose path via least enlargement
+                node = self.root
+                while len(node.getChildren()) !=0:
+                    children = node.getChildren()
+
+                    # Get enlargement from first child
+                    node = list(children.values())[0]
+                    # Assign remaining objects based on least enlargement
+                    for child in list(children.values())[0:]:
+                        # Compare node enlargement with next child, set new node if lesser
+                        if self.findEnlargement(node, object.getCoords()) > self.findEnlargement(child, object.getCoords()):
+                            node = child
+                        
+                  
+
+                # Set object to leaf node
+                node.setObject([object])
+
+                # CHECK IF PARENTS ARE RECURSIVELY RESIZED
+
             # Check if there is a node
-            if node != None:
+            elif node != None:
                 # Add object to node 
                 node.setObject([object])
             
-                # Check if node is too big, if so split it
-                if len(node.getObjects()) > self.fanout:
-                    self.linearSplit(node)
+            # Check if node is too big, if so split it
+            if len(node.getObjects()) > self.fanout:
+                self.linearSplit(node)
 
-                # Check if node has too many children
-            else:
-                node = self.root
+            # Check if node has too many children
 
-                # Create new leaf node with object 
-                newChild = Node(object.getCoords()[0], object.getCoords()[1], fanout=self.fanout, objects={object.getCoords():[object]}, parent=node)
-                # Add leaf node to root
-                node.setChildren(newChild)
 
-                 # Check if node is too big, if so split it
-                if len(node.getChildren()) > self.fanout:
-                    self.linearSplit(node)
 
-        # node = self.traverseNode(self.root, object)
 
-        # self.linearSplit(node)
+
+
+        #     # Find leaf node
+        #     node = self.traverseNode(self.root, object)
+        #     # Check if there is a node
+        #     if node != None:
+        #         # Add object to node 
+        #         node.setObject([object])
+            
+        #         # Check if node is too big, if so split it
+        #         if len(node.getObjects()) > self.fanout:
+        #             self.linearSplit(node)
+
+        #         # Check if node has too many children
+        #     else:
+        #         node = self.root
+
+        #         # Create new leaf node with object 
+        #         newChild = Node(object.getCoords()[0], object.getCoords()[1], fanout=self.fanout, objects={object.getCoords():[object]}, parent=node)
+        #         # Add leaf node to root
+        #         node.setChildren(newChild)
+
+        #          # Check if node is too big, if so split it
+        #         if len(node.getChildren()) > self.fanout:
+        #             self.linearSplit(node)
+
+        # # node = self.traverseNode(self.root, object)
+
+        # # self.linearSplit(node)
 
     # Delete object
     def Delete(self, object):
