@@ -176,6 +176,7 @@ class Node:
         # Set new coords
         self.bL, self.tR = self.findAreaObjects()
 
+        self.recursivelySetArea()
 
 
 
@@ -187,6 +188,7 @@ class Node:
             self.parent.getChildren()[self.findAreaObjects()] = self.parent.getChildren().pop((self.bL, self.tR))
 
         self.bL, self.tR = self.findAreaObjects()
+        self.recursivelySetArea()
 
 
     def getNumObjects(self):
@@ -204,9 +206,11 @@ class Node:
     def setCoords(self):
         if len(self.children) == 0:         # if current node is a leaf node, return minimum bounding box of objects
             self.bL, self.tR = self.findAreaObjects()
+
             return self.findAreaObjects()
         else:
             self.bL, self.tR = self.findAreaChildren()
+
             return self.findAreaChildren()  # return MBB of children
 
     def getArea(self):
@@ -244,9 +248,18 @@ class Node:
 
         self.children = dict(zip(keys, values))
 
+
+        if self.isRoot() == 0:
+            if self in self.parent.getChildren().values():
+                self.parent.getChildren()[self.findAreaChildren()] = self.parent.getChildren().pop((self.bL, self.tR))
+
+            
+       
+
         # Set new coords
         self.bL, self.tR = self.findAreaChildren()
-
+        
+        self.recursivelySetArea()
 
     def getChildren(self):
         return self.children
@@ -267,13 +280,15 @@ class Node:
 
         if len(self.objects[key]) == 0: # Check if key has any values
             self.objects.pop(key)       # Delete key
-
+        
+        self.setCoords()
+        self.recursivelySetArea()
 
     
     def isRoot(self):
         return self.root
 
-
+    # Get area of leaf node
     def findAreaObjects(self):
         # Return a tuple with area (bL, tR)
         x1 = 0
@@ -302,7 +317,7 @@ class Node:
 
         return ((x1,y1),(x2,y2))
          
-
+    # Get area of internal node
     def findAreaChildren(self):
         # Return a tuple with area (bL, tR)
         x1 = 0
@@ -331,7 +346,18 @@ class Node:
 
         return ((x1,y1),(x2,y2))
 
+    # Go up tree and reset parents areas
+    def recursivelySetArea(self):
+        if self.isRoot():
+            return
+        # Get parent and set new area
+        node = self
+        parent = node.getParent()
+        while parent.isRoot() == 0:
+            parent = node.getParent()
+            parent.setCoords()
 
+            node = parent
 
 
 
@@ -723,12 +749,7 @@ class RTree:
 
         node.removeObjects(object)
 
-        parent = None
-        while parent.isRoot() == 0:
-            parent = node.getParent()
-            parent.getCoords()
-
-            node = parent
+        x=1
 
         
 
@@ -801,7 +822,7 @@ def main():
 
 
 ### Query
-
+    
 
 ### Delete
 
