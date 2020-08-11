@@ -281,8 +281,19 @@ class Node:
         if len(self.objects[key]) == 0: # Check if key has any values
             self.objects.pop(key)       # Delete key
         
+        
+        if self in self.parent.getChildren().values():
+            self.parent.getChildren()[self.findAreaObjects()] = self.parent.getChildren().pop((self.bL, self.tR))
+
+        # self.bL, self.tR = self.findAreaObjects()
         self.setCoords()
         self.recursivelySetArea()
+        
+        if len(self.getObjects()) == 0:
+            # Remove current node from parents children list
+            self.parent.getChildren().pop(self.getCoords())
+            # Recursively check if parents need to be deleted
+            self.recursivelyRemoveChildren()
 
     
     def isRoot(self):
@@ -351,13 +362,37 @@ class Node:
         if self.isRoot():
             return
         # Get parent and set new area
-        node = self
-        parent = node.getParent()
+        parent = self.getParent()
         while parent.isRoot() == 0:
-            parent = node.getParent()
+
+            if parent in parent.getParent().getChildren().values():
+                parent.getParent().getChildren()[self.findAreaObjects()] = parent.getParent().getChildren().pop((parent.bL, parent.tR))
+            
+            
             parent.setCoords()
 
-            node = parent
+            parent = parent.getParent()
+
+  
+    
+    def recursivelyRemoveChildren(self):
+        # Return if root
+        if self.isRoot():
+            return
+        # Initialize parent
+        parent = self.getParent()
+        
+        # Loop till reach parent
+        while parent.isRoot() == 0:
+            # Get parent and check if it has kids             
+            if len(parent.getChildren()) == 0:
+                # Remove parent from grandparents list
+                parent.getParent().getChildren().pop(parent.getCoords())
+            # Make new parent the grand parent
+            parent = parent.getParent()
+        
+        # Reset area of resulting parent
+        parent.setCoords()
 
 
 
@@ -404,7 +439,7 @@ class RTree:
             topRightNode = child.getCoords()[1]       # Top right coords of node
 
             # Check if point is within child
-            if bottomLeftNode[0] <= bottomLeftObject[0] and bottomLeftNode[1] <= bottomLeftObject[1] and topRightNode[0] >= topRightObject[0] and topRightNode[1] >= topRightNode[1]:
+            if bottomLeftNode[0] <= bottomLeftObject[0] and bottomLeftNode[1] <= bottomLeftObject[1] and topRightNode[0] >= topRightObject[0] and topRightNode[1] >= topRightObject[1]:
                 # Check if child has children
                 if len(child.getChildren()) == 0:
                     return child    # Return node
@@ -729,7 +764,17 @@ class RTree:
                     self.linearSplit(node)
 
                 # Check if node has too many children
+            else:
+                node = self.root
 
+                # Create new leaf node with object 
+                newChild = Node(object.getCoords()[0], object.getCoords()[1], fanout=self.fanout, objects={object.getCoords():[object]}, parent=node)
+                # Add leaf node to root
+                node.setChildren(newChild)
+
+                 # Check if node is too big, if so split it
+                if len(node.getChildren()) > self.fanout:
+                    self.linearSplit(node)
 
         # node = self.traverseNode(self.root, object)
 
@@ -752,7 +797,8 @@ class RTree:
         x=1
 
         
-
+    def Search(self, object):
+        pass
 
 
 
@@ -822,11 +868,12 @@ def main():
 
 
 ### Query
-    
+
 
 ### Delete
 
     rtree.Delete(f1)
+    rtree.Delete(f5)
 
 
     x = 1
