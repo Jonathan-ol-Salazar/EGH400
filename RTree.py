@@ -279,8 +279,14 @@ class Node:
         self.children = {}
 
     def removeObjects(self, object):
+        result = None
         key = object.getCoords()        # Get key for object
         self.objects[key].remove(object)# Use key to remove from object list
+
+        if object not in self.objects[key]:
+            result = 1
+        else:
+            result = 0
 
         if len(self.objects[key]) == 0: # Check if key has any values
             self.objects.pop(key)       # Delete key
@@ -302,7 +308,7 @@ class Node:
         self.setCoords()
         self.recursivelySetArea()
         
-       
+        return result
 
     
     def isRoot(self):
@@ -804,9 +810,6 @@ class RTree:
             # Check if node is too big, if so split it
             if len(node.getObjects()) > self.fanout:
                 self.linearSplit(node)
-
-
-
        
     # Delete object
     def Delete(self, object):
@@ -818,12 +821,18 @@ class RTree:
         # If leaf is empty, delete it (or below minimum size)
         # If parent of leaf is empty, delete it (or below minimum size)
 
+        # Check if object exists
+        if self.Query(object) == 0:
+            return 0
+
+        # Finding the node
         node = self.traverseNode(self.root, object)
+
 
         if node == None:
             return 0    # Node not found
 
-        node.removeObjects(object)
+        return node.removeObjects(object)   # removeObjects returns 0:Failure, 1: Success
 
 
     # Query object and return node with that object
