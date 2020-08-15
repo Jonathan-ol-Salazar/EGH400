@@ -176,7 +176,7 @@ class Node:
         # Set new coords
         self.bL, self.tR = self.findAreaObjects()
 
-        self.recursivelySetArea()
+        self.recursivelySetAreaChildren()
 
 
 
@@ -188,7 +188,7 @@ class Node:
             self.parent.getChildren()[self.findAreaObjects()] = self.parent.getChildren().pop((self.bL, self.tR))
 
         self.bL, self.tR = self.findAreaObjects()
-        self.recursivelySetArea()
+        self.recursivelySetAreaChildren()
 
 
     def getNumObjects(self):
@@ -259,7 +259,7 @@ class Node:
         # Set new coords
         self.bL, self.tR = self.findAreaChildren()
         
-        self.recursivelySetArea()
+        self.recursivelySetAreaChildren()
 
     def getChildren(self):
         return self.children
