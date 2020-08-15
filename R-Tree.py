@@ -176,7 +176,7 @@ class Node:
         # Set new coords
         self.bL, self.tR = self.findAreaObjects()
 
-        self.recursivelySetAreaChildren()
+        self.recursivelySetArea()
 
 
 
@@ -188,7 +188,7 @@ class Node:
             self.parent.getChildren()[self.findAreaObjects()] = self.parent.getChildren().pop((self.bL, self.tR))
 
         self.bL, self.tR = self.findAreaObjects()
-        self.recursivelySetAreaChildren()
+        self.recursivelySetArea()
 
 
     def getNumObjects(self):
@@ -259,7 +259,7 @@ class Node:
         # Set new coords
         self.bL, self.tR = self.findAreaChildren()
         
-        self.recursivelySetAreaChildren()
+        self.recursivelySetArea()
 
     def getChildren(self):
         return self.children
@@ -296,7 +296,7 @@ class Node:
             self.parent.getChildren()[self.findAreaObjects()] = self.parent.getChildren().pop((self.bL, self.tR))
 
         self.setCoords()
-        self.recursivelySetAreaChildren()
+        self.recursivelySetArea()
         
        
 
@@ -362,24 +362,8 @@ class Node:
 
         return ((x1,y1),(x2,y2))
 
-    # Go up tree and reset parents areas
-    def recursivelySetArea(self):
-        if self.isRoot():
-            return
-        # Get parent and set new area
-        parent = self.getParent()
-        while parent.isRoot() == 0:
-
-            if parent in parent.getParent().getChildren().values():
-                parent.getParent().getChildren()[self.findAreaObjects()] = parent.getParent().getChildren().pop((parent.bL, parent.tR))
-            
-            
-            parent.setCoords()
-
-            parent = parent.getParent()
-
   # Go up tree and reset parents areas
-    def recursivelySetAreaChildren(self):
+    def recursivelySetArea(self):
         if self.isRoot():
             return
         # Get parent and set new area
