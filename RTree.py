@@ -121,6 +121,9 @@ class Object:
     def setPoint(self, point):
         self.points.append(point)
 
+    def getPoints(self):
+        return self.points
+
     def getPoint(self, point):
         if point in self.points:
             return point
@@ -138,6 +141,9 @@ class Object:
             return 1
         return None
 
+    
+    def getAll(self):
+        return [self.getCoords(), self.getPoints(), self.getOrientation()]
 
 # Class for node in R-Tree. Contains Leaf nodes or Objects
 class Node:
@@ -422,7 +428,7 @@ class RTree:
 
         if points[0].getLat() == points[-1].getLat():
             return Object(start[0], start[1], end[0], end[1], 1, points=points)   # Object with points, Horizontal, Y-axis the same
-        else:
+        elif points[0].getLong() == points[-1].getLong():
             return Object(start[0], start[1], end[0], end[1], 0, points=points)   # Object with points, Vertical, X-Axis the same
 
 
@@ -780,6 +786,7 @@ class RTree:
                 
                 # Set object to leaf node
                 node.setObject([object])
+                # return 1
 
             # Check if there is a node
             elif node != None:
