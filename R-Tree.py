@@ -282,18 +282,23 @@ class Node:
             self.objects.pop(key)       # Delete key
         
         
-        if self in self.parent.getChildren().values():
-            self.parent.getChildren()[self.findAreaObjects()] = self.parent.getChildren().pop((self.bL, self.tR))
-
-        # self.bL, self.tR = self.findAreaObjects()
-        self.setCoords()
-        self.recursivelySetArea()
-        
         if len(self.getObjects()) == 0:
             # Remove current node from parents children list
-            self.parent.getChildren().pop(self.getCoords())
+            self.parent.getChildren().pop((self.bL, self.tR))
+            # Set new coords for parent without this current node
+            # self.parent.setCoords()
             # Recursively check if parents need to be deleted
-            self.recursivelyRemoveChildren()
+            if len(self.getParent().getChildren()) == 0:
+                self.recursivelyRemoveChildren()
+
+        # Current node must still have objects, so update new parents coords
+        elif self in self.parent.getChildren().values():
+            self.parent.getChildren()[self.findAreaObjects()] = self.parent.getChildren().pop((self.bL, self.tR))
+
+        self.setCoords()
+        self.recursivelySetAreaChildren()
+        
+       
 
     
     def isRoot(self):
@@ -373,7 +378,29 @@ class Node:
 
             parent = parent.getParent()
 
-  
+  # Go up tree and reset parents areas
+    def recursivelySetAreaChildren(self):
+        if self.isRoot():
+            return
+        # Get parent and set new area
+        parent = self.getParent()
+        while True:
+            if parent.isRoot() == 1:
+                parent.setCoords()
+                break
+            # Check if parent is a child of grandparent
+            if parent in parent.getParent().getChildren().values():
+                if len(parent.getChildren()) == 0:  # Parent is a leaf node
+                    # Replace parents area with its new area
+                    parent.getParent().getChildren()[parent.findAreaObjects()] = parent.getParent().getChildren().pop((parent.bL, parent.tR))
+                elif len(parent.getObjects()) == 0: # Parent is internal node
+                    parent.getParent().getChildren()[parent.findAreaChildren()] = parent.getParent().getChildren().pop((parent.bL, parent.tR))
+
+            
+            parent.setCoords()
+
+            parent = parent.getParent()
+
     
     def recursivelyRemoveChildren(self):
         # Return if root
