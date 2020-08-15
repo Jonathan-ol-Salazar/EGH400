@@ -178,8 +178,6 @@ class Node:
 
         self.recursivelySetArea()
 
-
-
     # Replace existing objects dict
     def setObjects(self, newPointDict):
         self.objects = newPointDict
@@ -456,7 +454,7 @@ class RTree:
                     return child    # Return node
                 else:
                     result = self.traverseNode(child, object)  # Recurse method again with child node
-
+        
         return result # Return node
 
     # Find the internal nodes that are the furthest apart
@@ -752,20 +750,18 @@ class RTree:
     # Insert object into a node
     def Insert(self, object):
         node = self.root
-        result = 0
-        # Check if object exists
-        
+          
         # if object doesn't exist, add to node or make one
         if len(self.root.getChildren()) == 0:
             # Create new leaf node with object 
             newChild = Node(object.getCoords()[0], object.getCoords()[1], fanout=self.fanout, objects={object.getCoords():[object]}, parent=node)
             # Add leaf node to root
             node.setChildren(newChild)
-            result = 1
+            return 1    # Object successfully inserted
         else:
             # Find leaf node
             node = self.traverseNode(self.root, object)
-            
+
             # If object doesn't fit into any nodes
             if node == None:
                 # Recursively go down tree till leaf node
@@ -780,17 +776,21 @@ class RTree:
                     for child in list(children.values())[0:]:
                         # Compare node enlargement with next child, set new node if lesser
                         if self.findEnlargement(node, object.getCoords()) > self.findEnlargement(child, object.getCoords()):
-                            node = child
-                        
-                  
-
+                            node = child                
+                
                 # Set object to leaf node
                 node.setObject([object])
 
-                # CHECK IF PARENTS ARE RECURSIVELY RESIZED
-
             # Check if there is a node
             elif node != None:
+
+                # Check if object already exists
+                if len(node.getChildren()) > 0:
+                    if object in node.getChildren().values():
+                        print("Object already exists")
+                        return 0    # Object failed to insert
+
+
                 # Add object to node 
                 node.setObject([object])
             
@@ -798,41 +798,9 @@ class RTree:
             if len(node.getObjects()) > self.fanout:
                 self.linearSplit(node)
 
-            # Check if node has too many children
 
 
-
-
-
-
-        #     # Find leaf node
-        #     node = self.traverseNode(self.root, object)
-        #     # Check if there is a node
-        #     if node != None:
-        #         # Add object to node 
-        #         node.setObject([object])
-            
-        #         # Check if node is too big, if so split it
-        #         if len(node.getObjects()) > self.fanout:
-        #             self.linearSplit(node)
-
-        #         # Check if node has too many children
-        #     else:
-        #         node = self.root
-
-        #         # Create new leaf node with object 
-        #         newChild = Node(object.getCoords()[0], object.getCoords()[1], fanout=self.fanout, objects={object.getCoords():[object]}, parent=node)
-        #         # Add leaf node to root
-        #         node.setChildren(newChild)
-
-        #          # Check if node is too big, if so split it
-        #         if len(node.getChildren()) > self.fanout:
-        #             self.linearSplit(node)
-
-        # # node = self.traverseNode(self.root, object)
-
-        # # self.linearSplit(node)
-
+       
     # Delete object
     def Delete(self, object):
         # Find the object 
@@ -845,13 +813,26 @@ class RTree:
 
         node = self.traverseNode(self.root, object)
 
+        if node == None:
+            return 0    # Node not found
+
         node.removeObjects(object)
 
-        x=1
 
+    # Query object and return node with that object
+    def Query(self, object):
+        node = self.traverseNode(self.root, object)
+
+        if node == None or node.isRoot() == 1 and len(node.getChildren()) == 0 and len(node.getObjects()) == 0:
+            return 0    # Node not found
+        # Check if a node is found
+        elif node != None:
+            # Check if object in node 
+            if [object] in list(node.getObjects().values()):
+                return object
+
+        return 0    # Query failed
         
-    def Search(self, object):
-        pass
 
 
 
@@ -918,9 +899,16 @@ def main():
 
     # rtree.traverseNode(rtree,f1)
 
-
-
 ### Query
+
+    # Query something existing, should return object
+    one = rtree.Query(f1)
+    two = rtree.Query(f2)
+    three = rtree.Query(f3)
+    four = rtree.Query(f4)
+    five = rtree.Query(f5)
+
+
 
 
 ### Delete
@@ -930,6 +918,18 @@ def main():
     rtree.Delete(f2)
     rtree.Delete(f4)
     rtree.Delete(f3)
+
+
+### Query
+
+    # Query something that doesn't exist, should return 0
+    one = rtree.Query(f1)
+    two = rtree.Query(f2)
+    three = rtree.Query(f3)
+    four = rtree.Query(f4)
+    five = rtree.Query(f5)
+
+
 
 
     x = 1
