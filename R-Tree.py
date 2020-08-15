@@ -414,7 +414,7 @@ class Node:
             # Get parent and check if it has kids             
             if len(parent.getChildren()) == 0:
                 # Remove parent from grandparents list
-                parent.getParent().getChildren().pop(parent.getCoords())
+                parent.getParent().getChildren().pop((parent.bL, parent.tR))
             # Make new parent the grand parent
             parent = parent.getParent()
         
@@ -943,6 +943,9 @@ def main():
 
     rtree.Delete(f1)
     rtree.Delete(f5)
+    rtree.Delete(f2)
+    rtree.Delete(f4)
+    rtree.Delete(f3)
 
 
     x = 1
