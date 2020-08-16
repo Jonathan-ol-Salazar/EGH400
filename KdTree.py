@@ -69,7 +69,7 @@ class Point:
                     self.time = attr
     
     def getCoords(self):
-        return [self.longitude, self.latitude]
+        return (self.longitude, self.latitude)
 
     def setID(self, identification):
         if self.checkInt(identification) == 1:
@@ -109,18 +109,69 @@ class Point:
 # Class for node in KdTree. Contains Leaf nodes or Points
 class Node:
     # New nodes will be type Leaf and store no points
-    def __init__(self, bL, tR, splitAxis, points={}, children={}, root=0, parent = None): 
+    def __init__(self, longitude, latitude, splitAxis, points={}, children={}, leftChild = None, rightChild = None, root=0, parent = None): 
         self.points = points
         self.children = children
         self.root = root
-        self.bL = bL
-        self.tR = tR
+        self.longitude = longitude 
+        self.latitude = latitude
         self.parent = parent
-        self.splitAxis = splitAxis
+        self.splitAxis = splitAxis  # 1 = X-Axis, 0 = Y-Axis
+        self.leftChild = leftChild
+        self.rightChild = rightChild
 
+    def getLeftChild(self):
+        return self.leftChild
+    
+    def getRightChild(self):
+        return self.rightChild
+    
+    def setChild(self, child):
+        # Get split axis
+        # Check childs relevant axis
+        # Set corresponding child location
+
+        # Get childs split axis
+        if self.splitAxis == 1:
+            childAxis = child.getLong()
+            nodeAxis = self.getLong()
+        elif self.splitAxis == 0:
+            childAxis = child.getLat()
+            nodeAxis = self.getLat()
+
+        else:
+            return 0 # Insert Failed
+
+        # Compare nodeAxis with relevant child axis 
+        if nodeAxis > childAxis:
+            if self.leftChild != None:
+                return 0 # Insert Failed
+            self.leftChild = child  # Child is put in the left branch because it's smaller
+        elif nodeAxis <= childAxis:
+            if self.rightChild != None:
+                return 0 # Insert Failed
+            self.rightChild = child
+        
+        return 1    # Insert Successful
+
+
+    def getLong(self):
+        return self.longitude
+    
+    def getLat(self):
+        return self.latitude
 
     def getParentSplitAxis(self):
         return self.getParent().getSplitAxis()
+
+    def getChildSplitAxis(self):
+        if self.splitAxis == 1: # If current split is X-Axis, child is Y-Axis
+            return 0
+        elif self.splitAxis == 0: # If current split is Y-Axis, child is X-Axis
+            return 1
+        else:
+            return None # Current node does not have a valid split axis
+
 
     def getSplitAxis(self):
         return self.splitAxis
@@ -133,7 +184,7 @@ class Node:
         return len(self.points)
 
     def getCoords(self):
-               pass
+        return (self.getLong(), self.getLat())
 
 
     def setCoords(self):
@@ -164,9 +215,6 @@ class Node:
     def purgeChildren(self):
         self.children = {}
 
-  
-
-    
     def isRoot(self):
         return self.root
 
@@ -175,13 +223,9 @@ class Node:
 
 # Class for KdTree
 class KdTree:
-    # Give initial size of KdTree
-    # Creates root node
-    def __init__(self, startingSplit=1): # 1 = X-Axis, 0 = Y-Axis
-        # bL = [longitude1, latitude1] # Bottom left corner (X,Y)
-        # tR = [longitude2, latitude2] # Top right corner (X,Y)
 
-        # self.root = Node(bL, tR, root = 1) # Create root node
+    def __init__(self, startingSplit=1): # 1 = X-Axis, 0 = Y-Axis
+
         self.root = None
         self.startingSplit = startingSplit
 
@@ -192,53 +236,128 @@ class KdTree:
  
 
     # Traverse tree to find node with given points
-    def traverseNode(self, node, points):
+    def traverseNode(self, node, point):
 
         # Compare alternating axis
         # Traverse till reach leaf node
 
+        # Compare with current nodes axis split, decide left or right
+            # if no child to put in, make new child, return child
+            # get child recurse method, 
+
+        # Functions used for:
+            # Insert -> return node to add child to
+                # node will be the parent of the new point
+               
+
+            # Delete -> return node with same input coords 
+            # Query -> return node with same input coords 
 
 
-        result = None
+        # Puesdo Code
+
+            # before proceeding next section of tree, check if there is a child there, if not return parent
+            # Did axis check and want to go left
+            # Check if current node has left child 
+            # If not, return parent to add child
+            # else, select left child and recurse
+
+
+   
 
         if node.isRoot() and len(node.getChildren()) == 0:
             return node
 
-        # Return if node has no children or points
-        if len(node.getChildren()) <= 0 and len(node.getPoints()) <= 0 or len(node.getChildren()) <= 0 and points not in node.getPoints():
-            return  # Return None
+        # Check split axis of point and compare with current node
+        splitAxis = node.getSplitAxis()
+        leftChild = node.getLeftChild()
+        rightChild = node.getRightChild()
 
-        # Loop through all children of current node
-        for child in node.getChildren().values():
-            bottomLeftObject = points.getCoords()[0]
-            topRightObject = points.getCoords()[1]
-            bottomLeftNode = child.getCoords()[0]     # Bottom left coords of node
-            topRightNode = child.getCoords()[1]       # Top right coords of node
 
-            # Check if point is within child
-            if bottomLeftNode[0] <= bottomLeftObject[0] and bottomLeftNode[1] <= bottomLeftObject[1] and topRightNode[0] >= topRightObject[0] and topRightNode[1] >= topRightObject[1]:
-                # Check if child has children
-                if len(child.getChildren()) == 0:
-                    return child    # Return node
-                else:
-                    result = self.traverseNode(child, points)  # Recurse method again with child node
+        # Get childs split axis
+        if splitAxis == 1:         # 1 = X-Axis split
+            childAxis = point.getLong()    # Get child x
+            nodeAxis = node.getLong()
+        elif splitAxis == 0:       # 0 = Y-Axis split 
+            childAxis = point.getLat()    # Get child y
+            nodeAxis = node.getLat()
+        else:
+            return None                    # Failed    
+
+        # Compare nodeAxis with relevant child axis 
+        if nodeAxis > childAxis:
+            if leftChild == None:   # Check if left child is empty
+                return              # Return this node, point to be added to it  
+            elif leftChild.getCoords() == point.getCoords():
+                return leftChild    # Return this node, delete or query for this node 
+            else:
+                self.traverseNode(leftChild, point)  # Recurse with left node          
+        elif nodeAxis <= childAxis:
+            if rightChild == None:  # Check if right child is empty
+                return              # Return this node, point to be added to it  
+            elif rightChild.getCoords() == point.getCoords():
+                return rightChild    # Return this node, delete or query for this node 
+            else:
+                self.traverseNode(rightChild, point)  # Recurse with left node          
         
-        return result # Return node
+        return None   # Insert Failed
+
+
+
+
+        # # Return if node has no children or points
+        # if len(node.getChildren()) <= 0 and len(node.getPoints()) <= 0 or len(node.getChildren()) <= 0 and points not in node.getPoints():
+        #     return  # Return None
+
+        # # Loop through all children of current node
+        # for child in node.getChildren().values():
+        #     bottomLeftObject = points.getCoords()[0]
+        #     topRightObject = points.getCoords()[1]
+        #     bottomLeftNode = child.getCoords()[0]     # Bottom left coords of node
+        #     topRightNode = child.getCoords()[1]       # Top right coords of node
+
+        #     # Check if point is within child
+        #     if bottomLeftNode[0] <= bottomLeftObject[0] and bottomLeftNode[1] <= bottomLeftObject[1] and topRightNode[0] >= topRightObject[0] and topRightNode[1] >= topRightObject[1]:
+        #         # Check if child has children
+        #         if len(child.getChildren()) == 0:
+        #             return child    # Return node
+        #         else:
+        #             result = self.traverseNode(child, points)  # Recurse method again with child node
+        
+        # return result # Return node
 
 
 
 
 
     # Insert points into a node
-    def Insert(self, points):
+    def Insert(self, point):
+        # Get point coords
+        pointLong = point.getCoords()[0]    # Point Long
+        pointLat = point.getCoords()[1]     # Point Lat 
+
         # Inserting inital point
         if self.root == None:
-            self.root = Node(points.getCoords()[0], points.getCoords()[1], self.startingSplit)
+            self.root = Node(point.getCoords()[0], point.getCoords()[1], self.startingSplit, points={(pointLong, pointLat):[point]}, root=1)
+            return self.root    # Return root 
+        
         # Inserting new points after root 
         else:
             # Traverse node and return node
             # Add point to node
-            pass 
+
+            # Find node to add point to
+            node = self.traverseNode(self.root, point)
+            
+            if node != None:                               
+                # Make a new node and add point to it
+                newChild = Node(pointLong, pointLat, node.getChildSplitAxis(), points={(pointLong, pointLat):[point]})
+                # Add new node to parent found
+                node.setChild(newChild)
+                return node # Return node
+
+        return None # Failure to Insert
+
     # Delete points
     def Delete(self, points):
         pass
@@ -261,12 +380,21 @@ def main():
 
 ### Insert
 
+    # Dummy points from GeeksforGeeks site on KDTree
+        # (3, 6), (17, 15), (13, 15), (6, 12), (9, 1), (2, 7), (10, 19)
+    point1 = Point(1,1,3,6,2,3)
+    point2 = Point(1,2,17,15,2,3)
+    point3 = Point(1,3,13,15,1,1)
+    point4 = Point(1,4,6,12,1,1)
+    point5 = Point(1,5,9,1,2,3)
+    point6 = Point(1,6,2,7,1,1)
+    point7 = Point(1,7,10,19,1,1)
+    f1Points = [point1,point2,point3,point4,point5,point6,point7]    # List of points
 
-    point1 = Point(1,1,1,1,2,3)
-    point2 = Point(1,2,1,2,2,3)
-    point3 = Point(1,3,1,3,1,1)
-    point4 = Point(1,4,1,4,1,1)
-    f1Points = [point1,point2,point3,point4]    # List of points
+
+    for point in f1Points:
+        kdtree.Insert(point)
+
 
     point1 = Point(2,1,2,1,2,3)
     point2 = Point(2,2,2,2,2,3)
