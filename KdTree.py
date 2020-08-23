@@ -116,7 +116,7 @@ class Node:
         self.longitude = longitude 
         self.latitude = latitude
         self.parent = parent
-        self.splitAxis = splitAxis  # 1 = X-Axis, 0 = Y-Axis
+        self.splitAxis = splitAxis  # 0 = X-Axis, 1 = Y-Axis
         self.leftChild = leftChild
         self.rightChild = rightChild
 
@@ -126,16 +126,22 @@ class Node:
     def getRightChild(self):
         return self.rightChild
     
+    def setLeftChild(self, child):
+        self.leftChild = child
+
+    def setRightChild(self, child):
+        self.rightChild = child
+
     def setChild(self, child):
         # Get split axis
         # Check childs relevant axis
         # Set corresponding child location
 
         # Get childs split axis
-        if self.splitAxis == 1:
+        if self.splitAxis == 0:
             childAxis = child.getLong()
             nodeAxis = self.getLong()
-        elif self.splitAxis == 0:
+        elif self.splitAxis == 1:
             childAxis = child.getLat()
             nodeAxis = self.getLat()
 
@@ -146,11 +152,14 @@ class Node:
         if nodeAxis > childAxis:
             if self.leftChild != None:
                 return 0 # Insert Failed
-            self.leftChild = child  # Child is put in the left branch because it's smaller
+            # self.leftChild = child  # Child is put in the left branch because it's smaller
+            self.setLeftChild(child)
         elif nodeAxis <= childAxis:
             if self.rightChild != None:
                 return 0 # Insert Failed
-            self.rightChild = child
+            # self.rightChild = child
+            self.setRightChild(child)
+
         
         return 1    # Insert Successful
 
@@ -165,10 +174,10 @@ class Node:
         return self.getParent().getSplitAxis()
 
     def getChildSplitAxis(self):
-        if self.splitAxis == 1: # If current split is X-Axis, child is Y-Axis
-            return 0
-        elif self.splitAxis == 0: # If current split is Y-Axis, child is X-Axis
+        if self.splitAxis == 0: # If current split is X-Axis, child is Y-Axis
             return 1
+        elif self.splitAxis == 1: # If current split is Y-Axis, child is X-Axis
+            return 0
         else:
             return None # Current node does not have a valid split axis
 
@@ -224,13 +233,24 @@ class Node:
     def isRoot(self):
         return self.root
 
+    def purgeChild(self, child):
+        if self.getLeftChild() == child:
+            self.setLeftChild(None)
+            return 1
+        elif self.getRightChild() == child:
+            self.setRightChild(child)
+            return 1
+        else:
+            return 0
+            
+
 
 
 
 # Class for KdTree
 class KdTree:
 
-    def __init__(self, startingSplit=1): # 1 = X-Axis, 0 = Y-Axis
+    def __init__(self, startingSplit=0): # 0 = X-Axis, 1 = Y-Axis
 
         self.root = None
         self.startingSplit = startingSplit
@@ -243,37 +263,16 @@ class KdTree:
 
     # Traverse tree to find node with given points
     def traverseNode(self, node, point):
-
-        # Compare alternating axis
-        # Traverse till reach leaf node
-
-        # Compare with current nodes axis split, decide left or right
-            # if no child to put in, make new child, return child
-            # get child recurse method, 
-
-        # Functions used for:
-            # Insert -> return node to add child to
-                # node will be the parent of the new point
-               
-
-            # Delete -> return node with same input coords 
-            # Query -> return node with same input coords 
-
-
-        # Puesdo Code
-
-            # before proceeding next section of tree, check if there is a child there, if not return parent
-            # Did axis check and want to go left
-            # Check if current node has left child 
-            # If not, return parent to add child
-            # else, select left child and recurse
-
-
         result = None
 
         if node.isRoot() and node.hasChildren() == 0:
         # if node.isRoot() and len(node.getChildren()) == 0:
             return node
+
+        # Check if current node shares same coords as point
+        if node.getCoords() == point.getCoords():
+            return node
+
 
         # Check split axis of point and compare with current node
         splitAxis = node.getSplitAxis()
@@ -282,10 +281,10 @@ class KdTree:
 
 
         # Get childs split axis
-        if splitAxis == 1:         # 1 = X-Axis split
+        if splitAxis == 0:         # 0 = X-Axis split
             childAxis = point.getLong()    # Get child x
             nodeAxis = node.getLong()
-        elif splitAxis == 0:       # 0 = Y-Axis split 
+        elif splitAxis == 1:       # 1 = Y-Axis split 
             childAxis = point.getLat()    # Get child y
             nodeAxis = node.getLat()
         else:
@@ -308,12 +307,41 @@ class KdTree:
                 result = self.traverseNode(rightChild, point)  # Recurse with left node          
         
 
-        return result   # Insert Failed
+        return result   #  Failed
+    
+    # Traverse tree to find node with the minimum value for a given dimension
+    def findMin(self, node, splitAxis, minValueChild):
+        # get dimension
+        # get value of dimension
+        # traverse 
+
+        result = minValueChild
+
+        if node.getLeftChild() != None:
+            # Compare child coords in splitAxis with current minValue child
+            if node.getLeftChild().getCoords()[splitAxis] < result.getCoords()[splitAxis]:
+                result = node.getLeftChild()
+                self.findMin(node.getLeftChild(), splitAxis, result)
+
+        if node.getRightChild() != None:
+            # Compare child coords in splitAxis with current minValue child
+            if node.getRightChild().getCoords()[splitAxis] < result.getCoords()[splitAxis]:
+                result = node.getRightChild()
+                self.findMin(node.getRightChild(), splitAxis, result)
 
 
 
 
 
+        # for child in node.getChildren():
+        #     # Compare child coords in splitAxis with current minValue child
+        #     if child.getCoords()[splitAxis] < minValueChild.getCoords()[splitAxis]:
+        #         if child.hasChildren() == 0:
+        #             return child    # return child that will take the place of the new minValue
+        #         else:
+        #             result = self.findMin(child, splitAxis, child)
+        
+        return result
 
     # Insert points into a node
     def Insert(self, point):
@@ -344,9 +372,55 @@ class KdTree:
         return None # Failure to Insert
 
     # Delete points
-    def Delete(self, points):
-        pass
+    def Delete(self, point):
+        # find node
+
+        # Check if its a leaf node
+        # if it is, easy 
+        # if not gluck, go through the if else statments
        
+
+        # Return confirmation of result
+
+
+        result = 0 # Placeholder for result
+
+        # Find Node to be deleted
+        node = self.traverseNode(self.root, point)
+
+        if node == None:
+            return result   # Delete failed
+        elif node.hasChildren() == 0:
+            result = node.getParent().purgeChild(node)   # Get node parent and delete child from parents children
+        elif node.hasChildren() > 0:
+            # Add various cases
+            if node.getRightChild() != None:
+                splitAxis = node.getSplitAxis() # Splitting axis of node to be deleted 
+
+                if splitAxis == 0:  # X-Axis
+                    minValue = node.getLong()
+                else:               # Y-Axis
+                    minValue = node.getLat()
+                
+                minNode = self.findMin(node.getRightChild(), splitAxis, node.getRightChild())
+                
+            elif node.getLeftChild() != None:
+
+                if splitAxis == 0:  # X-Axis
+                    minValue = node.getLong()
+                else:               # Y-Axis
+                    minValue = node.getLat()
+                
+                minNode = self.findMin(node.getLeftChild(), splitAxis, minValue)
+
+                
+        
+        
+        
+        return result   # Delete failed
+
+
+
 
     # Query points and return node with that points
     def Query(self, points):
@@ -434,7 +508,7 @@ def main():
 
 ### Delete
 
-    # kdtree.Delete(f1)
+    kdtree.Delete(f1Points[1])
     # kdtree.Delete(f5)
     # kdtree.Delete(f2)
     # kdtree.Delete(f4)
