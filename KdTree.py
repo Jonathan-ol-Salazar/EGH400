@@ -403,84 +403,104 @@ class KdTree:
         elif node.hasChildren() > 0:
             self.recursiveDelete(node)
 
-                
-        
+            # if node.getRightChild() != None:
+            #     self.recursiveDelete(node)
+            # elif node.getLeftChild() != None:
+            #     self.recursiveDelete(node)
+
         
         
         return result   # Delete failed
 
+
+    def recursiveDeleteHelper(self, node, nodeChild):
+        splitAxis = node.getSplitAxis() # Splitting axis of node to be deleted 
+
+        if splitAxis == 0:  # X-Axis
+            minValue = node.getLong()
+        else:               # Y-Axis
+            minValue = node.getLat()
+        
+        # Find minimum node
+        minNode = self.findMin(nodeChild, splitAxis, nodeChild)
+    
+        # Set new coords for node
+        node.setCoords(minNode.getCoords())
+        # Set new points
+        node.setPoints(minNode.getPoints())
+
+        # If minNode is a leaf node
+        if minNode.hasChildren() == False:
+            # Remove minNode from parent
+            minNode.getParent().purgeChild(minNode)
+        elif minNode.hasChildren() == True:
+            # Recurse method
+            self.recursiveDelete(minNode)
+
+
     # Recursively delete nodes in tree
     def recursiveDelete(self, node):
-        
-            # If there is a right child 
+
+         # If there is a right child 
             if node.getRightChild() != None:
-                splitAxis = node.getSplitAxis() # Splitting axis of node to be deleted 
-
-                if splitAxis == 0:  # X-Axis
-                    minValue = node.getLong()
-                else:               # Y-Axis
-                    minValue = node.getLat()
-                
-                # Find minimum node
-                minNode = self.findMin(node.getRightChild(), splitAxis, node.getRightChild())
-            
-############### Replace node to be deleted with minimum node ################################
-                
-                # Set new coords for node
-                node.setCoords(minNode.getCoords())
-                # Set new points
-                node.setPoints(minNode.getPoints())
-                # node = minNode
-
-                # # Set new kids for new node
-                # minNode.purgeChildren()                 # Remove all kids, kids still register minNode as parent
-                # minNode.setChildren(node.getChildren()) # Add old nodes kids to new node 
-                
-                # # Set new kids for new parent to be minNode
-                # for child in minNode.getChildren():
-                #     child.getParent(minNode)                    
-
-                # # Set new parents for new node
-                # minNode.getParent().purgeChild(minNode) # Remove node from parent            
-                # minNode.setParent(node.getParent())     # Set new parent 
-
-                # node.getParent().purgeChild(node)       # Remove old node from new parent
-                # node.getParent().setChildren(minNode)   # Set new child for new parent
-##############################################################################################
-                # If minNode is a leaf node
-                if minNode.hasChildren() == False:
-                    # Remove minNode from parent
-                    minNode.getParent().purgeChild(minNode)
-                elif minNode.hasChildren() == True:
-                    # Recurse method
-                    self.recursiveDelete(minNode)
+               
+                self.recursiveDeleteHelper(node, node.getRightChild())
 
           
             # If there is no right child
             elif node.getLeftChild() != None:
-                splitAxis = node.getSplitAxis() # Splitting axis of node to be deleted 
+                self.recursiveDeleteHelper(node, node.getLeftChild())
+       
+        
+            # # If there is a right child 
+            # if node.getRightChild() != None:
+            #     splitAxis = node.getSplitAxis() # Splitting axis of node to be deleted 
 
-                if splitAxis == 0:  # X-Axis
-                    minValue = node.getLong()
-                else:               # Y-Axis
-                    minValue = node.getLat()
+            #     if splitAxis == 0:  # X-Axis
+            #         minValue = node.getLong()
+            #     else:               # Y-Axis
+            #         minValue = node.getLat()
                 
-                minNode = self.findMin(node.getLeftChild(), splitAxis, node.getLeftChild())
+            #     # Find minimum node
+            #     minNode = self.findMin(node.getRightChild(), splitAxis, node.getRightChild())
+            
+            #     # Set new coords for node
+            #     node.setCoords(minNode.getCoords())
+            #     # Set new points
+            #     node.setPoints(minNode.getPoints())
 
-                # Set new coords for node
-                node.setCoords(minNode.getCoords())
-                # Set new points
-                node.setPoints(minNode.getPoints())
+            #     # If minNode is a leaf node
+            #     if minNode.hasChildren() == False:
+            #         # Remove minNode from parent
+            #         minNode.getParent().purgeChild(minNode)
+            #     elif minNode.hasChildren() == True:
+            #         # Recurse method
+            #         self.recursiveDelete(minNode)
 
+          
+            # # If there is no right child
+            # elif node.getLeftChild() != None:
+            #     splitAxis = node.getSplitAxis() # Splitting axis of node to be deleted 
 
+            #     if splitAxis == 0:  # X-Axis
+            #         minValue = node.getLong()
+            #     else:               # Y-Axis
+            #         minValue = node.getLat()
+                
+            #     minNode = self.findMin(node.getLeftChild(), splitAxis, node.getLeftChild())
 
-                # If minNode is a leaf node
-                if minNode.hasChildren() == False:
-                    # Remove minNode from parent
-                    minNode.getParent().purgeChild(minNode)
-                elif minNode.hasChildren() == True:
-                    # Recurse method
-                    self.recursiveDelete(minNode)
+            #     # Set new coords for node
+            #     node.setCoords(minNode.getCoords())
+            #     # Set new points
+            #     node.setPoints(minNode.getPoints())
+
+            #     # If minNode is a leaf node
+            #     if minNode.hasChildren() == False:
+            #         # Remove minNode from parent
+            #         minNode.getParent().purgeChild(minNode)
+            #     elif minNode.hasChildren() == True:
+            #         # Recurse method
+            #         self.recursiveDelete(minNode)
 
 
     # Query points and return node with that points
