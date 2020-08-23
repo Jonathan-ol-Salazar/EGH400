@@ -313,29 +313,6 @@ class KdTree:
 
 
 
-        # # Return if node has no children or points
-        # if len(node.getChildren()) <= 0 and len(node.getPoints()) <= 0 or len(node.getChildren()) <= 0 and points not in node.getPoints():
-        #     return  # Return None
-
-        # # Loop through all children of current node
-        # for child in node.getChildren().values():
-        #     bottomLeftObject = points.getCoords()[0]
-        #     topRightObject = points.getCoords()[1]
-        #     bottomLeftNode = child.getCoords()[0]     # Bottom left coords of node
-        #     topRightNode = child.getCoords()[1]       # Top right coords of node
-
-        #     # Check if point is within child
-        #     if bottomLeftNode[0] <= bottomLeftObject[0] and bottomLeftNode[1] <= bottomLeftObject[1] and topRightNode[0] >= topRightObject[0] and topRightNode[1] >= topRightObject[1]:
-        #         # Check if child has children
-        #         if len(child.getChildren()) == 0:
-        #             return child    # Return node
-        #         else:
-        #             result = self.traverseNode(child, points)  # Recurse method again with child node
-        
-        # return result # Return node
-
-
-
 
 
     # Insert points into a node
