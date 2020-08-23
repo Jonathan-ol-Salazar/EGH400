@@ -109,7 +109,7 @@ class Point:
 # Class for node in KdTree. Contains Leaf nodes or Points
 class Node:
     # New nodes will be type Leaf and store no points
-    def __init__(self, longitude, latitude, splitAxis, points={}, children={}, leftChild = None, rightChild = None, root=0, parent = None): 
+    def __init__(self, longitude, latitude, splitAxis, points=[], children={}, leftChild = None, rightChild = None, root=0, parent = None): 
         self.points = points
         self.children = children
         self.root = root
@@ -195,10 +195,18 @@ class Node:
     def getCoords(self):
         return (self.getLong(), self.getLat())
 
+    # Setting new coords, assuming input is a tuple
+    def setCoords(self, newCoords):
+        self.longitude = newCoords[0]
+        self.latitude = newCoords[1]
 
-    def setCoords(self):
-               pass
-
+    # Replace all points
+    def setPoints(self, points):
+        self.points = points
+    
+    # Add a single point
+    def setPoint(self, point):
+        self.points.append(point)
 
     def getPoints(self):
         return self.points
@@ -319,13 +327,13 @@ class KdTree:
 
         if node.getLeftChild() != None:
             # Compare child coords in splitAxis with current minValue child
-            if node.getLeftChild().getCoords()[splitAxis] < result.getCoords()[splitAxis]:
+            if node.getLeftChild().getCoords()[splitAxis] <= result.getCoords()[splitAxis]:
                 result = node.getLeftChild()
                 self.findMin(node.getLeftChild(), splitAxis, result)
 
         if node.getRightChild() != None:
             # Compare child coords in splitAxis with current minValue child
-            if node.getRightChild().getCoords()[splitAxis] < result.getCoords()[splitAxis]:
+            if node.getRightChild().getCoords()[splitAxis] <= result.getCoords()[splitAxis]:
                 result = node.getRightChild()
                 self.findMin(node.getRightChild(), splitAxis, result)
 
@@ -393,7 +401,18 @@ class KdTree:
         elif node.hasChildren() == 0:
             result = node.getParent().purgeChild(node)   # Get node parent and delete child from parents children
         elif node.hasChildren() > 0:
-            # Add various cases
+            self.recursiveDelete(node)
+
+                
+        
+        
+        
+        return result   # Delete failed
+
+    # Recursively delete nodes in tree
+    def recursiveDelete(self, node):
+        
+            # If there is a right child 
             if node.getRightChild() != None:
                 splitAxis = node.getSplitAxis() # Splitting axis of node to be deleted 
 
@@ -402,24 +421,66 @@ class KdTree:
                 else:               # Y-Axis
                     minValue = node.getLat()
                 
+                # Find minimum node
                 minNode = self.findMin(node.getRightChild(), splitAxis, node.getRightChild())
+            
+############### Replace node to be deleted with minimum node ################################
                 
+                # Set new coords for node
+                node.setCoords(minNode.getCoords())
+                # Set new points
+                node.setPoints(minNode.getPoints())
+                # node = minNode
+
+                # # Set new kids for new node
+                # minNode.purgeChildren()                 # Remove all kids, kids still register minNode as parent
+                # minNode.setChildren(node.getChildren()) # Add old nodes kids to new node 
+                
+                # # Set new kids for new parent to be minNode
+                # for child in minNode.getChildren():
+                #     child.getParent(minNode)                    
+
+                # # Set new parents for new node
+                # minNode.getParent().purgeChild(minNode) # Remove node from parent            
+                # minNode.setParent(node.getParent())     # Set new parent 
+
+                # node.getParent().purgeChild(node)       # Remove old node from new parent
+                # node.getParent().setChildren(minNode)   # Set new child for new parent
+##############################################################################################
+                # If minNode is a leaf node
+                if minNode.hasChildren() == False:
+                    # Remove minNode from parent
+                    minNode.getParent().purgeChild(minNode)
+                elif minNode.hasChildren() == True:
+                    # Recurse method
+                    self.recursiveDelete(minNode)
+
+          
+            # If there is no right child
             elif node.getLeftChild() != None:
+                splitAxis = node.getSplitAxis() # Splitting axis of node to be deleted 
 
                 if splitAxis == 0:  # X-Axis
                     minValue = node.getLong()
                 else:               # Y-Axis
                     minValue = node.getLat()
                 
-                minNode = self.findMin(node.getLeftChild(), splitAxis, minValue)
+                minNode = self.findMin(node.getLeftChild(), splitAxis, node.getLeftChild())
 
-                
-        
-        
-        
-        return result   # Delete failed
+                # Set new coords for node
+                node.setCoords(minNode.getCoords())
+                # Set new points
+                node.setPoints(minNode.getPoints())
 
 
+
+                # If minNode is a leaf node
+                if minNode.hasChildren() == False:
+                    # Remove minNode from parent
+                    minNode.getParent().purgeChild(minNode)
+                elif minNode.hasChildren() == True:
+                    # Recurse method
+                    self.recursiveDelete(minNode)
 
 
     # Query points and return node with that points
@@ -450,16 +511,27 @@ def main():
     point7 = Point(1,7,10,19,1,1)
     f1Points = [point1,point2,point3,point4,point5,point6,point7]    # List of points
 
+    # for point in f1Points:
+    #     kdtree.Insert(point)
 
-    for point in f1Points:
+
+
+    # Dummy points from Marko Berezovský
+        # 
+    point1 = Point(2,1,30,40,2,3)
+    point2 = Point(2,2,5,25,2,3)
+    point3 = Point(2,3,70,70,1,1)
+    point4 = Point(2,4,10,12,1,1)
+    point5 = Point(2,5,50,30,1,1)
+    point6 = Point(2,6,35,45,1,1)
+    f2Points = [point1,point2,point3,point4,point5,point6]    # List of points
+
+
+    for point in f2Points:
         kdtree.Insert(point)
 
 
-    point1 = Point(2,1,2,1,2,3)
-    point2 = Point(2,2,2,2,2,3)
-    point3 = Point(2,3,2,3,1,1)
-    point4 = Point(2,4,2,4,1,1)
-    f2Points = [point1,point2,point3,point4]    # List of points
+
 
     point1 = Point(3,1,3,1,2,3)
     point2 = Point(3,2,3,2,2,3)
@@ -508,7 +580,7 @@ def main():
 
 ### Delete
 
-    kdtree.Delete(f1Points[1])
+    kdtree.Delete(f2Points[0])
     # kdtree.Delete(f5)
     # kdtree.Delete(f2)
     # kdtree.Delete(f4)
