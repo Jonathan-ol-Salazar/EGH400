@@ -203,8 +203,14 @@ class Node:
         
 
     def getChildren(self):
-        return self.children
+        # return self.children
+        return (self.getLeftChild(), self.getRightChild())
 
+    def hasChildren(self):
+        if self.getLeftChild() != None or self.getRightChild() != None:
+            return 1
+        
+        return 0
 
     def setParent(self, parent):
         self.parent = parent
@@ -263,9 +269,10 @@ class KdTree:
             # else, select left child and recurse
 
 
-   
+        result = None
 
-        if node.isRoot() and len(node.getChildren()) == 0:
+        if node.isRoot() and node.hasChildren() == 0:
+        # if node.isRoot() and len(node.getChildren()) == 0:
             return node
 
         # Check split axis of point and compare with current node
@@ -287,20 +294,21 @@ class KdTree:
         # Compare nodeAxis with relevant child axis 
         if nodeAxis > childAxis:
             if leftChild == None:   # Check if left child is empty
-                return              # Return this node, point to be added to it  
+                return node              # Return this node, point to be added to it  
             elif leftChild.getCoords() == point.getCoords():
                 return leftChild    # Return this node, delete or query for this node 
             else:
-                self.traverseNode(leftChild, point)  # Recurse with left node          
+                result = self.traverseNode(leftChild, point)  # Recurse with left node          
         elif nodeAxis <= childAxis:
             if rightChild == None:  # Check if right child is empty
-                return              # Return this node, point to be added to it  
+                return node             # Return this node, point to be added to it  
             elif rightChild.getCoords() == point.getCoords():
                 return rightChild    # Return this node, delete or query for this node 
             else:
-                self.traverseNode(rightChild, point)  # Recurse with left node          
+                result = self.traverseNode(rightChild, point)  # Recurse with left node          
         
-        return None   # Insert Failed
+
+        return result   # Insert Failed
 
 
 
@@ -351,7 +359,7 @@ class KdTree:
             
             if node != None:                               
                 # Make a new node and add point to it
-                newChild = Node(pointLong, pointLat, node.getChildSplitAxis(), points={(pointLong, pointLat):[point]})
+                newChild = Node(pointLong, pointLat, node.getChildSplitAxis(), points={(pointLong, pointLat):[point]}, parent=node)
                 # Add new node to parent found
                 node.setChild(newChild)
                 return node # Return node
