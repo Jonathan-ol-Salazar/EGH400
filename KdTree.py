@@ -325,29 +325,19 @@ class KdTree:
 
         result = minValueChild
 
-        if node.getLeftChild() != None:
-            # Compare child coords in splitAxis with current minValue child
-            if node.getLeftChild().getCoords()[splitAxis] <= result.getCoords()[splitAxis]:
-                result = node.getLeftChild()
-                self.findMin(node.getLeftChild(), splitAxis, result)
-
         if node.getRightChild() != None:
             # Compare child coords in splitAxis with current minValue child
             if node.getRightChild().getCoords()[splitAxis] <= result.getCoords()[splitAxis]:
                 result = node.getRightChild()
-                self.findMin(node.getRightChild(), splitAxis, result)
+                result = self.findMin(node.getRightChild(), splitAxis, result)
 
 
+        if node.getLeftChild() != None:
+            # Compare child coords in splitAxis with current minValue child
+            if node.getLeftChild().getCoords()[splitAxis] <= result.getCoords()[splitAxis]:
+                result = node.getLeftChild()
+                result = self.findMin(node.getLeftChild(), splitAxis, result)
 
-
-
-        # for child in node.getChildren():
-        #     # Compare child coords in splitAxis with current minValue child
-        #     if child.getCoords()[splitAxis] < minValueChild.getCoords()[splitAxis]:
-        #         if child.hasChildren() == 0:
-        #             return child    # return child that will take the place of the new minValue
-        #         else:
-        #             result = self.findMin(child, splitAxis, child)
         
         return result
 
@@ -403,12 +393,6 @@ class KdTree:
         elif node.hasChildren() > 0:
             self.recursiveDelete(node)
 
-            # if node.getRightChild() != None:
-            #     self.recursiveDelete(node)
-            # elif node.getLeftChild() != None:
-            #     self.recursiveDelete(node)
-
-        
         
         return result   # Delete failed
 
@@ -416,11 +400,6 @@ class KdTree:
     def recursiveDeleteHelper(self, node, nodeChild):
         splitAxis = node.getSplitAxis() # Splitting axis of node to be deleted 
 
-        if splitAxis == 0:  # X-Axis
-            minValue = node.getLong()
-        else:               # Y-Axis
-            minValue = node.getLat()
-        
         # Find minimum node
         minNode = self.findMin(nodeChild, splitAxis, nodeChild)
     
@@ -441,67 +420,27 @@ class KdTree:
     # Recursively delete nodes in tree
     def recursiveDelete(self, node):
 
-         # If there is a right child 
-            if node.getRightChild() != None:
-               
+        # If there is a right child 
+            if node.getRightChild() != None:               
                 self.recursiveDeleteHelper(node, node.getRightChild())
 
           
             # If there is no right child
             elif node.getLeftChild() != None:
+
+                # if node.getLeftChild().hasChildren() == False:
+                #     node.setRightChild(node.getLeftChild())
+                #     node.setLeftChild(None)
+                    
+                # else:
                 self.recursiveDeleteHelper(node, node.getLeftChild())
-       
-        
-            # # If there is a right child 
-            # if node.getRightChild() != None:
-            #     splitAxis = node.getSplitAxis() # Splitting axis of node to be deleted 
 
-            #     if splitAxis == 0:  # X-Axis
-            #         minValue = node.getLong()
-            #     else:               # Y-Axis
-            #         minValue = node.getLat()
-                
-            #     # Find minimum node
-            #     minNode = self.findMin(node.getRightChild(), splitAxis, node.getRightChild())
-            
-            #     # Set new coords for node
-            #     node.setCoords(minNode.getCoords())
-            #     # Set new points
-            #     node.setPoints(minNode.getPoints())
+            if node.hasChildren() == False:
+                if node.getParent().getLeftChild() == node:
+                    node.getParent().setRightChild(node)
+                    node.getParent().setLeftChild(None)
 
-            #     # If minNode is a leaf node
-            #     if minNode.hasChildren() == False:
-            #         # Remove minNode from parent
-            #         minNode.getParent().purgeChild(minNode)
-            #     elif minNode.hasChildren() == True:
-            #         # Recurse method
-            #         self.recursiveDelete(minNode)
-
-          
-            # # If there is no right child
-            # elif node.getLeftChild() != None:
-            #     splitAxis = node.getSplitAxis() # Splitting axis of node to be deleted 
-
-            #     if splitAxis == 0:  # X-Axis
-            #         minValue = node.getLong()
-            #     else:               # Y-Axis
-            #         minValue = node.getLat()
-                
-            #     minNode = self.findMin(node.getLeftChild(), splitAxis, node.getLeftChild())
-
-            #     # Set new coords for node
-            #     node.setCoords(minNode.getCoords())
-            #     # Set new points
-            #     node.setPoints(minNode.getPoints())
-
-            #     # If minNode is a leaf node
-            #     if minNode.hasChildren() == False:
-            #         # Remove minNode from parent
-            #         minNode.getParent().purgeChild(minNode)
-            #     elif minNode.hasChildren() == True:
-            #         # Recurse method
-            #         self.recursiveDelete(minNode)
-
+         
 
     # Query points and return node with that points
     def Query(self, points):
@@ -599,12 +538,13 @@ def main():
 
 
 ### Delete
+    
+    # DELETING EXAMPLES FROM GeeksForGeeks Delete Example
+    # kdtree.Delete(f2Points[0]) # Deleting first point
+    kdtree.Delete(f2Points[2]) # Deleting 2nd level right point
 
-    kdtree.Delete(f2Points[0])
-    # kdtree.Delete(f5)
-    # kdtree.Delete(f2)
-    # kdtree.Delete(f4)
-    # kdtree.Delete(f3)
+
+
 
 
 ### Query
