@@ -269,8 +269,8 @@ class KdTree:
         return self.startingSplit
  
 
-    # Traverse tree to find node with given points
-    def traverseNode(self, node, point):
+    # Traverse tree to find node where point should be added
+    def traverseNode(self, node, point, query = 0):
         result = None
 
         if node.isRoot() and node.hasChildren() == 0:
@@ -305,15 +305,25 @@ class KdTree:
             elif leftChild.getCoords() == point.getCoords():
                 return leftChild    # Return this node, delete or query for this node 
             else:
-                result = self.traverseNode(leftChild, point)  # Recurse with left node          
+                result = self.traverseNode(leftChild, point, query)  # Recurse with left node     
+                # # Make resul
+                # if result != None:
+                #     if result.getCoords() != point.getCoords():
+                #         result == None
+     
         elif nodeAxis <= childAxis:
             if rightChild == None:  # Check if right child is empty
                 return node             # Return this node, point to be added to it  
             elif rightChild.getCoords() == point.getCoords():
                 return rightChild    # Return this node, delete or query for this node 
             else:
-                result = self.traverseNode(rightChild, point)  # Recurse with left node          
+                result = self.traverseNode(rightChild, point, query)  # Recurse with left node          
+                
+
         
+        if query == 1 and result != None:
+            if result.getCoords() != point.getCoords():
+                return None
 
         return result   #  Failed
     
@@ -384,14 +394,17 @@ class KdTree:
         result = 0 # Placeholder for result
 
         # Find Node to be deleted
-        node = self.traverseNode(self.root, point)
+        node = self.traverseNode(self.root, point, query=1)
 
         if node == None:
             return result   # Delete failed
         elif node.hasChildren() == 0:
-            result = node.getParent().purgeChild(node)   # Get node parent and delete child from parents children
+            node.getParent().purgeChild(node)   # Get node parent and delete child from parents children
+            result = 1
         elif node.hasChildren() > 0:
             self.recursiveDelete(node)
+            result = 1
+
 
         
         return result   # Delete failed
@@ -421,30 +434,39 @@ class KdTree:
     def recursiveDelete(self, node):
 
         # If there is a right child 
-            if node.getRightChild() != None:               
-                self.recursiveDeleteHelper(node, node.getRightChild())
+        if node.getRightChild() != None:               
+            self.recursiveDeleteHelper(node, node.getRightChild())
 
-          
-            # If there is no right child
-            elif node.getLeftChild() != None:
+        
+        # If there is no right child
+        elif node.getLeftChild() != None:
 
-                # if node.getLeftChild().hasChildren() == False:
-                #     node.setRightChild(node.getLeftChild())
-                #     node.setLeftChild(None)
-                    
-                # else:
-                self.recursiveDeleteHelper(node, node.getLeftChild())
+            # if node.getLeftChild().hasChildren() == False:
+            #     node.setRightChild(node.getLeftChild())
+            #     node.setLeftChild(None)
+                
+            # else:
+            self.recursiveDeleteHelper(node, node.getLeftChild())
 
-            if node.hasChildren() == False:
-                if node.getParent().getLeftChild() == node:
-                    node.getParent().setRightChild(node)
-                    node.getParent().setLeftChild(None)
+        if node.hasChildren() == False:
+            if node.getParent().getLeftChild() == node:
+                node.getParent().setRightChild(node)
+                node.getParent().setLeftChild(None)
 
          
 
-    # Query points and return node with that points
-    def Query(self, points):
-        pass
+    # Query point and return node with that point
+
+    def Query(self, point):
+        node = self.traverseNode(self.root, point)
+        
+        # Check if a node was found
+        if node == None:
+            return 0    # Query Failed
+        elif node.getCoords() != point.getCoords():
+            return 0    # Query Failed
+        
+        return node     # Returning node found
 
 
 
@@ -470,8 +492,8 @@ def main():
     point7 = Point(1,7,10,19,1,1)
     f1Points = [point1,point2,point3,point4,point5,point6,point7]    # List of points
 
-    # for point in f1Points:
-    #     kdtree.Insert(point)
+    for point in f1Points:
+        kdtree.Insert(point)
 
 
 
@@ -486,8 +508,8 @@ def main():
     f2Points = [point1,point2,point3,point4,point5,point6]    # List of points
 
 
-    for point in f2Points:
-        kdtree.Insert(point)
+    # for point in f2Points:
+    #     kdtree.Insert(point)
 
 
 
@@ -513,9 +535,6 @@ def main():
 
 
 
-
-
-
     # kdtree.Insert(f1)
     # kdtree.Insert(f2)
     # kdtree.Insert(f3)
@@ -535,13 +554,15 @@ def main():
     # five = kdtree.Query(f5)
 
 
+    # one = kdtree.Query(f1Points[3])
+    one = kdtree.Query(point4)
 
 
 ### Delete
     
     # DELETING EXAMPLES FROM GeeksForGeeks Delete Example
     # kdtree.Delete(f2Points[0]) # Deleting first point
-    kdtree.Delete(f2Points[2]) # Deleting 2nd level right point
+    delete = kdtree.Delete(point4) # Deleting 2nd level right point
 
 
 
