@@ -73,8 +73,8 @@ class Point:
         return [self.longitude, self.latitude]
 
     def setID(self, identification):
-        if self.checkInt(identification) == 1:
-            self.id = identification
+        # if self.checkInt(identification) == 1:
+        self.id = identification
     
     def setSequence(self, sequence):
         if self.checkInt(sequence) == 1:
@@ -103,7 +103,7 @@ class Point:
             else:
                 return 1 # Passed
         except Custom_Exception.typeNotInt():
-            print("Input must be of type 'int' ")
+            # print("Input must be of type 'int' ")
             return 0 # Failed
             
     # def checkDatetime(self, input):
@@ -338,8 +338,8 @@ class Quadtree:
         node = self.root
 
         # Check if point is already in tree
-        if self.Query(point) != None:
-            print("Insert Failed: Point: ", point.getAll(), " already exists")
+        if self.Query(point) != 0:
+            # print("Insert Failed: Point: ", point.getAll(), " already exists")
             return
 
         
@@ -362,10 +362,10 @@ class Quadtree:
         
         # Check if point is actually in node
         if node.getNumPoints() != 0 and point in node.getPoints()[(point.getLong(), point.getLat())] or node == self.root and node.getNumPoints !=0 :
-            print("Insert Successful: Point:", point.getAll(), "located in Node:", node.getCoords())
+            # print("Insert Successful: Point:", point.getAll(), "located in Node:", node.getCoords())
             result = 1
         else:
-            print("Insert Unsuccessful")    
+            # print("Insert Unsuccessful")    
             result = 0
 
         return result
@@ -395,14 +395,15 @@ class Quadtree:
     
 
         # Print confirmations
+        # if result == None:
+        #     print("Query Failed: Point: ", point.getAll(), " does not exist!")
+        # elif allPoints == True:
+        #     print("Query Successful: Points with (X,Y) = ", key, "located in Node: ", node.getCoords())
+        # else:
+        #     print("Query Successful: Point: ", result.getAll(), "located in Node: ", node.getCoords())
+
         if result == None:
-            print("Query Failed: Point: ", point.getAll(), " does not exist!")
-        elif allPoints == True:
-            print("Query Successful: Points with (X,Y) = ", key, "located in Node: ", node.getCoords())
-        else:
-            print("Query Successful: Point: ", result.getAll(), "located in Node: ", node.getCoords())
-
-
+            return 0
         
         return result   # Point or list of points with same Long, Lat
 
@@ -415,7 +416,7 @@ class Quadtree:
         node = self.root
         key = (point.getLong(), point.getLat()) # Key for dictionary with list of points
 
-        if self.Query(point) == None:
+        if self.Query(point) == 0:
             # result = "Delete Failed: Point: {0} does not exist!".format(point.getAll()) # Print statement
             # print(result)
             result = 0
@@ -445,45 +446,45 @@ class Quadtree:
                 result = 1
                 
         # Print confirmations
-        print(result)
+        # print(result)
 
-        if result == 0:
-            print("Delete Failed: Point: {0} does not exist!".format(point.getAll()))
-        else:
-            print("Delete Successful: Point: {0} deleted from Node: {1}".format(point.getAll(), node.getCoords()))
+        # if result == 0:
+        #     print("Delete Failed: Point: {0} does not exist!".format(point.getAll()))
+        # else:
+        #     print("Delete Successful: Point: {0} deleted from Node: {1}".format(point.getAll(), node.getCoords()))
         
         return result
 
 
+    # UPDATE NOT USED ANYMORE
+    # # Update existing node
+    # def Update(self, existingPoint, editedPoint):
 
-    # Update existing node
-    def Update(self, existingPoint, editedPoint):
+    #     existingPoint = self.Query(existingPoint)
 
-        existingPoint = self.Query(existingPoint)
-
-        if existingPoint == None:
-            print("Update Failed: Point to update does not exist")
-            return 0
-        elif existingPoint.getAll() == editedPoint.getAll():
-            print("Update Failed: Updates do not change the select point")
-            return 0
-        else:
-            # # Dummy variable to replace existing point
-            # newPoint = existingPoint
-            # # Set attr of dummy variable to the edited point
-            # newPoint.setAll(editedPoint.getAll())
+    #     if existingPoint == None:
+    #         # print("Update Failed: Point to update does not exist")
+    #         return 0
+    #     elif existingPoint.getAll() == editedPoint.getAll():
+    #         # print("Update Failed: Updates do not change the select point")
+    #         return 0
+    #     else:
+    #         # # Dummy variable to replace existing point
+    #         # newPoint = existingPoint
+    #         # # Set attr of dummy variable to the edited point
+    #         # newPoint.setAll(editedPoint.getAll())
                        
 
         
-            # Delete existing point
-            self.Delete(existingPoint)
+    #         # Delete existing point
+    #         self.Delete(existingPoint)
 
-            existingPoint.setAll(editedPoint.getAll())
+    #         existingPoint.setAll(editedPoint.getAll())
 
-            # Insert new point
-            self.Insert(existingPoint)
+    #         # Insert new point
+    #         self.Insert(existingPoint)
 
-            return 1
+    #         return 1
             
 
     
@@ -520,8 +521,8 @@ def main():
 
 ### Query
     quadtree.Insert(point1)     # Insert point1
-    quadtree.Query(point1, 1)   # Query point at root
-    quadtree.Query(point2, 1)   # Query point that doesn't exist
+    quadtree.Query(point1)   # Query point at root
+    quadtree.Query(point2)   # Query point that doesn't exist
     quadtree.Query(point1)      # Query point in children
     quadtree.Query(point2)      # Query point in children
 
@@ -563,11 +564,11 @@ def main():
     quadtree.Insert(point2)
     # quadtree.Insert(point3)
 
-    quadtree.Update(point2, point3) # 
-    quadtree.Update(point1, point2) # yes
-    quadtree.Update(point2, point1) # yes
-    quadtree.Update(point3, point2) # no
-    quadtree.Update(point3, point3) # 
+    # quadtree.Update(point2, point3) # 
+    # quadtree.Update(point1, point2) # yes
+    # quadtree.Update(point2, point1) # yes
+    # quadtree.Update(point3, point2) # no
+    # quadtree.Update(point3, point3) # 
 
     x = 1
 
