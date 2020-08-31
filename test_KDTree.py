@@ -38,3 +38,46 @@ class TestKDTree(unittest.TestCase):
         for point in self.f1Points:
            self.assertEqual(self.kdtree.Insert(point), 1)            
         
+
+    def test_Delete(self):
+        # Deleting a non-existent point
+        self.assertEqual(self.kdtree.Delete(self.point1), 0)
+        self.assertEqual(self.kdtree.Delete(self.point2), 0)
+        self.assertEqual(self.kdtree.Delete(self.point3), 0)
+        self.assertEqual(self.kdtree.Delete(self.point4), 0)
+        self.assertEqual(self.kdtree.Delete(self.point5), 0)        
+
+        # Adding points to delete
+        for point in self.f1Points:
+           self.assertEqual(self.kdtree.Insert(point), 1)            
+    
+        # Deleting an existent point
+        self.assertEqual(self.kdtree.Delete(self.point1), 1)
+        self.assertEqual(self.kdtree.Delete(self.point2), 1)
+        self.assertEqual(self.kdtree.Delete(self.point3), 1)
+        self.assertEqual(self.kdtree.Delete(self.point4), 1)
+        self.assertEqual(self.kdtree.Delete(self.point5), 1)        
+
+
+    def test_Query(self):
+      # Searching a non-existent point
+        self.assertEqual(self.kdtree.Query(self.point1), 0)
+        self.assertEqual(self.kdtree.Query(self.point2), 0)
+        self.assertEqual(self.kdtree.Query(self.point3), 0)
+        self.assertEqual(self.kdtree.Query(self.point4), 0)
+        self.assertEqual(self.kdtree.Query(self.point5), 0)        
+
+        # Adding points to search
+        for point in self.f1Points:
+           self.assertEqual(self.kdtree.Insert(point), 1)            
+    
+        # Searching an existent point
+        self.assertEqual(self.kdtree.Query(self.point1), self.point1)
+        self.assertEqual(self.kdtree.Query(self.point2), self.point2)
+        self.assertEqual(self.kdtree.Query(self.point3), self.point3)
+        self.assertEqual(self.kdtree.Query(self.point4), self.point4)
+        self.assertEqual(self.kdtree.Query(self.point5), self.point5)
+
+        
+
+
