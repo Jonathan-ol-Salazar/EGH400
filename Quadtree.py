@@ -557,8 +557,8 @@ def main():
 
     quadtree.Insert(point1)         # Insert point1
     
-    quadtree.Update(point1, point2) # Make point1 into point2
-    quadtree.Update(point2, point2) # Make point2 into point2
+    # quadtree.Update(point1, point2) # Make point1 into point2
+    # quadtree.Update(point2, point2) # Make point2 into point2
 
     quadtree.Insert(point1)
     quadtree.Insert(point2)

@@ -23,6 +23,23 @@ class TestQuadtree(unittest.TestCase):
 
     def test_Insert(self):
 
+        # FOR REPORT
+        # point1 = quadtree.Point(1,1,1,1,1,1)
+
+        # point1 = quadtree.Point(1,1,1,9,2,3)    # Quadrant One
+        # point2 = quadtree.Point(1,2,8,9,2,3)    # Quadrant Two
+        # point3 = quadtree.Point(1,3,1,4,2,3)    # Quadrant Three
+        # point4 = quadtree.Point(1,4,8,4,2,3)    # Quadrant Four
+
+
+        # # Initial insert, root node
+        # self.assertEqual(self.quadtree.Insert(point1), 1)    
+        # # Inserting after structure is filled
+        # self.assertEqual(self.quadtree.Insert(point2), 1)    
+        # self.assertEqual(self.quadtree.Insert(point3), 1)    
+        # self.assertEqual(self.quadtree.Insert(point4), 1)    
+
+
 
         # Root Level 
         point1 = quadtree.Point(1,1,1,1,1,1)
@@ -32,7 +49,7 @@ class TestQuadtree(unittest.TestCase):
         self.assertEqual(self.quadtree.root.points[point1.getKey()][0].getAll(), point1.getAll())
         self.assertEqual(len(self.quadtree.root.getChildren()), 0)    # No children
         self.assertEqual(len(self.quadtree.root.getPoints()), 1)      # Single point
-        self.assertEqual(self.quadtree.root.getParent(), None)
+        self.assertEqual(self.quadtree.root.getParent(), None)        # No parents
 
 
         # Existing Point
@@ -76,45 +93,41 @@ class TestQuadtree(unittest.TestCase):
         self.assertEqual(self.quadtree.Query(point6), point6)
 
 
-    # def test_Update(self):
-    #     # NON-EXISTANT
-    #     point1 = quadtree.Point(1,1,1,1,1,1)
-    #     point2 = quadtree.Point(1,2,1,1,1,1)
-
-    #     self.assertEqual(self.quadtree.Update(point1, point2), 0)
-
-    #     # ROOT LEVEL 
-    #     self.quadtree.Insert(point1)
-    #     self.assertEqual(self.quadtree.Update(point1, point2), 1)               # Update point1 to point2 attr
-    #     self.assertEqual(self.quadtree.Query(point1).getAll(), point2.getAll()) # Check if point1 has point2 attr
-
-    #     # SINGLE LEVEL
-    #     point3 = quadtree.Point(1,3,8,9,1,1)
-    #     self.assertEqual(self.quadtree.Delete(point1), 1)           # Delete point1
-    #     self.assertEqual(len(self.quadtree.root.getChildren()), 0)  # Check no root has no children
-    #     point1 = quadtree.Point(1,1,1,1,1,1)                        # Reset point1
-    #     self.quadtree.Insert(point1)                                # Insert point1 and point3
-    #     self.quadtree.Insert(point3)
-
-    #     # Check if points are added to correct quadrant
-    #     self.assertEqual(len(self.quadtree.root.getChildren()[2].getPoints()), 1)                                       # Check 3rd quad has 1 point
-    #     self.assertEqual(self.quadtree.root.getChildren()[2].getPoints()[point1.getKey()][0].getAll(), point1.getAll()) # Check if point is point1
-
-    #     self.assertEqual(len(self.quadtree.root.getChildren()[1].getPoints()), 1)                                       # Check 2nd quad has 1 point
-    #     self.assertEqual(self.quadtree.root.getChildren()[1].getPoints()[point3.getKey()][0].getAll(), point3.getAll()) # Check if point is point3
-
-    #     # Update point3 and check if its node has children after 
-    #     self.assertEqual(self.quadtree.Update(point3, point2), 1) # Update point3 to point2
-
-    #     # Check point1s node to see if point3 is moved there
-    #     self.assertEqual(len(self.quadtree.root.getChildren()[1].getPoints()), 0)                   # Quadrant 2 where old point3 was has no points
-    #     self.assertEqual(len(self.quadtree.root.getChildren()[2].getPoints()[point1.getKey()]), 2)  # Quadrant 3 now has point3
-
-    #     self.assertEqual(point1 in (self.quadtree.root.getChildren()[2].getPoints()[point1.getKey()]), True)  # Check if point3 is in the new quadrant
-    #     self.assertEqual(point3 in (self.quadtree.root.getChildren()[2].getPoints()[point1.getKey()]), True)  # Check if point3 is in the new quadrant
-        
+   
 
     def test_Delete(self):
+
+
+        # # FOR REPORT
+        # point1 = quadtree.Point(1,1,1,9,2,3)    # Quadrant One
+        # point2 = quadtree.Point(1,2,8,9,2,3)    # Quadrant Two
+        # point3 = quadtree.Point(1,3,1,4,2,3)    # Quadrant Three
+        # point4 = quadtree.Point(1,4,8,4,2,3)    # Quadrant Four
+
+
+        # # Deleting a non-existent point
+        # self.assertEqual(self.quadtree.Delete(point1), 0)
+        # self.assertEqual(self.quadtree.Delete(point2), 0)
+        # self.assertEqual(self.quadtree.Delete(point3), 0)
+        # self.assertEqual(self.quadtree.Delete(point4), 0)
+
+
+        # # Inserting points
+        # self.assertEqual(self.quadtree.Insert(point1), 1)    
+        # self.assertEqual(self.quadtree.Insert(point2), 1)    
+        # self.assertEqual(self.quadtree.Insert(point3), 1)    
+        # self.assertEqual(self.quadtree.Insert(point4), 1)    
+
+
+        # # Deleting an existing point
+        # self.assertEqual(self.quadtree.Delete(point1), 1)
+        # self.assertEqual(self.quadtree.Delete(point2), 1)
+        # self.assertEqual(self.quadtree.Delete(point3), 1)
+        # self.assertEqual(self.quadtree.Delete(point4), 1)
+
+
+
+
         # Non-existant
         point1 = quadtree.Point(1,1,1,1,1,1)
         self.assertEqual(self.quadtree.Delete(point1), 0)
@@ -168,6 +181,24 @@ class TestQuadtree(unittest.TestCase):
 
 
     def test_Query(self):
+        # FOR REPORT
+        # point1 = quadtree.Point(1,1,1,9,2,3)    # Quadrant One
+        # point2 = quadtree.Point(1,2,8,9,2,3)    # Quadrant Two
+        # point3 = quadtree.Point(1,3,1,4,2,3)    # Quadrant Three
+        # point4 = quadtree.Point(1,4,8,4,2,3)    # Quadrant Four
+        # point5 = quadtree.Point(1,4,9,4,2,3)    # Quadrant Four
+
+
+        # self.assertEqual(self.quadtree.Query(point1), 0)
+        # self.assertEqual(self.quadtree.Query(point2), 0)
+        # self.assertEqual(self.quadtree.Query(point3), 0)
+        # self.assertEqual(self.quadtree.Query(point4), 0)
+        # self.assertEqual(self.quadtree.Query(point5), 0)
+
+
+
+
+
         # Non-existant
         point1 = quadtree.Point(1,1,1,1,1,1)
         
@@ -212,7 +243,43 @@ class TestQuadtree(unittest.TestCase):
         self.assertEqual(self.quadtree.Query(point3), point3)
         self.assertEqual(self.quadtree.Query(point4), point4)
 
+ # def test_Update(self):
+    #     # NON-EXISTANT
+    #     point1 = quadtree.Point(1,1,1,1,1,1)
+    #     point2 = quadtree.Point(1,2,1,1,1,1)
 
+    #     self.assertEqual(self.quadtree.Update(point1, point2), 0)
+
+    #     # ROOT LEVEL 
+    #     self.quadtree.Insert(point1)
+    #     self.assertEqual(self.quadtree.Update(point1, point2), 1)               # Update point1 to point2 attr
+    #     self.assertEqual(self.quadtree.Query(point1).getAll(), point2.getAll()) # Check if point1 has point2 attr
+
+    #     # SINGLE LEVEL
+    #     point3 = quadtree.Point(1,3,8,9,1,1)
+    #     self.assertEqual(self.quadtree.Delete(point1), 1)           # Delete point1
+    #     self.assertEqual(len(self.quadtree.root.getChildren()), 0)  # Check no root has no children
+    #     point1 = quadtree.Point(1,1,1,1,1,1)                        # Reset point1
+    #     self.quadtree.Insert(point1)                                # Insert point1 and point3
+    #     self.quadtree.Insert(point3)
+
+    #     # Check if points are added to correct quadrant
+    #     self.assertEqual(len(self.quadtree.root.getChildren()[2].getPoints()), 1)                                       # Check 3rd quad has 1 point
+    #     self.assertEqual(self.quadtree.root.getChildren()[2].getPoints()[point1.getKey()][0].getAll(), point1.getAll()) # Check if point is point1
+
+    #     self.assertEqual(len(self.quadtree.root.getChildren()[1].getPoints()), 1)                                       # Check 2nd quad has 1 point
+    #     self.assertEqual(self.quadtree.root.getChildren()[1].getPoints()[point3.getKey()][0].getAll(), point3.getAll()) # Check if point is point3
+
+    #     # Update point3 and check if its node has children after 
+    #     self.assertEqual(self.quadtree.Update(point3, point2), 1) # Update point3 to point2
+
+    #     # Check point1s node to see if point3 is moved there
+    #     self.assertEqual(len(self.quadtree.root.getChildren()[1].getPoints()), 0)                   # Quadrant 2 where old point3 was has no points
+    #     self.assertEqual(len(self.quadtree.root.getChildren()[2].getPoints()[point1.getKey()]), 2)  # Quadrant 3 now has point3
+
+    #     self.assertEqual(point1 in (self.quadtree.root.getChildren()[2].getPoints()[point1.getKey()]), True)  # Check if point3 is in the new quadrant
+    #     self.assertEqual(point3 in (self.quadtree.root.getChildren()[2].getPoints()[point1.getKey()]), True)  # Check if point3 is in the new quadrant
+        
 
 class TestPoint(unittest.TestCase):
     def setUp(self):
