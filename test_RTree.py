@@ -104,7 +104,7 @@ class TestRTree(unittest.TestCase):
 
     def test_Insert(self):
         # FOR REPORT
-        # Initial Insert
+        # # Initial Insert
         # self.assertEqual(self.rtree.Insert(self.f1), 1)    
         # # Insert 2nd point
         # self.assertEqual(self.rtree.Insert(self.f2), 1)    
@@ -197,6 +197,18 @@ class TestRTree(unittest.TestCase):
         self.rtree.Insert(self.f3)
         self.rtree.Insert(self.f4)
         self.rtree.Insert(self.f5)
+
+        # FOR REPORT        
+        # self.assertEqual(self.rtree.Delete(self.f1), 1)    
+        # # Delete 2nd point
+        # self.assertEqual(self.rtree.Delete(self.f2), 1)    
+        # # Delete 3rd point
+        # self.assertEqual(self.rtree.Delete(self.f3), 1) 
+        # # Delete 4th point
+        # self.assertEqual(self.rtree.Delete(self.f4), 1) 
+        # # Delete 5th point
+        # self.assertEqual(self.rtree.Delete(self.f5), 1) 
+
 
         # Find them -> Delete them -> Find them
         self.assertEqual(self.rtree.Query(self.f1), self.f1)
