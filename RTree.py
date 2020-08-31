@@ -4,7 +4,7 @@ import datetime
 
 # Main R-Tree file containing classes: Rtree, Point and Node
 
-FANOUT = 2
+FANOUT = 4
 
 
 # Class for point in R-Tree
@@ -761,6 +761,7 @@ class RTree:
 
     # Insert object into a node
     def Insert(self, object):
+        result = 0
         node = self.root
           
         # if object doesn't exist, add to node or make one
@@ -792,6 +793,7 @@ class RTree:
                 
                 # Set object to leaf node
                 node.setObject([object])
+                result = 1
                 # return 1
 
             # Check if there is a node
@@ -810,7 +812,9 @@ class RTree:
             # Check if node is too big, if so split it
             if len(node.getObjects()) > self.fanout:
                 self.linearSplit(node)
-       
+                result = 1
+
+        return result
     # Delete object
     def Delete(self, object):
         # Find the object 
@@ -906,11 +910,11 @@ def main():
 
 
 
-    rtree.Insert(f1)
-    rtree.Insert(f2)
-    rtree.Insert(f3)
-    rtree.Insert(f4)
-    rtree.Insert(f5)
+    x=rtree.Insert(f1)
+    x=rtree.Insert(f2)
+    x=rtree.Insert(f3)
+    x=rtree.Insert(f4)
+    x=rtree.Insert(f5)
 
 
     # rtree.traverseNode(rtree,f1)

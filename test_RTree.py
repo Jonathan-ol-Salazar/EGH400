@@ -103,6 +103,15 @@ class TestRTree(unittest.TestCase):
         self.assertEqual(self.rtree.createObject(points), None)
 
     def test_Insert(self):
+        # FOR REPORT
+        # Initial Insert
+        # self.assertEqual(self.rtree.Insert(self.f1), 1)    
+        # # Insert 2nd point
+        # self.assertEqual(self.rtree.Insert(self.f2), 1)    
+        # # Insert 3rd point
+        # self.assertEqual(self.rtree.Insert(self.f3), 1) 
+        # # Insert 4th point
+        # self.assertEqual(self.rtree.Insert(self.f4), 1)            
         
 
         # Object 1 
@@ -120,8 +129,8 @@ class TestRTree(unittest.TestCase):
         self.assertEqual(len(self.rtree.root.getObjects()), 0)      # No objects before insert
         self.assertEqual(len(self.rtree.root.getChildren()), 1)     # No children before insert
         
-        self.rtree.Insert(self.f2)
-        # self.assertEqual(self.rtree.Insert(f2), 1)            # Insert another object
+        # self.rtree.Insert(self.f2)
+        self.assertEqual(self.rtree.Insert(self.f2), 1)            # Insert another object
 
         self.assertEqual(len(self.rtree.root.getChildren()), 1)     # Children after insert
         self.assertEqual(len(self.rtree.root.getObjects()), 0)      # No objects after insert
@@ -213,10 +222,7 @@ class TestRTree(unittest.TestCase):
 
 
 
-    def test_Query(self):
-        
-
-
+    def test_Query(self):       
         # Find objects before being inserted
         self.assertEqual(self.rtree.Query(self.f1), 0)
         self.assertEqual(self.rtree.Query(self.f2), 0)
@@ -230,6 +236,22 @@ class TestRTree(unittest.TestCase):
         self.rtree.Insert(self.f3)
         self.rtree.Insert(self.f4)
         self.rtree.Insert(self.f5)
+
+
+        # Find them
+        self.assertEqual(self.rtree.Query(self.f1), self.f1)
+
+        self.assertEqual(self.rtree.Query(self.f2), self.f2)
+
+        self.assertEqual(self.rtree.Query(self.f3), self.f3)
+ 
+        self.assertEqual(self.rtree.Query(self.f4), self.f4)
+
+        self.assertEqual(self.rtree.Query(self.f5), self.f5)
+
+
+
+
 
         # Find them -> Delete them -> Find them
         self.assertEqual(self.rtree.Query(self.f1), self.f1)
