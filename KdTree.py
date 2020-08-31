@@ -2,10 +2,10 @@ import datetime
 import Custom_Exception
 
 
-# Main Kd-Tree file containing classes: KdTree, Point and Node
+# Main Kd-Tree file containing classes: KDTree, Point and Node
 
 
-# Class for point in KdTree
+# Class for point in KDTree
 class Point:
     def __init__(self, identification, sequence, longitude, latitude, altitude, time): # long = x, lat = y
         self.id = identification
@@ -106,7 +106,7 @@ class Point:
             print("Input must be of type 'int' ")
             return 0 # Failed
 
-# Class for node in KdTree. Contains Leaf nodes or Points
+# Class for node in KDTree. Contains Leaf nodes or Points
 class Node:
     # New nodes will be type Leaf and store no points
     def __init__(self, longitude, latitude, splitAxis, points=[], children={}, leftChild = None, rightChild = None, root=0, parent = None): 
@@ -255,8 +255,8 @@ class Node:
 
 
 
-# Class for KdTree
-class KdTree:
+# Class for KDTree
+class KDTree:
 
     def __init__(self, startingSplit=0): # 0 = X-Axis, 1 = Y-Axis
 
@@ -475,8 +475,8 @@ def main():
 
 
 
-    # # Initialize KdTree
-    kdtree = KdTree()
+    # # Initialize KDTree
+    kdtree = KDTree()
     
 
 ### Insert
