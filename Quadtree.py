@@ -508,15 +508,28 @@ def main():
 
 
     # Initialize Quadtree
-    quadtree = Quadtree(0,0,10,10, 1)
+    quadtree = Quadtree(0,0,11,10, 1)
     
     point1 = Point(1,1,1,1,2,3)
     point2 = Point(1,2,1,2,2,3)
     point3 = Point(1,3,1,3,1,1)
     point4 = Point(1,4,1,1,1,1)
+    point5 = Point(1,5,1,9,1,1)
 
-    point1.setID([])
+    quadtree.Insert(point1)
+    quadtree.Insert(point2)
+    quadtree.Insert(point3)
+    quadtree.Insert(point4)
+    quadtree.Insert(point5)
 
+    # Getting 50 points
+
+    i=0
+    while i != 250:
+        point = Point(1,1,i,1,1,1)
+        quadtree.Insert(point)
+        # self.assertEqual(quadtree.Insert(point), 1)    
+        i+=5 
 
 
 ### Query

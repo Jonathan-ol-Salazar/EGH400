@@ -40,6 +40,21 @@ class TestQuadtree(unittest.TestCase):
         # self.assertEqual(self.quadtree.Insert(point4), 1)    
 
 
+        # ADDING 50 POINTS
+        
+        # for point in points50:
+        #     self.assertEqual(self.quadtree.Insert(point), 1)    
+
+        # i=0
+        # while i != 50:
+        #     point = quadtree.Point(1,1,i,1,1,1)
+        #     self.assertEqual(self.quadtree.Insert(point), 1)    
+        #     i+=1 
+
+
+
+
+
 
         # Root Level 
         point1 = quadtree.Point(1,1,1,1,1,1)
