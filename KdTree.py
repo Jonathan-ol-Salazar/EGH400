@@ -273,6 +273,9 @@ class KDTree:
     def traverseNode(self, node, point, query = 0):
         result = None
 
+        if node == None:
+            return result
+
         if node.isRoot() and node.hasChildren() == 0:
         # if node.isRoot() and len(node.getChildren()) == 0:
             return node
@@ -467,8 +470,10 @@ class KDTree:
             return 0    # Query Failed
         elif node.getCoords() != point.getCoords():
             return 0    # Query Failed
+        elif [point] in list(node.points.values()):
+            return point # Returning point found from node found
         
-        return node     # Returning node found
+        return 0     # Query failed
 
 
 
@@ -556,15 +561,15 @@ def main():
     # five = kdtree.Query(f5)
 
 
-    # one = kdtree.Query(f1Points[3])
-    one = kdtree.Query(point4)
+    one = kdtree.Query(f1Points[3])
+    # one = kdtree.Query(point4)
 
 
 ### Delete
     
     # DELETING EXAMPLES FROM GeeksForGeeks Delete Example
     # kdtree.Delete(f2Points[0]) # Deleting first point
-    delete = kdtree.Delete(point4) # Deleting 2nd level right point
+    delete = kdtree.Delete(point1) # Deleting 2nd level right point
 
 
 
