@@ -360,7 +360,8 @@ class KDTree:
         # Inserting inital point
         if self.root == None:
             self.root = Node(point.getCoords()[0], point.getCoords()[1], self.startingSplit, points={(pointLong, pointLat):[point]}, root=1)
-            return self.root    # Return root 
+            # return self.root    # Return root 
+            return 1
         
         # Inserting new points after root 
         else:
@@ -375,7 +376,8 @@ class KDTree:
                 newChild = Node(pointLong, pointLat, node.getChildSplitAxis(), points={(pointLong, pointLat):[point]}, parent=node)
                 # Add new node to parent found
                 node.setChild(newChild)
-                return node # Return node
+                # return node # Return 
+                return 1
 
         return None # Failure to Insert
 
