@@ -22,6 +22,14 @@ class TestKDTree(unittest.TestCase):
 
         self.kdtree = kdtree.KDTree()
 
+    def test_Insert50(self):
+        # Test to insert 50 points
+        i = 0 
+        while i != 50:
+            point = kdtree.Point(1,1,i,1,1,1)
+            self.assertEqual(self.kdtree.Insert(point), 1) 
+            i += 1
+
 
     def test_Insert(self):
         # FOR REPORT
