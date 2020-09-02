@@ -102,6 +102,28 @@ class TestRTree(unittest.TestCase):
 
         self.assertEqual(self.rtree.createObject(points), None)
 
+    def test_Insert50(self):
+        # Creating object with 50 points
+        points = []
+        i = 0 
+        while i != 50: 
+            point = rtree.Point(1,i,1,1,1,1)
+            points.append(point)
+            i += 1
+
+        pointsObject = self.rtree.createObject(points)
+
+        self.assertEqual(self.rtree.Insert(pointsObject), 1) 
+
+        
+        # # Test to insert 50 points
+        # i = 0 
+        # while i != 50:
+        #     point = rtree.Point(1,1,i,1,1,1)
+        #     self.assertEqual(self.rtree.Insert(point), 1) 
+        #     i += 1
+
+
     def test_Insert(self):
         # FOR REPORT
         # # Initial Insert
