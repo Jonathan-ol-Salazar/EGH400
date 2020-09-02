@@ -14,8 +14,8 @@ class TestRTree(unittest.TestCase):
         longitude2 = 10
         latitude2 = 10
         fanout = 2
-
-        self.rtree = rtree.RTree(latitude1, longitude1, latitude2, longitude2, fanout)
+ 
+        self.rtree = rtree.RTree(longitude1, latitude1, longitude2, latitude2, fanout)
         # self.rtree.root.purgeChildren()
         # self.rtree.root.purgeObjects()
 

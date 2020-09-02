@@ -110,7 +110,7 @@ class Point:
 
 # Class for object in R-Tree. Represents a flight plan, which is a set of points. This can be though of as a MINIMUM BOUNDING BOX
 class Object:
-    def __init__(self, latitude1, longitude1, latitude2, longitude2, orientation, points = []):
+    def __init__(self, longitude1, latitude1, longitude2, latitude2, orientation, points = []):
         self.bL = (longitude1, latitude1) # Bottom left corner (X,Y)
         self.tR = (longitude2, latitude2) # Top right corner (X,Y)
         self.points = points
@@ -551,11 +551,11 @@ class RTree:
         startY = True
 
 
-        # X-axis, Vertical (1)
+        # Y-axis same, Horizontal (1)
         for key in keys:
             if objects[key][0].getOrientation() == 1:
 
-                valueX = key[0][0]
+                valueX = key[0][1]
                 if startX == True:
                     minX = valueX
                     maxX = valueX
@@ -570,10 +570,10 @@ class RTree:
                     maximumX = key
         
 
-        # Y-axis, Horizontal (0)
+        # X-axis same, Vertical (0)
         for key in keys:
             if objects[key][0].getOrientation() == 0:
-                valueY = key[0][1]
+                valueY = key[0][0]
                 if startY == True:
                     minY = valueY
                     maxY = valueY
