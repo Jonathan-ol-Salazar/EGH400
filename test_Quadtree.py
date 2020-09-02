@@ -20,6 +20,15 @@ class TestQuadtree(unittest.TestCase):
         self.quadtree.root.purgeChildren()
         self.quadtree.root.purgePoints()
 
+    def test_Insert50(self):
+        # Test to insert 50 
+        # quadtree50 = quadtree.Quadtree(0, 0, 100, 100, 1)
+        
+        i = 0 
+        while i != 50:
+            point = quadtree.Point(1,i,10,10,1,1)
+            self.assertEqual(self.quadtree.Insert(point), 1) 
+            i += 1
 
     def test_Insert(self):
 
