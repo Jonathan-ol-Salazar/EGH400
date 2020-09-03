@@ -31,6 +31,7 @@ class TestKDTree(unittest.TestCase):
             i += 1
 
 
+
     def test_Insert(self):
         # FOR REPORT
         # # Initial Insert
