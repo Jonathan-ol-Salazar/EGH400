@@ -1,0 +1,16 @@
+dictJSON = {
+    "start_time": startTime,
+    "expire_time": endTime,
+    "location": locationAMSL,
+    "points": points,
+    "altitude":altitude
+} 
+
+
+dictJSON_BC = {
+    "start_time": startTime,
+    "expire_time": endTime,
+    "location": locationAMSL,
+    "radius": radius,
+    "height":height
+}
