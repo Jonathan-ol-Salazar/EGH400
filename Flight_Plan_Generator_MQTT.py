@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt  # import the client1
 import time
 import json
+import requests
 
 # Purpose of this class is to generate fight paths with basic parameteres
 # Duration = 10 seconds
