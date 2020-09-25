@@ -77,20 +77,20 @@ class Point:
         self.id = identification
     
     def setSequence(self, sequence):
-        # if self.checkInt(sequence) == 1:
-        self.sequence = sequence
+        if self.checkInt(sequence) == 1:
+            self.sequence = sequence
     
     def setLong(self, longitude):
-        # if self.checkInt(longitude) == 1:
-        self.longitude = longitude
+        if self.checkInt(longitude) == 1:
+            self.longitude = longitude
     
     def setLat(self, latitude):
-        # if self.checkInt(latitude) == 1:
-        self.latitude = latitude
+        if self.checkInt(latitude) == 1:
+            self.latitude = latitude
     
     def setAlt(self, altitude):
-        # if self.checkInt(altitude) == 1:
-        self.altitude = altitude
+        if self.checkInt(altitude) == 1:
+            self.altitude = altitude
 
     def setTime(self, time):
         # if self.checkDatetime(time) == 1:

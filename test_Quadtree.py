@@ -1,7 +1,7 @@
 import unittest
 import sys
 import math
-# import Custom_Exception as exception
+import Custom_Exception as exception
 # from EGH400 import Quadtree
 import Quadtree as quadtree
 
