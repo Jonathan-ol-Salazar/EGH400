@@ -1,5 +1,5 @@
 import datetime
-import Custom_Exception
+from structures import Custom_Exception
 
 
 # Main Kd-Tree file containing classes: KDTree, Point and Node
