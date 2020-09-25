@@ -3,7 +3,7 @@ import sys
 import math
 # import Custom_Exception as exception
 # from EGH400 import Quadtree
-import structures
+# import structures
 from structures import Quadtree as quadtree
 
 class TestQuadtree(unittest.TestCase):
