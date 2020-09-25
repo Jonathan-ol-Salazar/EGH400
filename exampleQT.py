@@ -226,7 +226,7 @@ class AirspaceService:
     # Check for possible collisions
     def has_collision(self, volume_hull, time_from, time_to, code):
         # Get all colliding candidates
-        possible_collisions = self.get_areas_on_path(code, time_from, time_to)
+     #   possible_collisions = self.get_areas_on_path(code, time_from, time_to)
 
         # TODO: Check possible colisions
         
