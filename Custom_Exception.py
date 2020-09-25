@@ -1,8 +1,12 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   
   
 >>>>>>> k-d-tree
+=======
+  
+>>>>>>> r-tree
 # Custom exceptions
 
 
