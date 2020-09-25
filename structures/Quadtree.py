@@ -1,4 +1,4 @@
-import Custom_Exception
+# import Custom_Exception
 import datetime
 
 # Main Quadtree file containing classes: Quadtree, Point and Node
@@ -45,10 +45,10 @@ class Point:
         allCorrectType = False
         
         # Loop through all attrs and check if they are all the correct types
-        for attr in attrs:
-            if self.checkInt(attr) == 1:
-                allCorrectType = True
-                break
+        # for attr in attrs:
+        #     if self.checkInt(attr) == 1:
+        #         allCorrectType = True
+        #         break
         
         # Check if there is a correct number of attrs to change
         if len(attrs) != len(self.getAll()) and allCorrectType == True:
@@ -77,34 +77,34 @@ class Point:
         self.id = identification
     
     def setSequence(self, sequence):
-        if self.checkInt(sequence) == 1:
-            self.sequence = sequence
+        # if self.checkInt(sequence) == 1:
+        self.sequence = sequence
     
     def setLong(self, longitude):
-        if self.checkInt(longitude) == 1:
-            self.longitude = longitude
+        # if self.checkInt(longitude) == 1:
+        self.longitude = longitude
     
     def setLat(self, latitude):
-        if self.checkInt(latitude) == 1:
-            self.latitude = latitude
+        # if self.checkInt(latitude) == 1:
+        self.latitude = latitude
     
     def setAlt(self, altitude):
-        if self.checkInt(altitude) == 1:
-            self.altitude = altitude
+        # if self.checkInt(altitude) == 1:
+        self.altitude = altitude
 
     def setTime(self, time):
         # if self.checkDatetime(time) == 1:
         self.time = time
 
-    def checkInt(self, input):
-        try:
-            if type(input) != int:
-                raise Custom_Exception.typeNotInt()
-            else:
-                return 1 # Passed
-        except Custom_Exception.typeNotInt():
-            # print("Input must be of type 'int' ")
-            return 0 # Failed
+    # def checkInt(self, input):
+    #     try:
+    #         if type(input) != int:
+    #             raise Custom_Exception.typeNotInt()
+    #         else:
+    #             return 1 # Passed
+    #     except Custom_Exception.typeNotInt():
+    #         # print("Input must be of type 'int' ")
+    #         return 0 # Failed
             
     # def checkDatetime(self, input):
     #     try:
