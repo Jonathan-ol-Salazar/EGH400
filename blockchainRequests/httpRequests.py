@@ -3,7 +3,9 @@ import requests
 
 # Practice script for making requests
 
-
+# Error tests
+# "121.5,61,0' AMSL" '180.0m'
+# ["90,47.0,0' AMSL", '9.0m']
 
 
 URLpost = "http://127.0.0.1:1317/skyy/cylinder"
@@ -16,8 +18,10 @@ data = {
     },
     "start_time": "2020-09-29T00:00:00Z",
     "expire_time": "2020-09-29T01:00:00Z",
-    "location": "42,-70,0' AMSL",
-    "radius": "10m",
+    # "location": "42,-70,0' AMSL",
+    # "radius": "10m",
+    "location": "90,-47,0' AMSL",
+    "radius": '9m',
     "height": "10m"
 }
 
