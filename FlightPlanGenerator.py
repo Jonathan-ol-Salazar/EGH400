@@ -1,5 +1,6 @@
 import json
 import requests
+from structures import Quadtree
 
 # Script to generate flight plans and interact with Skyy Network blockchain
 
@@ -139,3 +140,12 @@ class FlightPlanGenerator:
             print("DENIED")
             return None
 
+
+    def setQuadtreePlans(self, plans):
+        pass
+
+    def setRTreePlans(self):
+        pass
+
+    def setKDTreePlans(self):
+        pass

@@ -7,12 +7,17 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../'))
 import FlightPlanGenerator
 import math
 import random
+import numpy as np
 
 def pointConverter():
     pass 
 
 
 def main():
+
+
+    # GLOBAL PARAMETERS
+    height = "20m"
     
     numPlans = 50
     LongLat = math.ceil(math.sqrt(numPlans) * 2)
@@ -68,7 +73,24 @@ def main():
             
         quadtreeDictPoints[i] = quadtreePoints
 
+    
+    # Point Converter
+        # Loop through each plan
+        # Get information for BC
+    
+    for plan in quadtreeDictPoints.values():
+        # Getting coords to calculate distance of flight
+        startCoords = np.array([plan[0].longitude, plan[0].latitude])
+        endCoords = np.array([plan[-1].longitude, plan[-1].latitude])
 
+        # Finding orientation of travel
+        if plan[0].longitude == plan[-1].longitude:
+            location = str(longitude) + ',' +  str(latitude/2) 
+        else:
+            location = str(longitude/2) + ',' +  str(latitude) 
+
+        location = str(location) + ",0' AMSL"
+        radius = str(np.linalg.norm(startCoords - endCoords)) + 'm'
 
 
 
@@ -85,9 +107,9 @@ def main():
     start_time = "2020-09-29T00:00:00Z"
     expire_time =   "2020-09-29T00:10:00Z"
 
-    location = "42,-70,0' AMSL" # Based on spacing between each plan
-    radius = "2m"               # Based on spacing between each plan
-    height = "20m"              # Based on max altitude of each plan
+    # location = "42,-70,0' AMSL" # Based on spacing between each plan (long, lat, ft above ground, Above Mean Sea Level)
+    # radius = "2m"               # Based on spacing between each plan
+    # height = "20m"              # Based on max altitude of each plan
 
     # Flight Plan Generator Initialization
     fpg = FlightPlanGenerator.FlightPlanGenerator(start_time, expire_time ,location, radius, height)
