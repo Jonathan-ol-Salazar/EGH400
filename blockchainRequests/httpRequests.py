@@ -20,7 +20,7 @@ data = {
     "expire_time": "2020-09-29T01:00:00Z",
     # "location": "42,-70,0' AMSL",
     # "radius": "10m",
-    "location": "90,-47,0' AMSL",
+    "location": "-47,90,0' AMSL",
     "radius": '9m',
     "height": "10m"
 }

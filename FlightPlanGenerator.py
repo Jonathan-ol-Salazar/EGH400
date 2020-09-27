@@ -188,9 +188,9 @@ class FlightPlanGenerator:
 
             # Finding orientation of travel
             if plan[0].longitude == plan[-1].longitude:
-                location = str(plan[0].longitude) + ',' +  str(plan[-1].latitude/2) 
+                location = str(plan[-1].latitude/2) + ',' + str(plan[0].longitude)
             else:
-                location = str(plan[-1].longitude/2) + ',' +  str(plan[1].latitude) 
+                location = str(plan[1].latitude) + ',' + str(plan[-1].longitude/2)
 
             location = str(location) + ",0' AMSL"
             radius = str(np.linalg.norm(startCoords - endCoords)) + 'm'
