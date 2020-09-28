@@ -18,7 +18,7 @@ def main():
 
     # GLOBAL PARAMETERS
     height = "20m"
-    LongLat = 100
+    LongLat = 1000
 
     # Quadtree Initialization
     quadtree = Quadtree.Quadtree(0,0,LongLat,LongLat,1)
@@ -44,35 +44,39 @@ def main():
 
     # Flight Plan Generator Initialization
     fpg = FlightPlanGenerator.FlightPlanGenerator()
-    fpg.randomGenerator()
 
+    # Take off and land
+    fpg.manualGenerator()
     quadtreePoints = fpg.getPointsStructures("quad")
+
+    # if fpg.sendRequests() == 1:
+    # Quadtree 
+    insertResultQuad = []
+    for plan in quadtreePoints.values():
+        for point in plan:
+            print(point.getAll())
+            insertResultQuad.append(quadtree.Insert(point))
+        
+    
+    # Random flight    
+    fpg.randomGenerator()
     kdtreePoints = fpg.getPointsStructures("kd")
     rtreePoints = fpg.getPointsStructures("r")
 
-    # x = fpg.sendRequests()
-    x = 1
-    # Adding points to structures
-    if x != None: 
-        # # Quadtree 
-        # insertResultQuad = []
-        # for plan in quadtreePoints.values():
-        #     for point in plan:
-        #         insertResultQuad.append(quadtree.Insert(point))
+    # if fpg.sendRequests() == 1:
+    # KDTree
+    insertResultKD = []
+    for plan in kdtreePoints.values():
+        for point in plan:
+            insertResultKD.append(kdtree.Insert(point))
         
-        # KDTree
-        insertResultKD = []
-        for plan in kdtreePoints.values():
-            for point in plan:
-                insertResultKD.append(kdtree.Insert(point))
-        
-        # RTree
-        insertResultR = []
-        for plan in rtreePoints:
-            c= rtree.Insert(plan)
-            if c == 0:
-                print("asdf")
-            insertResultR.append(c)
+    # RTree
+    insertResultR = []
+    for plan in rtreePoints:
+        c= rtree.Insert(plan)
+        if c == 0:
+            print("asdf")
+        insertResultR.append(c)
 
             # insertResultR.append(rtree.Insert(plan))
 
@@ -80,8 +84,8 @@ def main():
 
     # x = fpg.sendRequest()
 
-    print("X")
-
+ 
+    x = 1
 
 if __name__ == "__main__":
     # execute only if run as a script

@@ -45,8 +45,8 @@ class FlightPlanGenerator:
     def setHeight(self, height):
         self.height = height
     
-    def setPoints(self, quadtreeDictPoints):
-        self.quadtreeDictPoints = quadtreeDictPoints
+    def setPoints(self, points):
+        self.points = points
     
     def setPointsBC(self, pointsBC):
         self.pointsBC = pointsBC
@@ -69,7 +69,7 @@ class FlightPlanGenerator:
         return self.height
     
     def getPoints(self):
-        return self.quadtreeDictPoints
+        return self.points
     
     def getPointsStructures(self, structure):
         if structure == "quad" or structure == "kd":
@@ -86,10 +86,49 @@ class FlightPlanGenerator:
         else:
             return None
 
+    def manualGenerator(self, numPlans=50, numPoints=10, longitude=100, latitude=100, altitude=20, max=1000):
+        # Flight plans stored in dictionary
+        dictPoints = {}
+
+        # For loop to make 50 plans
+        for i in range(1,numPlans+1):
+            # List to store flight points
+            quadtreePoints = []                     
+            newPlan = True
+
+            # Random variables
+            # longitude = random.randint(0,10)
+            # latitude = random.randint(0,10)
+            # altitude = random.randint(0,20)
+            # randLatLong = random.choice([0, 1])
+
+            # For loop to make 10 points in plan
+            for j in range(1,numPoints+1):
+                identification = i
+                sequence = j
+
+                time = j
+                longitude = longitude
+                latitude = latitude
+                
+                # Take off and land
+                if j >= numPoints:
+                    altitude -= 1
+                else:
+                    altitude += 1        
+
+                # Make new point
+                point = Quadtree.Point(identification,sequence,longitude,latitude,altitude,time)
+                quadtreePoints.append(point)
+
+            # Add to flight plan dictionary    
+            dictPoints[i] = quadtreePoints
+        
+        self.setPoints(dictPoints)
 
 
     # Random Point Generator
-    def randomGenerator(self, start_time = None, expire_time = None, height = None):
+    def randomGenerator(self, start_time = None, expire_time = None, height = None, max = 10000):
 
         # Default parameters: 50 flight plans with 10 points each at 20m altitude
         self.setHeight("20m")
@@ -97,7 +136,7 @@ class FlightPlanGenerator:
         self.setEndTime("2020-09-29T00:10:00Z")
 
         # Flight plans stored in dictionary
-        quadtreeDictPoints = {}
+        dictPoints = {}
 
         # For loop to make 50 plans
         for i in range(1,51):
@@ -106,8 +145,8 @@ class FlightPlanGenerator:
             newPlan = True
 
             # Random variables
-            longitude = random.randint(0,100)
-            latitude = random.randint(0,85)
+            longitude = random.randint(0,max)
+            latitude = random.randint(0,max)
             altitude = random.randint(0,20)
             randLatLong = random.choice([0, 1])
 
@@ -131,9 +170,9 @@ class FlightPlanGenerator:
                 quadtreePoints.append(point)
 
             # Add to flight plan dictionary    
-            quadtreeDictPoints[i] = quadtreePoints
+            dictPoints[i] = quadtreePoints
         
-        self.setPoints(quadtreeDictPoints)
+        self.setPoints(dictPoints)
 
     # Convert points to BC
     def pointConverter(self, plan): 

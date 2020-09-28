@@ -1,3 +1,7 @@
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__),'../'))
+
 from structures import Custom_Exception
 import datetime
 
@@ -499,7 +503,19 @@ class Quadtree:
 def main():
 
     # Initialize Quadtree
-    quadtree = Quadtree(0,0,10,10, 1)
+    quadtree = Quadtree(0,0,1000,1000, 1)
+
+    #testing
+    point1 = Point(1,1,5,2,7,1)
+    point2 = Point(1,2,6,2,7,2)
+    point3 = Point(1,1,7,2,7,1)
+
+
+    # quadtree.Insert(point1)     # Insert point1
+    # quadtree.Insert(point2)     # Insert point1
+    # quadtree.Insert(point3)     # Insert point1
+
+
 
     point1 = Point(1,1,1,1,2,3)
     point2 = Point(1,2,1,2,2,3)
@@ -526,12 +542,14 @@ def main():
     # quadtree.Insert(point5)
 
     # Getting 50 points
-    # i=1
-    # while i != 50:
-    #     point = Point(1,i,100,100,1,1)
-    #     quadtree.Insert(point)
-    #     # self.assertEqual(quadtree.Insert(point), 1)    
-    #     i+=1 
+    i=1
+    while i != 50:
+        point = Point(1,i,100,100,1,1)
+        quadtree.Insert(point)
+
+        point = Point(1,i,100,201,i,1)
+        quadtree.Insert(point)
+        i+=1 
 
 
 ### Query
