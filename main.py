@@ -1,9 +1,11 @@
 from structures import Quadtree
-# from structures import RTree
-# from structures import KDTree
+from structures import RTree
+from structures import KDTree
 import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__),'../'))
+
+# sys.setrecursionlimit(int(MAX)) 
 import FlightPlanGenerator
 
 
@@ -20,6 +22,8 @@ def main():
 
     # Quadtree Initialization
     quadtree = Quadtree.Quadtree(0,0,LongLat,LongLat,1)
+    rtree = RTree.RTree(0,0,LongLat,LongLat,4)
+    kdtree = KDTree.KDTree()
 
 
 
@@ -40,10 +44,38 @@ def main():
 
     # Flight Plan Generator Initialization
     fpg = FlightPlanGenerator.FlightPlanGenerator()
-    fpg.randomGeneratorQuadTree()
-    x = fpg.sendRequests()
+    fpg.randomGenerator()
 
-    # Set flight plan
+    quadtreePoints = fpg.getPointsStructures("quad")
+    kdtreePoints = fpg.getPointsStructures("kd")
+    rtreePoints = fpg.getPointsStructures("r")
+
+    # x = fpg.sendRequests()
+    x = 1
+    # Adding points to structures
+    if x != None: 
+        # # Quadtree 
+        # insertResultQuad = []
+        # for plan in quadtreePoints.values():
+        #     for point in plan:
+        #         insertResultQuad.append(quadtree.Insert(point))
+        
+        # KDTree
+        insertResultKD = []
+        for plan in kdtreePoints.values():
+            for point in plan:
+                insertResultKD.append(kdtree.Insert(point))
+        
+        # RTree
+        insertResultR = []
+        for plan in rtreePoints:
+            c= rtree.Insert(plan)
+            if c == 0:
+                print("asdf")
+            insertResultR.append(c)
+
+            # insertResultR.append(rtree.Insert(plan))
+
 
 
     # x = fpg.sendRequest()

@@ -811,6 +811,7 @@ class RTree:
 
                 # Add object to node 
                 node.setObject([object])
+                result = 1
             
             # Check if node is too big, if so split it
             if len(node.getObjects()) > self.fanout:
@@ -857,7 +858,17 @@ class RTree:
         return 0    # Query failed
         
 
+def createObject(points):
+    start = (points[0].getLong(), points[0].getLat()) # Start coords
+    end = (points[-1].getLong(), points[-1].getLat())   # End coords
 
+    if points[0].getLat() == points[-1].getLat():
+        return Object(start[0], start[1], end[0], end[1], 1, points=points)   # Object with points, Horizontal, Y-axis the same
+    elif points[0].getLong() == points[-1].getLong():
+        return Object(start[0], start[1], end[0], end[1], 0, points=points)   # Object with points, Vertical, X-Axis the same
+
+
+    return None
 
 
 def main():
@@ -901,15 +912,19 @@ def main():
     point4 = Point(5,4,5,4,1,1)
     f5Points = [point1,point2,point3,point4]    # List of points
 
+    f1 = createObject(f1Points)
+    f2 = createObject(f2Points)
+    f3 = createObject(f3Points)
+    f4 = createObject(f4Points)
+    f5 = createObject(f5Points)
 
 
 
-
-    f1 = rtree.createObject(f1Points)
-    f2 = rtree.createObject(f2Points)
-    f3 = rtree.createObject(f3Points)
-    f4 = rtree.createObject(f4Points)
-    f5 = rtree.createObject(f5Points)
+    # f1 = rtree.createObject(f1Points)
+    # f2 = rtree.createObject(f2Points)
+    # f3 = rtree.createObject(f3Points)
+    # f4 = rtree.createObject(f4Points)
+    # f5 = rtree.createObject(f5Points)
 
 
 

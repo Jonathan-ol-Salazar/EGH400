@@ -1,53 +1,11 @@
 import json
 import requests
-from structures import Quadtree
+from structures import Quadtree, KDTree, RTree
 import math
 import random
 import numpy as np
 # Script to generate flight plans and interact with Skyy Network blockchain
 
-
-# PARAMETERS
-
-# # Example Times, ISO-8601
-# start_time = "2020-09-29T00:00:00Z"
-# expire_time =   "2020-09-29T00:10:00Z"
-
-# location = "42,-70,0' AMSL" 
-# radius = "1m" 
-# height = "20m"
-
-
-
-# # URL for blockchain 
-# URLpost = "http://127.0.0.1:1317/skyy/cylinder"
-
-# # data 
-# data = {
-#     "base_req": {
-#         "chain_id": "skyyNetwork",
-#         "from": "skyy14a5vmle5xwjz7tcawcgt0leu3vp90vugt9ugry",
-#         "gas": "auto"
-#     },
-#     "start_time": start_time,
-#     "expire_time": expire_time,
-#     "location": location,
-#     "radius": radius,
-#     "height": height
-# }
-
-
-
-
-# # POST 
-# resp = requests.post(URLpost, json=data)
-
-# if resp.status_code == 200:
-#     print("APPROVED")
-#     # Convert to points
-#     # Add to data structure
-# else:
-#     print("DENIED")
 
 
 
@@ -110,12 +68,28 @@ class FlightPlanGenerator:
     def getHeight(self):
         return self.height
     
-    def getPointsQuadTree(self):
+    def getPoints(self):
         return self.quadtreeDictPoints
+    
+    def getPointsStructures(self, structure):
+        if structure == "quad" or structure == "kd":
+            return self.getPoints()
+        elif structure == "r":
+            plansObjectList = []
+            # Get points
+            plans = self.getPoints()
+            # Convert them to RTree object
+            for plan in plans.values():
+                plansObjectList.append(RTree.createObject(plan))
+            
+            return plansObjectList
+        else:
+            return None
+
 
 
     # Random Point Generator
-    def randomGeneratorQuadTree(self, start_time = None, expire_time = None, height = None):
+    def randomGenerator(self, start_time = None, expire_time = None, height = None):
 
         # Default parameters: 50 flight plans with 10 points each at 20m altitude
         self.setHeight("20m")
@@ -205,7 +179,7 @@ class FlightPlanGenerator:
         # URL for blockchain 
         URLpost = "http://127.0.0.1:1317/skyy/cylinder"
 
-        plans = self.getPointsQuadTree()
+        plans = self.getPoints()
 
         for plan in plans.values():
 
@@ -237,8 +211,9 @@ class FlightPlanGenerator:
                 # return 1
             else:
                 print("DENIED")
-                # return None
-        return None
+                return None
+                
+        return 1
 
     def setQuadtreePlans(self, plans):
         pass
