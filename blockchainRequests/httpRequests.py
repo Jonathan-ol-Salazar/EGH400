@@ -6,6 +6,7 @@ import requests
 # Error tests
 # "121.5,61,0' AMSL" '180.0m'
 # ["90,47.0,0' AMSL", '9.0m']
+["35.0,70,0' AMSL", '0.0m']
 
 
 URLpost = "http://127.0.0.1:1317/skyy/cylinder"

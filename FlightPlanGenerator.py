@@ -19,7 +19,12 @@ class FlightPlanGenerator:
     #     self.height = height
     #     # Possibly add function to convert Point to point
 
-        
+    
+    def __init__(self):
+        # Default parameters: 50 flight plans with 10 points each at 20m altitude
+        self.height = "20m"
+        self.start_time = "2020-09-29T00:00:00Z"
+        self.expire_time = "2020-09-29T00:10:00Z"
     
     def addParams(self, start_time, expire_time, location, radius, height):
         self.start_time = start_time
@@ -86,7 +91,7 @@ class FlightPlanGenerator:
         else:
             return None
 
-    def manualGenerator(self, numPlans=50, numPoints=10, longitude=100, latitude=100, altitude=20, max=1000):
+    def manualGenerator(self, numPlans=50, numPoints=10, longitude=70, latitude=70, altitude=20, max=1000):
         # Flight plans stored in dictionary
         dictPoints = {}
 
@@ -145,8 +150,10 @@ class FlightPlanGenerator:
             newPlan = True
 
             # Random variables
-            longitude = random.randint(0,max)
-            latitude = random.randint(0,max)
+            # longitude = random.randint(0,100)
+            # latitude = random.randint(0,70)
+            longitude = random.randint(140,149)
+            latitude = random.randint(21,28)
             altitude = random.randint(0,20)
             randLatLong = random.choice([0, 1])
 
@@ -207,6 +214,9 @@ class FlightPlanGenerator:
 
             location = str(location) + ",0' AMSL"
             radius = str(np.linalg.norm(startCoords - endCoords)) + 'm'
+
+            if startCoords.tolist() == endCoords.tolist():
+                radius = '10m'
 
             return [location, radius]
 
