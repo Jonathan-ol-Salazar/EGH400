@@ -1,8 +1,10 @@
 import unittest
-import sys
 import math
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__),'../'))
 
-import RTree as rtree
+from structures import RTree as rtree
 
 
 class TestRTree(unittest.TestCase):

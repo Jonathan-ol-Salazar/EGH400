@@ -1,9 +1,13 @@
 import unittest
-import sys
+
 import math
 # import Custom_Exception as exception
 # from EGH400 import Quadtree
 # import structures
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__),'../'))
+
 from structures import Quadtree as quadtree
 
 class TestQuadtree(unittest.TestCase):
@@ -345,10 +349,10 @@ class TestPoint(unittest.TestCase):
 
     # Setters
 
-    def test_setAll(self):
-        testSetAll = [1,2,1,1,1,1]      # Array of attr to set
-        self.point.setAll(testSetAll)   # Set new attr
-        self.assertEqual(self.point.getAll(), testSetAll)   # Use getAll() to check 
+    # def test_setAll(self):
+    #     testSetAll = [1,2,1,1,1,1]      # Array of attr to set
+    #     self.point.setAll(testSetAll)   # Set new attr
+    #     self.assertEqual(self.point.getAll(), testSetAll)   # Use getAll() to check 
     
     def test_setID(self):
         testID = 2

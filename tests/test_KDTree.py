@@ -1,8 +1,11 @@
-import unittest
-import sys
-import math
 
-import KDTree as kdtree
+import unittest
+import math
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__),'../'))
+
+from structures import KDTree as kdtree
 
 class TestKDTree(unittest.TestCase):
     def setUp(self):

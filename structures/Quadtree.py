@@ -2,7 +2,7 @@ import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__),'../'))
 
-from structures import Custom_Exception
+# from structures import Custom_Exception
 import datetime
 
 # Main Quadtree file containing classes: Quadtree, Point and Node
@@ -49,10 +49,10 @@ class Point:
         allCorrectType = False
         
         # Loop through all attrs and check if they are all the correct types
-        for attr in attrs:
-            if self.checkInt(attr) == 1:
-                allCorrectType = True
-                break
+        # for attr in attrs:
+        #     if self.checkInt(attr) == 1:
+        #         allCorrectType = True
+        #         break
         
         # Check if there is a correct number of attrs to change
         if len(attrs) != len(self.getAll()) and allCorrectType == True:
@@ -100,15 +100,15 @@ class Point:
         # if self.checkDatetime(time) == 1:
         self.time = time
 
-    def checkInt(self, input):
-        try:
-            if type(input) != int:
-                raise Custom_Exception.typeNotInt()
-            else:
-                return 1 # Passed
-        except Custom_Exception.typeNotInt():
-            # print("Input must be of type 'int' ")
-            return 0 # Failed
+    # def checkInt(self, input):
+    #     try:
+    #         if type(input) != int:
+    #             raise Custom_Exception.typeNotInt()
+    #         else:
+    #             return 1 # Passed
+    #     except Custom_Exception.typeNotInt():
+    #         # print("Input must be of type 'int' ")
+    #         return 0 # Failed
             
     # def checkDatetime(self, input):
     #     try:
