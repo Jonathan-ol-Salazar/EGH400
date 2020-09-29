@@ -1,87 +1,78 @@
-from structures import Quadtree
-from structures import RTree
-from structures import KDTree
 import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__),'../'))
 
+from structures import Quadtree
+from structures import RTree
+from structures import KDTree
+
 # sys.setrecursionlimit(int(MAX)) 
 import FlightPlanGenerator
 
-
-def pointConverter():
-    pass 
 
 
 def main():
 
 
     # GLOBAL PARAMETERS
-    height = "20m"
-    LongLat = 1000
+    maxPoints = 1
+
+    # QLD Coverage
+    longitude1 = 138
+    latitude1 = 28
+    longitude2 = 153
+    latitude2 = 10
+
+    # Generator Params
+    numPlans = 50
+    numPoints = 10
+    maxAltitude = 20
 
     # Quadtree Initialization
-    quadtree = Quadtree.Quadtree(0,0,LongLat,LongLat,1)
-    rtree = RTree.RTree(0,0,LongLat,LongLat,4)
+    quadtree = Quadtree.Quadtree(longitude1,latitude1,longitude2,latitude2,maxPoints)
+
+    # R-Tree Initialization
+    FANOUT = 4
+    rtree = RTree.RTree(longitude1,latitude1,longitude2,latitude2,FANOUT)
+
+    # K-D Tree Initialization
     kdtree = KDTree.KDTree()
 
-
-
-    # # R-Tree Initialization
-    # FANOUT = 4
-    # rtree = RTree.RTree(0,0,1000,1000, FANOUT)
-
-    # # K-D Tree Initialization
-    # kdtree = KDTree.KDTree()
-
-    # Parameters being sent are just cylinders that encapsulate entire plan
-
-
-
-    # location = "42,-70,0' AMSL" # Based on spacing between each plan (long, lat, ft above ground, Above Mean Sea Level)
-    # radius = "2m"               # Based on spacing between each plan
-    # height = "20m"              # Based on max altitude of each plan
-
     # Flight Plan Generator Initialization
-    fpg = FlightPlanGenerator.FlightPlanGenerator()
+    fpg = FlightPlanGenerator.FlightPlanGenerator(longitude1,latitude1,longitude2,latitude2,numPlans,numPoints,maxAltitude)
+
+################## FLIGHT PLAN GENERATIONS #####################
 
     # Take off and land
     fpg.manualGenerator()
     quadtreePoints = fpg.getPointsStructures("quad")
 
-    if fpg.sendRequests() == 1:
-        # Quadtree 
-        insertResultQuad = []
-        for plan in quadtreePoints.values():
-            for point in plan:
-                print(point.getAll())
-                insertResultQuad.append(quadtree.Insert(point))
-            
+    # if fpg.sendRequests() == 1:
+    # Quadtree 
+    insertResultQuad = []
+    for plan in quadtreePoints.values():
+        for point in plan:
+            # print(point.getAll())
+            insertResultQuad.append(quadtree.Insert(point))
+        
     
     # Random flight    
     fpg.randomGenerator()
     kdtreePoints = fpg.getPointsStructures("kd")
     rtreePoints = fpg.getPointsStructures("r")
 
-    if fpg.sendRequests() == 1:
-        # KDTree
-        insertResultKD = []
-        for plan in kdtreePoints.values():
-            for point in plan:
-                insertResultKD.append(kdtree.Insert(point))
-            
-        # RTree
-        insertResultR = []
-        for plan in rtreePoints:
-            # c= rtree.Insert(plan)
-            # if c == 0:
-            #     print("asdf")
-            # insertResultR.append(c)
-            insertResultR.append(rtree.Insert(plan))
+    # if fpg.sendRequests() == 1:
+    # KDTree
+    insertResultKD = []
+    for plan in kdtreePoints.values():
+        for point in plan:
+            insertResultKD.append(kdtree.Insert(point))
+        
+    # RTree
+    insertResultR = []
+    for plan in rtreePoints:
+        insertResultR.append(rtree.Insert(plan))
 
-
-
-    # x = fpg.sendRequest()
 
  
     x = 1

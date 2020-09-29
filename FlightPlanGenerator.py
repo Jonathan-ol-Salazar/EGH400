@@ -1,5 +1,9 @@
 import json
 import requests
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__),'../'))
+
 from structures import Quadtree, KDTree, RTree
 import math
 import random
@@ -20,11 +24,18 @@ class FlightPlanGenerator:
     #     # Possibly add function to convert Point to point
 
     
-    def __init__(self):
+    def __init__(self,longitude1,latitude1,longitude2,latitude2, numPlans, numPoints, maxAltitude):
         # Default parameters: 50 flight plans with 10 points each at 20m altitude
         self.height = "20m"
-        self.start_time = "2020-09-29T00:00:00Z"
-        self.expire_time = "2020-09-29T00:10:00Z"
+        self.start_time = "2021-09-29T00:00:00Z"
+        self.expire_time = "2021-09-29T00:10:00Z"
+        self.longitude1 = longitude1
+        self.longitude2 = longitude2
+        self.latitude1 = latitude1
+        self.latitude2 = latitude2
+        self.numPlans = numPlans
+        self.numPoints = numPoints
+        self.maxAltitude = maxAltitude
     
     def addParams(self, start_time, expire_time, location, radius, height):
         self.start_time = start_time
@@ -91,36 +102,47 @@ class FlightPlanGenerator:
         else:
             return None
 
-    def manualGenerator(self, numPlans=50, numPoints=10, longitude=70, latitude=70, altitude=20, max=1000):
+
+    def getLongitude1(self):
+        return self.longitude1
+        
+    def getLongitude2(self):
+        return self.longitude2
+
+    def getLatitude1(self):
+        return self.latitude1
+
+    def getLatitude2(self):
+        return self.latitude2
+
+    def getNumPlans(self):
+        return self.numPlans
+    
+    def getNumPoints(self):
+        return self.numPoints
+    
+    def getMaxAltitude(self):
+        return self.maxAltitude
+
+
+    def manualGenerator(self, numPlans=50, numPoints=10, longitude=153, latitude=28, altitude=0):
         # Flight plans stored in dictionary
         dictPoints = {}
 
         # For loop to make 50 plans
-        for i in range(1,numPlans+1):
+        for i in range(1,self.getNumPlans()+1):
             # List to store flight points
             quadtreePoints = []                     
-            newPlan = True
 
-            # Random variables
-            # longitude = random.randint(0,10)
-            # latitude = random.randint(0,10)
-            # altitude = random.randint(0,20)
-            # randLatLong = random.choice([0, 1])
 
             # For loop to make 10 points in plan
-            for j in range(1,numPoints+1):
+            for j in range(1,self.getNumPoints()+1):
                 identification = i
                 sequence = j
-
                 time = j
-                longitude = longitude
-                latitude = latitude
                 
-                # Take off and land
-                if j >= numPoints:
-                    altitude -= 1
-                else:
-                    altitude += 1        
+                # Take off and hover
+                altitude += 1        
 
                 # Make new point
                 point = Quadtree.Point(identification,sequence,longitude,latitude,altitude,time)
@@ -133,12 +155,7 @@ class FlightPlanGenerator:
 
 
     # Random Point Generator
-    def randomGenerator(self, start_time = None, expire_time = None, height = None, max = 10000):
-
-        # Default parameters: 50 flight plans with 10 points each at 20m altitude
-        self.setHeight("20m")
-        self.setStartTime("2020-09-29T00:00:00Z")
-        self.setEndTime("2020-09-29T00:10:00Z")
+    def randomGenerator(self):
 
         # Flight plans stored in dictionary
         dictPoints = {}
@@ -152,9 +169,9 @@ class FlightPlanGenerator:
             # Random variables
             # longitude = random.randint(0,100)
             # latitude = random.randint(0,70)
-            longitude = random.randint(140,149)
-            latitude = random.randint(21,28)
-            altitude = random.randint(0,20)
+            longitude = random.randint(self.getLongitude1(),self.getLongitude2())
+            latitude = random.randint(self.getLatitude2(), self.getLatitude1())
+            altitude = random.randint(0,self.getMaxAltitude())
             randLatLong = random.choice([0, 1])
 
             # For loop to make 10 points in plan
@@ -187,20 +204,6 @@ class FlightPlanGenerator:
             # Loop through each plan
             # Get information for BC and store in dict
 
-        
-        # for plan in quadtreeDictPoints.values():
-        #     # Getting coords to calculate distance of flight
-        #     startCoords = np.array([plan[0].longitude, plan[0].latitude])
-        #     endCoords = np.array([plan[-1].longitude, plan[-1].latitude])
-
-        #     # Finding orientation of travel
-        #     if plan[0].longitude == plan[-1].longitude:
-        #         location = str(plan[0].longitude) + ',' +  str(plan[-1].latitude/2) 
-        #     else:
-        #         location = str(plan[-1].longitude/2) + ',' +  str(plan[1].latitude) 
-
-        #     location = str(location) + ",0' AMSL"
-        #     radius = str(np.linalg.norm(startCoords - endCoords)) + 'm'
 
             # Getting coords to calculate distance of flight
             startCoords = np.array([plan[0].longitude, plan[0].latitude])
