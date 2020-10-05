@@ -15,10 +15,29 @@ class Point:
     def __init__(self, identification, sequence, longitude, latitude, altitude, time): # long = x, lat = y
         self.id = identification
         self.sequence = sequence
-        self.longitude = longitude
-        self.latitude = latitude
+        self.longitude = self.setLongitudeDirection(longitude)
+        self.latitude = self.setLatitudeDirection(latitude)
         self.altitude = altitude
         self.time = time
+
+
+    def setLongitudeDirection(self, longitude):
+        # Longitude is -ve, so it's WEST of Prime Meridian
+        if longitude < 0:
+            self.longitudeDirection = "W"
+            return longitude * -1
+        # Longitude is +ve, so it's EAST of Prime Meridian
+        self.longitudeDirection = "E"
+        return longitude
+    
+    def setLatitudeDirection(self, latitude):
+        # Latitude is -ve, so it's SOUTH of Equator
+        if latitude < 0:
+            self.latitudeDirection = "S"
+            return latitude * -1
+        # Latitude is +ve, so it's NORTH of Equator
+        self.longitudeDirection = "N"
+        return latitude
 
     def getID(self):
         return self.id
@@ -192,14 +211,34 @@ class Node:
 class Quadtree:
     # Give initial size of Quadtree
     # Creates root node
-    def __init__(self, latitude1, longitude1, latitude2, longitude2, maxPoints): # 1 = bottom left corner, 2 = top right corner
-        bL = [longitude1, latitude1] # Bottom left corner (X,Y)
-        tR = [longitude2, latitude2] # Top right corner (X,Y)
+    def __init__(self, longitude1, latitude1, longitude2, latitude2, maxPoints): # 1 = bottom left corner, 2 = top right corner
+        self.bL = [longitude1, latitude1] # Bottom left corner (X,Y)
+        self.tR = [longitude2, latitude2] # Top right corner (X,Y)
+
+        self.bLDirection = self.setDirection(self.bL)
+        self.tRDirection = self.setDirection(self.tR)
 
         self.maxPoints = maxPoints # Max points before decomposition
-        self.root = Node(bL, tR, root = 1) # Create root node
+        self.root = Node(self.bL, self.tR, root = 1) # Create root node
 
     ############# BODY METHODS #################
+
+    def setDirection(self, corner):
+        direction = ["E", "N"]
+        # Longitude is -ve, so it's WEST of Prime Meridian
+        if corner[0] < 0:
+            direction[0] = "W"
+            corner[0] *= -1
+
+        # Latitude is -ve, so it's SOUTH of Equator
+        if corner[1] < 0:
+            direction[1] = "S"
+            corner[1] *= -1
+        
+        return direction
+    
+
+
 
 
     # Helper (Insert): Subdivide nodes into 4 children                 
