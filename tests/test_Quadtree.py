@@ -18,7 +18,18 @@ class TestQuadtree(unittest.TestCase):
         latitude1 = 0
         longitude2 = 10
         latitude2 = 10
+        
+        longitude3 = -1
+        latitude3 = -1
+        longitude4 = -10
+        latitude4 = -10  
+    
         maxPoints = 1
+
+
+        self.quadtreeNegative = quadtree.Quadtree(latitude3, longitude3, latitude4, longitude4, maxPoints)
+        self.quadtreeNegative.root.purgeChildren()
+        self.quadtreeNegative.root.purgePoints()
 
 
         self.quadtree = quadtree.Quadtree(latitude1, longitude1, latitude2, longitude2, maxPoints)
@@ -66,6 +77,15 @@ class TestQuadtree(unittest.TestCase):
         #     i+=1 
 
 
+        # Negative
+        pointNeg = quadtree.Point(1,1,-1,-1,1,1)
+        
+        self.assertEqual(self.quadtreeNegative.Insert(pointNeg), 1)    # No children
+
+        self.assertEqual(self.quadtreeNegative.root.points[pointNeg.getKey()][0].getAll(), pointNeg.getAll())
+        self.assertEqual(len(self.quadtreeNegative.root.getChildren()), 0)    # No children
+        self.assertEqual(len(self.quadtreeNegative.root.getPoints()), 1)      # Single point
+        self.assertEqual(self.quadtreeNegative.root.getParent(), None)        # No parents
 
 
 
