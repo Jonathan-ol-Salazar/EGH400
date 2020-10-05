@@ -65,6 +65,22 @@ class TestRTree(unittest.TestCase):
         f5Points = [point1,point2,point3,point4]    # List of points
         self.f5 = self.rtree.createObject(f5Points)
 
+        # Negative params
+        longitude3 = -1
+        latitude3 = -1
+        longitude4 = -10
+        latitude4 = -10  
+
+        self.rtreeNegative = rtree.RTree(longitude3, latitude3, longitude4, latitude4, fanout)
+
+        # Negative Object  
+        point1Neg = rtree.Point(5,1,-5,-1,2,3)
+        point2Neg = rtree.Point(5,2,-5,-2,2,3)
+        point3Neg = rtree.Point(5,3,-5,-3,1,1)
+        point4Neg = rtree.Point(5,4,-5,-4,1,1)
+        fnegPoints = [point1Neg,point2Neg,point3Neg,point4Neg]    # List of points
+        self.fneg = self.rtree.createObject(fnegPoints)
+
 
 
     def test_createObject(self):
@@ -137,6 +153,17 @@ class TestRTree(unittest.TestCase):
         # # Insert 4th point
         # self.assertEqual(self.rtree.Insert(self.f4), 1)            
         
+        # Negative
+        self.assertEqual(len(self.rtreeNegative.root.getObjects()), 0)      # No objects before insert
+        self.assertEqual(len(self.rtreeNegative.root.getChildren()), 0)     # No children before insert
+        
+        self.assertEqual(self.rtreeNegative.Insert(self.fneg), 1)            # Initial Insert
+
+        self.assertEqual(len(self.rtreeNegative.root.getChildren()), 1)     # Children after insert
+        self.assertEqual(len(self.rtreeNegative.root.getObjects()), 0)      # No objects after insert
+        self.assertEqual(self.rtreeNegative.root.getParent(), None)         # No Parent
+
+
 
         # Object 1 
         self.assertEqual(len(self.rtree.root.getObjects()), 0)      # No objects before insert
