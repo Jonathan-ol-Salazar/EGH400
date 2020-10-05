@@ -25,6 +25,19 @@ class TestKDTree(unittest.TestCase):
 
         self.kdtree = kdtree.KDTree()
 
+        # Negative params
+        self.point1Neg = kdtree.Point(1,1,-3,-6,2,3)
+        self.point2Neg = kdtree.Point(1,2,-17,-15,2,3)
+        self.point3Neg = kdtree.Point(1,3,-13,-15,1,1)
+        self.point4Neg = kdtree.Point(1,4,-6,-12,1,1)
+
+        # Negative structure
+        self.fNegPoints = [self.point1Neg,self.point2Neg,self.point3Neg,self.point4Neg]    # List of points
+
+        self.kdtreeNegative = kdtree.KDTree()
+
+
+
     def test_Insert50(self):
         # Test to insert 50 points
         i = 0 
@@ -46,6 +59,9 @@ class TestKDTree(unittest.TestCase):
         # # Insert 4th point
         # self.assertEqual(self.kdtree.Insert(self.f4), 1)            
         
+        # Negative
+        for point in self.fNegPoints:
+           self.assertEqual(self.kdtreeNegative.Insert(point), 1) 
         
         for point in self.f1Points:
            self.assertEqual(self.kdtree.Insert(point), 1)            

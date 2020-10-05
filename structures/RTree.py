@@ -36,7 +36,7 @@ class Point:
             self.latitudeDirection = "S"
             return latitude * -1
         # Latitude is +ve, so it's NORTH of Equator
-        self.longitudeDirection = "N"
+        self.latitudeDirection = "N"
         return latitude
 
     def getID(self):

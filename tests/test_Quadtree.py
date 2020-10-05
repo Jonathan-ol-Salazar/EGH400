@@ -18,7 +18,8 @@ class TestQuadtree(unittest.TestCase):
         latitude1 = 0
         longitude2 = 10
         latitude2 = 10
-        
+
+        # Negative params
         longitude3 = -1
         latitude3 = -1
         longitude4 = -10
@@ -26,7 +27,7 @@ class TestQuadtree(unittest.TestCase):
     
         maxPoints = 1
 
-
+        # Negative structure
         self.quadtreeNegative = quadtree.Quadtree(latitude3, longitude3, latitude4, longitude4, maxPoints)
         self.quadtreeNegative.root.purgeChildren()
         self.quadtreeNegative.root.purgePoints()

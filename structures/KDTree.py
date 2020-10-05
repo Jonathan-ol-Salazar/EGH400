@@ -10,10 +10,35 @@ class Point:
     def __init__(self, identification, sequence, longitude, latitude, altitude, time): # long = x, lat = y
         self.id = identification
         self.sequence = sequence
-        self.longitude = longitude
-        self.latitude = latitude
+        self.longitude = self.setLongitudeDirection(longitude)
+        self.latitude = self.setLatitudeDirection(latitude)
         self.altitude = altitude
         self.time = time
+
+
+    def setLongitudeDirection(self, longitude):
+        # Longitude is -ve, so it's WEST of Prime Meridian
+        if longitude < 0:
+            self.longitudeDirection = "W"
+            return longitude * -1
+        # Longitude is +ve, so it's EAST of Prime Meridian
+        self.longitudeDirection = "E"
+        return longitude
+    
+    def setLatitudeDirection(self, latitude):
+        # Latitude is -ve, so it's SOUTH of Equator
+        if latitude < 0:
+            self.latitudeDirection = "S"
+            return latitude * -1
+        # Latitude is +ve, so it's NORTH of Equator
+        self.latitudeDirection = "N"
+        return latitude
+    
+    def getLongitudeDirection(self):
+        return self.longitudeDirection
+
+    def getLatitudeDirection(self):
+        return self.latitudeDirection
 
     def getID(self):
         return self.id
@@ -109,7 +134,7 @@ class Point:
 # Class for node in KDTree. Contains Leaf nodes or Points
 class Node:
     # New nodes will be type Leaf and store no points
-    def __init__(self, longitude, latitude, splitAxis, points=[], children={}, leftChild = None, rightChild = None, root=0, parent = None): 
+    def __init__(self, longitude, latitude, splitAxis, points=[], children={}, leftChild = None, rightChild = None, root=0, parent = None, longitudeDirection="", latitudeDirection=""): 
         self.points = points
         self.children = children
         self.root = root
@@ -119,6 +144,9 @@ class Node:
         self.splitAxis = splitAxis  # 0 = X-Axis, 1 = Y-Axis
         self.leftChild = leftChild
         self.rightChild = rightChild
+        self.longitudeDirection = longitudeDirection
+        self.latitudeDirection = latitudeDirection
+
 
     def getLeftChild(self):
         return self.leftChild
@@ -359,10 +387,12 @@ class KDTree:
         # Get point coords
         pointLong = point.getCoords()[0]    # Point Long
         pointLat = point.getCoords()[1]     # Point Lat 
+        pointLongDirection = point.getLongitudeDirection()
+        pointLatDirection = point.getLatitudeDirection()
 
         # Inserting inital point
         if self.root == None:
-            self.root = Node(point.getCoords()[0], point.getCoords()[1], self.startingSplit, points={(pointLong, pointLat):[point]}, root=1)
+            self.root = Node(pointLong, pointLat, self.startingSplit, points={(pointLong, pointLat):[point]}, root=1, longitudeDirection=pointLongDirection, latitudeDirection=pointLatDirection)
             # return self.root    # Return root 
             return 1
         
@@ -376,7 +406,7 @@ class KDTree:
             
             if node != None:                               
                 # Make a new node and add point to it
-                newChild = Node(pointLong, pointLat, node.getChildSplitAxis(), points={(pointLong, pointLat):[point]}, parent=node)
+                newChild = Node(pointLong, pointLat, node.getChildSplitAxis(), points={(pointLong, pointLat):[point]}, parent=node, longitudeDirection=pointLongDirection, latitudeDirection=pointLatDirection)
                 # Add new node to parent found
                 node.setChild(newChild)
                 # return node # Return 
@@ -490,7 +520,7 @@ def main():
 
     # Dummy points from GeeksforGeeks site on KDTree
         # (3, 6), (17, 15), (13, 15), (6, 12), (9, 1), (2, 7), (10, 19)
-    point1 = Point(1,1,3,6,2,3)
+    point1 = Point(1,1,-3,-6,2,3)
     point2 = Point(1,2,17,15,2,3)
     point3 = Point(1,3,13,15,1,1)
     point4 = Point(1,4,6,12,1,1)

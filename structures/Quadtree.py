@@ -36,7 +36,7 @@ class Point:
             self.latitudeDirection = "S"
             return latitude * -1
         # Latitude is +ve, so it's NORTH of Equator
-        self.longitudeDirection = "N"
+        self.latitudeDirection = "N"
         return latitude
 
     def getID(self):
@@ -542,7 +542,7 @@ class Quadtree:
 def main():
 
     # Initialize Quadtree
-    quadtree = Quadtree(0,0,1000,1000, 1)
+    quadtree = Quadtree(0,0,-1000,1000, 1)
 
     #testing
     point1 = Point(1,1,5,2,7,1)
