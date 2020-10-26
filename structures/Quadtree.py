@@ -38,6 +38,12 @@ class Point:
         # Latitude is +ve, so it's NORTH of Equator
         self.latitudeDirection = "N"
         return latitude
+        
+    def getLongitudeDirection(self):
+        return self.longitudeDirection
+
+    def getLatitudeDirection(self):
+        return self.latitudeDirection
 
     def getID(self):
         return self.id

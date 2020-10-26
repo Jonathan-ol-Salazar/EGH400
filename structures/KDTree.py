@@ -136,7 +136,7 @@ class Node:
     # New nodes will be type Leaf and store no points
     def __init__(self, longitude, latitude, splitAxis, points=[], children={}, leftChild = None, rightChild = None, root=0, parent = None, longitudeDirection="", latitudeDirection=""): 
         self.points = points
-        self.children = children
+        # self.children = children // COMMENTED THIS OUT BUT MIGHT NEED IN FUTURE TO REPLACE leftChild/rightChild
         self.root = root
         self.longitude = longitude 
         self.latitude = latitude
