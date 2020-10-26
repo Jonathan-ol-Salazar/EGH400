@@ -43,35 +43,35 @@ def main():
 
 ################## FLIGHT PLAN GENERATIONS #####################
 
-    # Take off and land
+    # TAKE OFF AND LAND FLIGHT
     fpg.manualGenerator()
     quadtreePoints = fpg.getPointsStructures("quad")
 
-    # if fpg.sendRequests() == 1:
-    # Quadtree 
-    insertResultQuad = []
-    for plan in quadtreePoints.values():
-        for point in plan:
-            # print(point.getAll())
-            insertResultQuad.append(quadtree.Insert(point))
+    if fpg.sendRequests() == 1:
+        # Quadtree 
+        insertResultQuad = []
+        for plan in quadtreePoints.values():
+            for point in plan:
+                # print(point.getAll())
+                insertResultQuad.append(quadtree.Insert(point))
         
     
-    # Random flight    
+    # RANDOM FLIGHT   
     fpg.randomGenerator()
     kdtreePoints = fpg.getPointsStructures("kd")
     rtreePoints = fpg.getPointsStructures("r")
 
-    # if fpg.sendRequests() == 1:
-    # KDTree
-    insertResultKD = []
-    for plan in kdtreePoints.values():
-        for point in plan:
-            insertResultKD.append(kdtree.Insert(point))
+    if fpg.sendRequests() == 1:
+        # KDTree
+        insertResultKD = []
+        for plan in kdtreePoints.values():
+            for point in plan:
+                insertResultKD.append(kdtree.Insert(point))
         
-    # RTree
-    insertResultR = []
-    for plan in rtreePoints:
-        insertResultR.append(rtree.Insert(plan))
+        # RTree
+        insertResultR = []
+        for plan in rtreePoints:
+            insertResultR.append(rtree.Insert(plan))
 
 
  
