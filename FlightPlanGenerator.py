@@ -161,7 +161,7 @@ class FlightPlanGenerator:
         dictPoints = {}
 
         # For loop to make 50 plans
-        for i in range(1,51):
+        for i in range(1,self.getNumPlans()+1):
             # List to store flight points
             quadtreePoints = []                     
             newPlan = True
@@ -175,7 +175,7 @@ class FlightPlanGenerator:
             randLatLong = random.choice([0, 1])
 
             # For loop to make 10 points in plan
-            for j in range(1,11):
+            for j in range(1,self.getNumPoints()+1):
                 identification = i
                 sequence = j
 
