@@ -36,7 +36,7 @@ class FlightPlanGenerator:
         self.numPlans = numPlans
         self.numPoints = numPoints
         self.maxAltitude = maxAltitude
-    
+   
     def addParams(self, start_time, expire_time, location, radius, height):
         self.start_time = start_time
         self.expire_time = expire_time
@@ -230,11 +230,13 @@ class FlightPlanGenerator:
     def sendRequests(self):
         # URL for blockchain 
         URLpost = "http://127.0.0.1:1317/skyy/cylinder"
-
+        
+        # Get generated points
         plans = self.getPoints()
 
+        # Loop through each point in plan and send to blockchain
         for plan in plans.values():
-
+            # Convert the points to blockchain format
             dataBC = self.pointConverter(plan)
             
             # data 
@@ -255,12 +257,10 @@ class FlightPlanGenerator:
             # POST 
             resp = requests.post(URLpost, json=data)
 
-
+            # Check if request is sent to blockchain
             if resp.status_code == 200:
+
                 print("APPROVED")
-                # Convert to points
-                # Add to data structure
-                # return 1
             else:
                 print("DENIED")
                 return None
