@@ -545,185 +545,45 @@ class Quadtree:
 
 ############################################################
 
+# EXAMPLE USAGE
+
+
 def main():
 
     # Initialize Quadtree
     quadtree = Quadtree(0,0,-1000,1000, 1)
 
-    #testing
-    point1 = Point(1,1,5,2,7,1)
-    point2 = Point(1,2,6,2,7,2)
-    point3 = Point(1,1,7,2,7,1)
-
-
-    # quadtree.Insert(point1)     # Insert point1
-    # quadtree.Insert(point2)     # Insert point1
-    # quadtree.Insert(point3)     # Insert point1
-
-
-
+    # Example points
     point1 = Point(1,1,1,1,2,3)
     point2 = Point(1,2,1,2,2,3)
     point3 = Point(1,3,2,2,1,1)
     point4 = Point(1,4,4,4,1,1)
-    # point5 = Point(1,5,1,9,1,1)
-    
-    # point1 = Point(1,1,1,1,2,3)
-    # point2 = Point(1,2,1,2,2,3)
-    # point3 = Point(1,3,1,3,1,1)
-    # point4 = Point(1,4,1,1,1,1)
-    # point5 = Point(1,5,1,9,1,1)
 
-    # point1 = Point(1,1,100,100,2,3)
-    # point2 = Point(1,2,100,200,2,3)
-    # point3 = Point(1,3,100,300,1,1)
-    # point4 = Point(1,4,100,200,1,1)
-    # point5 = Point(1,5,100,900,1,1)
-
-    # quadtree.Insert(point1)
-    # quadtree.Insert(point2)
-    # quadtree.Insert(point3)
-    # quadtree.Insert(point4)
-    # quadtree.Insert(point5)
-
-    # Getting 50 points
-    i=1
-    while i != 50:
-        point = Point(1,i,100,100,1,1)
-        quadtree.Insert(point)
-
-        point = Point(1,i,100,201,i,1)
-        quadtree.Insert(point)
-        i+=1 
+    # INSERT -> x = 1(success), 0(failure)
+    one = quadtree.Insert(point1)  
+    two = quadtree.Insert(point2)  
+    three = quadtree.Insert(point3)  
+    four = quadtree.Insert(point4)  
 
 
-### Query
-    quadtree.Insert(point1)     # Insert point1
-    quadtree.Query(point1)   # Query point at root
-    quadtree.Query(point2)   # Query point that doesn't exist
-    quadtree.Query(point1)      # Query point in children
-    quadtree.Query(point2)      # Query point in children
+    # QUERY - Return point
+    one = quadtree.Query(point1)  
+    two = quadtree.Query(point2)  
+    three = quadtree.Query(point3)  
+    four = quadtree.Query(point4)  
 
-    quadtree.Insert(point2)     # Insert point2
-    quadtree.Insert(point3)     # Insert point3
-    # quadtree.Insert(point4)     # Insert point4
+    # DELETE -> x = 1(success), 0(failure)
+    one = quadtree.Delete(point1) 
+    two = quadtree.Delete(point2) 
+    three = quadtree.Delete(point3) 
+    four = quadtree.Delete(point4) 
 
-    quadtree.Query(point1, 1)   # Query point in children
-    quadtree.Query(point1)      # Query point in children
 
-### Delete
-    quadtree.Insert(point1)     # Insert point1
-    quadtree.Delete(point1)   # Query point at root
-    quadtree.Delete(point2)   # Query point that doesn't exist
-    quadtree.Delete(point1)      # Query point in children
-    quadtree.Delete(point2)      # Query point in children
-
-    quadtree.Insert(point2)     # Insert point2
-    quadtree.Insert(point3)     # Insert point3
-    quadtree.Insert(point4)     # Insert point4
-
-    quadtree.Delete(point1)   # Query point in children
-    quadtree.Delete(point1)      # Query point in children
-
-    quadtree.Insert(point1)
-    quadtree.Delete(point2)     # Insert point2
-    quadtree.Delete(point3)     # Insert point3
-    quadtree.Delete(point4)     # Insert point4
-    quadtree.Delete(point1)      # Query point in children
-
-### Update
-
-    quadtree.Insert(point1)         # Insert point1
-    
-    # quadtree.Update(point1, point2) # Make point1 into point2
-    # quadtree.Update(point2, point2) # Make point2 into point2
-
-    quadtree.Insert(point1)
-    quadtree.Insert(point2)
-    # quadtree.Insert(point3)
-
-    # quadtree.Update(point2, point3) # 
-    # quadtree.Update(point1, point2) # yes
-    # quadtree.Update(point2, point1) # yes
-    # quadtree.Update(point3, point2) # no
-    # quadtree.Update(point3, point3) # 
-
+    # Breakpoint variable
     x = 1
 
 
-
-############################################### old testing
-
-    # # points = [point1, point2]
-
-    # # quadtree.Delete(point1)
-
-    # w = quadtree.Query(point1) #  no
-    
-
-    # quadtree.Insert(point1)
-    
-    # x = quadtree.Query(point1)  # yes
-
-    # quadtree.Insert(point2) 
-
-    # y = quadtree.Query(point3)  # no
-    # z = quadtree.Query(point1)  # yes
-    # zz = quadtree.Query(point2)  # yes
-
-
-    # quadtree.Delete(point1)
-    # quadtree.Delete(point2)
-
-    # y = quadtree.Query(point3)  # no
-    # z = quadtree.Query(point1)  # no
-    # zz = quadtree.Query(point2)  # no
-
-
-    # quadtree.Insert(point1)
-    # quadtree.Insert(point2)
-    # # quadtree.Insert(point3)
-
-    # quadtree.Update(point2, point3) # 
-    # # quadtree.Update(point1, point2) # yes
-    # # quadtree.Update(point2, point1) # yes
-    # # quadtree.Update(point3, point2) # no
-    # quadtree.Update(point3, point3) # 
-
-
-    # # point = Point(1,1,2,3)
-    # # quadtree.movePoints(quadtree.root.children[0], point)
-    # # y = quadtree.Query([0,0], [5,5])
-    # x = 1
-
-
-    # # points1 = [point1.getAll(), point2.getAll()]
-    # # points1 = [point1, point2]
-    # # points2 = [point1, Point(1,2,1,2,2,3) , Point(1,1,1,1,1,1)]
-
-    # # quadtree.Update(points1, points2)
-
-    # # for x in points2:
-    # #     # print(x)
-    # #     print(x.getAll())
-    # #     if x.getAll() not in points:
-    # #         print(x)
-    #     # alteredPoints = [point for point in newPlan if point.getAll() not in oldPlan] 
-
-    # # xx = [x for x in points2 if x.getAll() not in points1] 
-    # # print(xx[0].getAll())
-
-
-
-
-
-  
-
-
-    # # print(point2.getAll() == xx.getAll()) 
-    # # print(point2.getAll() is xx.getAll()) 
-
-    
+   
 
 
 if __name__ == "__main__":
