@@ -507,18 +507,20 @@ class KDTree:
 
 
 
+############################################################
+
+# EXAMPLE USAGE
+
 
 def main():
 
-
-
-    # # Initialize KDTree
+    # Initialize KDTree
     kdtree = KDTree()
     
 
-### Insert
 
-    # Dummy points from GeeksforGeeks site on KDTree
+
+    # Dummy points 1 from GeeksforGeeks site on KDTree
         # (3, 6), (17, 15), (13, 15), (6, 12), (9, 1), (2, 7), (10, 19)
     point1 = Point(1,1,-3,-6,2,3)
     point2 = Point(1,2,17,15,2,3)
@@ -529,94 +531,46 @@ def main():
     point7 = Point(1,7,10,19,1,1)
     f1Points = [point1,point2,point3,point4,point5,point6,point7]    # List of points
 
-    for point in f1Points:
+    # # Dummy points 2 from Marko Berezovský
+    # point1 = Point(2,1,30,40,2,3)
+    # point2 = Point(2,2,5,25,2,3)
+    # point3 = Point(2,3,70,70,1,1)
+    # point4 = Point(2,4,10,12,1,1)
+    # point5 = Point(2,5,50,30,1,1)
+    # point6 = Point(2,6,35,45,1,1)
+    # f2Points = [point1,point2,point3,point4,point5,point6]    # List of points
+
+
+    # INSERT
+    for point in f1Points: # Dummy points 1
         kdtree.Insert(point)
-
-
-
-    # Dummy points from Marko Berezovský
-        # 
-    point1 = Point(2,1,30,40,2,3)
-    point2 = Point(2,2,5,25,2,3)
-    point3 = Point(2,3,70,70,1,1)
-    point4 = Point(2,4,10,12,1,1)
-    point5 = Point(2,5,50,30,1,1)
-    point6 = Point(2,6,35,45,1,1)
-    f2Points = [point1,point2,point3,point4,point5,point6]    # List of points
-
-
-    # for point in f2Points:
+   
+    # for point in f2Points:  # Dummy points 2
     #     kdtree.Insert(point)
 
 
+    # QUERY - Return point
+    one = kdtree.Query(point1)
+    two = kdtree.Query(point2)
+    three = kdtree.Query(point3)
+    four = kdtree.Query(point4)
+    five = kdtree.Query(point5)
 
+    # DELETE -> x = 1(success), 0(failure)
+    x = kdtree.Delete(point1)
+    x = kdtree.Delete(point2)
+    x = kdtree.Delete(point3)
+    x = kdtree.Delete(point4)
+    x = kdtree.Delete(point5)
 
-    point1 = Point(3,1,3,1,2,3)
-    point2 = Point(3,2,3,2,2,3)
-    point3 = Point(3,3,3,3,1,1)
-    point4 = Point(3,4,3,4,1,1)
-    f3Points = [point1,point2,point3,point4]    # List of points
+    # QUERY - Return 0, for everything except the last point
+    one = kdtree.Query(point1)
+    two = kdtree.Query(point2)
+    three = kdtree.Query(point3)
+    four = kdtree.Query(point4)
+    five = kdtree.Query(point5) # Should return a point because it is the root
 
-    point1 = Point(4,1,4,1,2,3)
-    point2 = Point(4,2,4,2,2,3)
-    point3 = Point(4,3,4,3,1,1)
-    point4 = Point(4,4,4,4,1,1)
-    f4Points = [point1,point2,point3,point4]    # List of points
-
-    point1 = Point(5,1,5,1,2,3)
-    point2 = Point(5,2,5,2,2,3)
-    point3 = Point(5,3,5,3,1,1)
-    point4 = Point(5,4,5,4,1,1)
-    f5Points = [point1,point2,point3,point4]    # List of points
-
-
-
-
-    # kdtree.Insert(f1)
-    # kdtree.Insert(f2)
-    # kdtree.Insert(f3)
-    # kdtree.Insert(f4)
-    # kdtree.Insert(f5)
-
-
-    # kdtree.traverseNode(kdtree,f1)
-
-### Query
-
-    # Query something existing, should return points
-    # one = kdtree.Query(f1)
-    # two = kdtree.Query(f2)
-    # three = kdtree.Query(f3)
-    # four = kdtree.Query(f4)
-    # five = kdtree.Query(f5)
-
-
-    one = kdtree.Query(f1Points[3])
-    # one = kdtree.Query(point4)
-
-
-### Delete
-    
-    # DELETING EXAMPLES FROM GeeksForGeeks Delete Example
-    # kdtree.Delete(f2Points[0]) # Deleting first point
-    delete = kdtree.Delete(point1) # Deleting 2nd level right point
-
-
-
-
-
-### Query
-
-    # Query something that doesn't exist, should return 0
-    # one = kdtree.Query(f1)
-    # two = kdtree.Query(f2)
-    # three = kdtree.Query(f3)
-    # four = kdtree.Query(f4)
-    # five = kdtree.Query(f5)
-
-
-
-
+    # Breakpoint variable
     x = 1
 
 

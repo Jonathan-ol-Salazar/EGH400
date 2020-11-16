@@ -908,17 +908,18 @@ def createObject(points):
     return None
 
 
+
+############################################################
+
+# EXAMPLE USAGE
+
+
 def main():
 
-
-
-    # # Initialize R-Tree
+    # Initialize R-Tree
     rtree = RTree(0,0,1000,1000, FANOUT)
     
-
-### Insert
-
-
+    # Example points
     point1 = Point(1,1,1,1,2,3)
     point2 = Point(1,2,1,2,2,3)
     point3 = Point(1,3,1,3,1,1)
@@ -949,64 +950,42 @@ def main():
     point4 = Point(5,4,5,4,1,1)
     f5Points = [point1,point2,point3,point4]    # List of points
 
+    # Make list of points into objects
     f1 = createObject(f1Points)
     f2 = createObject(f2Points)
     f3 = createObject(f3Points)
     f4 = createObject(f4Points)
     f5 = createObject(f5Points)
 
-
-
-    # f1 = rtree.createObject(f1Points)
-    # f2 = rtree.createObject(f2Points)
-    # f3 = rtree.createObject(f3Points)
-    # f4 = rtree.createObject(f4Points)
-    # f5 = rtree.createObject(f5Points)
-
-
-
+    # INSERT -> x = 1(success), 0(failure)
     x=rtree.Insert(f1)
     x=rtree.Insert(f2)
     x=rtree.Insert(f3)
     x=rtree.Insert(f4)
     x=rtree.Insert(f5)
 
-
-    # rtree.traverseNode(rtree,f1)
-
-### Query
-
-    # Query something existing, should return object
+    # QUERY - Return object
     one = rtree.Query(f1)
     two = rtree.Query(f2)
     three = rtree.Query(f3)
     four = rtree.Query(f4)
     five = rtree.Query(f5)
 
+    # DELETE -> x = 1(success), 0(failure)
+    x=rtree.Delete(f1)
+    x=rtree.Delete(f5)
+    x=rtree.Delete(f2)
+    x=rtree.Delete(f4)
+    x=rtree.Delete(f3)
 
-
-
-### Delete
-
-    rtree.Delete(f1)
-    rtree.Delete(f5)
-    rtree.Delete(f2)
-    rtree.Delete(f4)
-    rtree.Delete(f3)
-
-
-### Query
-
-    # Query something that doesn't exist, should return 0
+    # QUERY - Return 0, because object non-existing
     one = rtree.Query(f1)
     two = rtree.Query(f2)
     three = rtree.Query(f3)
     four = rtree.Query(f4)
     five = rtree.Query(f5)
 
-
-
-
+    # Breakpoint variable
     x = 1
 
 
