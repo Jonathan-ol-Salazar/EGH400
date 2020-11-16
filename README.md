@@ -11,7 +11,7 @@ Performance Analysis Of A Range Of Data Structures When Storing 4D Airspace Data
 - Run main.py using command -> 'python main.py'
 
 ## Observing Data Structures
-It's assumed the code editor is VSCode. The default setup is 50 flight plans with 10 points for each plan 
+It's assumed the code editor is VSCode. The default setup is 50 flight plans with 10 points for each plan. Python 3.7.5 is used.
 
 - Open main.py
 - Put a breakpoint at line 78 (line should contain the following -> 'x = 1')
